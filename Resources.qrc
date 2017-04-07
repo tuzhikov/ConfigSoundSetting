@@ -1,0 +1,19 @@
+<RCC>
+    <qresource prefix="/">
+        <file>ico/help.ico</file>
+        <file>ico/exit.ico</file>
+        <file>ico/setting.ico</file>
+        <file>ico/open.ico</file>
+        <file>ico/save.ico</file>
+        <file>ico/download.ico</file>
+        <file>ico/load.ico</file>
+        <file>ico/type.ico</file>
+        <file>ico/test.ico</file>
+        <file>ico/levels.ico</file>
+        <file>QSS/style_files001.qss</file>
+        <file>QSS/style_files002.qss</file>
+        <file>QSS/style_files003.qss</file>
+        <file>ico/logo.ico</file>
+        <file>ico/play.png</file>
+    </qresource>
+</RCC>
