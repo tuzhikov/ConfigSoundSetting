@@ -7,23 +7,30 @@
 #include <QPushButton>
 #include <QHBoxLayout>
 #include <QTimeEdit>
-class CreateDayPlan : public QWidget
-{
-    Q_OBJECT
-    QLabel *lbText;
-    QTimeEdit *time;
-    QSpinBox *value1;
-    QSpinBox *value2;
-    QPushButton *btDelete;
+#include "InterfaceForms.h"
 
-public:
-    explicit CreateDayPlan(QWidget *parent = 0,
-                           const QString &text = "1");
+namespace UnitDeyPlan{
+    class CreateDayPlan : public InterfaceForms
+    {
+        Q_OBJECT
+        QLabel *lbText;
+        QTimeEdit *timeEdit;
+        QSpinBox *value1;
+        QSpinBox *value2;
+        QPushButton *btDelete;
+        QSpacerItem *horizontalSpacer;
 
-signals:
-    void click(bool);
-
-public slots:
-};
+    public:
+        explicit CreateDayPlan(QWidget *parent = 0,
+                               const int index = 1,
+                               const QTime &time = QTime::currentTime(),
+                               const int val1 = 30,
+                               const int val2 = 70);
+        void setNumberItem( const int number );
+    signals:
+        void click(bool);
+    public slots:
+    };
+}
 
 #endif // CREATEDAYPLAN_H

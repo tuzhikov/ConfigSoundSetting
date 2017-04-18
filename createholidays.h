@@ -6,6 +6,8 @@
 #include <QSpinBox>
 #include <QPushButton>
 #include <QHBoxLayout>
+#include <QDateEdit>
+#include "InterfaceForms.h"
 
 class QLabel;
 class QSpinBox;
@@ -14,25 +16,32 @@ class QHBoxLayout;
 
 namespace UnitHolidays{
 
-class CreateHolidays : public QWidget
-{
-    Q_OBJECT
-    QLabel *lbText;
-    QSpinBox *sbMounth;
-    QSpinBox *sbDay;
-    QSpinBox *sbNumberPlan;
-    QPushButton *btDelete;
-public:
-    explicit CreateHolidays(QWidget *parent = 0,
-                            const QString &text = "1",
-                            const int mounth = 1,
-                            const int day = 1,
-                            const int num_plan = 1);
+    class CreateHolidays : public InterfaceForms
+    {
+        Q_OBJECT
 
-signals:
-    void click(bool);
+        QLabel *lbText;
+        QDateEdit *dataEdit;
+        QSpinBox *sbNumberPlan;
+        QPushButton *btDelete;
+        QSpacerItem *horizontalSpacer;
 
-public slots:
-};
+    public:
+        explicit CreateHolidays(QWidget *parent     = 0,
+                                const int index     = 1,
+                                const QDate date = QDate::currentDate(),
+                                const int num_plan  = 1);
+        void setNumberItem( const int number );
+        void setDateEdit( const QDate date );
+        void setNumberPlan( const int number );
+        void setMaxNumberPlan( const int number );
+        int getNumberItem( void ) const;
+        QDate getDateEdit( void ) const;
+        int getNumberPlan( void ) const;
+        int getMaxNumberPlan( void ) const;
+    signals:
+    public slots:
+        void setMaxPlan(const int);
+    };
 }
 #endif // CREATEHOLIDAYS_H

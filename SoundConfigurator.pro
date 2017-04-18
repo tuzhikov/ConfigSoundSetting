@@ -4,9 +4,9 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui multimedia winextras
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets multimedia winextras
 
 TARGET = SoundConfigurator
 TEMPLATE = app
@@ -26,12 +26,18 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += main.cpp\
         mainwindow.cpp \
     createholidays.cpp \
-    createdayplan.cpp
+    createdayplan.cpp \
+    accessdata.cpp \
+    volumebutton.cpp \
+    musicplayer.cpp
 
 HEADERS  += mainwindow.h \
     InterfaceForms.h \
     createholidays.h \
-    createdayplan.h
+    createdayplan.h \
+    accessdata.h \
+    volumebutton.h \
+    musicplayer.h
 
 FORMS    += mainwindow.ui
 
