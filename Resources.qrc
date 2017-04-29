@@ -15,5 +15,10 @@
         <file>QSS/style_files003.qss</file>
         <file>ico/logo.ico</file>
         <file>ico/play.png</file>
+        <file>ico/gnomeplanner48x48.ico</file>
+        <file>ico/gnomenetworkpreferences128x128.ico</file>
+        <file>ico/usb48x48.ico</file>
+        <file>ico/net48x48.ico</file>
+        <file>ico/win48x48.ico</file>
     </qresource>
 </RCC>

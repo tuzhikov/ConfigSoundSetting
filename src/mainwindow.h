@@ -16,10 +16,12 @@
 #include <stdint.h>
 #include <QFileDialog>
 
-#include "createholidays.h"
-#include "createdayplan.h"
-#include "musicplayer.h"
-
+#include "src/FORM/createholidays.h"
+#include "src/FORM/createdayplan.h"
+#include "src/FORM/createformplaylist.h"
+#include "src/PLAYER/musicplayer.h"
+#include "src/INTERFACE/settingsdialog.h"
+#include "src/INTERFACE/settingdialogwifi.h"
 
 namespace Ui {
 class MainWindow;
@@ -36,8 +38,10 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    int MaxPnan = 24; // set from database
-    int MaxHoliday = 186; // set from database
+    int MaxPnan = 24;      // set from database
+    int MaxHoliday = 186;  // set from database
+    uint8_t value_speaker1 = 50;
+    uint8_t value_speaker2 = 50;
 
     QMap<QAction*,QTextEdit*> mainWindowFormMap;
     QList<QAction*> ListCommand;
@@ -50,8 +54,9 @@ private:
     QListWidget* lWgtHoliday;
     QList< QListWidget* > lWgtPlansList;
     QStackedWidget *swPlans;
-    uint8_t value_speaker1 = 50;
-    uint8_t value_speaker2 = 50;
+    SettingsDialog *settings;
+    SettingDialogWifi *settingsWifi;
+    QLabel *statusBar;
 
     void createToolTip(void);
     void createToolBar(void);
@@ -61,13 +66,22 @@ private:
     void createGroupMenu(void);
     void createGroupSlider(void);
     void createSoundMenu(void);
-    void createPlans(void);
-    void createPlayer( QWidget *page );
+    void createPlans( QWidget * const page );
+    void createPlayer( QWidget * const page );
     void createOnePlan( QWidget *page, const int maxItem );
-    void createHolidays( void );
+    void createHolidays( QWidget * const page );
     void createOneHoliday( QWidget *page, const int maxItem );
+    void createPopurMenuFiles( QWidget * const page );
+    void createFormPlayList( QWidget * const page );
     void writeSettings();
     void readSettings();
+    void showStatusMessage(const QString &message);
+    void makeItemLabel(QListWidget *lstWgt = 0,
+                       const QString text = "");
+    void makeItemPlayList(QListWidget *lstWgt = 0,
+                          const QString text = tr("Trask"),
+                          const QString path = "");
+
     void makeItemPlan( QListWidget *lstWgt=0,
                        const int number = 1,
                        const QTime time = QTime::currentTime(),
@@ -89,15 +103,15 @@ private:
     void installDiagnosisPage( void );
 protected:
     void closeEvent(QCloseEvent *event);
-    void focusInEvent(QFocusEvent *someEvent);
     bool eventFilter( QObject *obj, QEvent *evt );
-private  slots:
+private slots:
     void onWindowsOut();
     void onActionabout();
     void onOpenFile(void);
     void onSaveFiles(void);
     void onOpenSoundFile(void);
     void onSaveSoundFile(void);
+    void onItemButtonPlay(void);
     void onToolBar(bool visible);
     void onTimeout();
     void onSwitchPanelMode(int);

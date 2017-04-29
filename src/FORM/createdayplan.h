@@ -17,7 +17,6 @@ namespace UnitDeyPlan{
         QTimeEdit *timeEdit;
         QSpinBox *value1;
         QSpinBox *value2;
-        QPushButton *btDelete;
         QSpacerItem *horizontalSpacer;
 
     public:

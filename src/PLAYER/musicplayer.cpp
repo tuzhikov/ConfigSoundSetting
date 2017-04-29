@@ -44,13 +44,17 @@
 #include <QtWidgets>
 #include <QtWinExtras>
 
+/**
+ * @brief MusicPlayer::MusicPlayer
+ * @param parent
+ */
 MusicPlayer::MusicPlayer(QWidget *parent) : QWidget(parent),
     taskbarButton(0), taskbarProgress(0), thumbnailToolBar(0),
     playToolButton(0), forwardToolButton(0), backwardToolButton(0),
     mediaPlayer(0), playButton(0), volumeButton(0),
     positionSlider(0), positionLabel(0), infoLabel(0)
 {
-    createWidgets();
+    createWidgets(parent);
     createShortcuts();
     createJumpList();
     createTaskbar();
@@ -87,7 +91,9 @@ void MusicPlayer::playFile(const QString &filePath)
         qDebug()<<"Class MusicPlayer functions playFile: filePath is Empty";
     }
 }
-
+/**
+ * @brief MusicPlayer::togglePlayback
+ */
 void MusicPlayer::togglePlayback()
 {
     if (mediaPlayer.mediaStatus() == QMediaPlayer::NoMedia)
@@ -97,45 +103,61 @@ void MusicPlayer::togglePlayback()
     else
         mediaPlayer.play();
 }
-
+/**
+ * @brief MusicPlayer::seekForward
+ */
 void MusicPlayer::seekForward()
 {
     positionSlider->triggerAction(QSlider::SliderPageStepAdd);
 }
-
+/**
+ * @brief MusicPlayer::seekBackward
+ */
 void MusicPlayer::seekBackward()
 {
     positionSlider->triggerAction(QSlider::SliderPageStepSub);
 }
-
-//! [0]
+/**
+ * @brief MusicPlayer::event
+ * @param event
+ * @return
+ */
 bool MusicPlayer::event(QEvent *event)
 {
     if (event->type() == QWinEvent::CompositionChange || event->type() == QWinEvent::ColorizationChange)
         stylize();
     return QWidget::event(event);
 }
-//! [0]
-
+/**
+ * @brief MusicPlayer::mousePressEvent
+ * @param event
+ */
 void MusicPlayer::mousePressEvent(QMouseEvent *event)
 {
     offset = event->globalPos() - pos();
     event->accept();
 }
-
+/**
+ * @brief MusicPlayer::mouseMoveEvent
+ * @param event
+ */
 void MusicPlayer::mouseMoveEvent(QMouseEvent *event)
 {
     move(event->globalPos() - offset);
     event->accept();
 }
-
+/**
+ * @brief MusicPlayer::mouseReleaseEvent
+ * @param event
+ */
 void MusicPlayer::mouseReleaseEvent(QMouseEvent *event)
 {
     offset = QPoint();
     event->accept();
 }
-
-//! [1]
+/**
+ * @brief MusicPlayer::stylize
+ */
 void MusicPlayer::stylize()
 {
     QtWin::resetExtendedFrame(this);
@@ -144,8 +166,10 @@ void MusicPlayer::stylize()
 
     volumeButton->stylize();
 }
-//! [1]
-
+/**
+ * @brief MusicPlayer::updateState
+ * @param state
+ */
 void MusicPlayer::updateState(QMediaPlayer::State state)
 {
     if (state == QMediaPlayer::PlayingState) {
@@ -156,7 +180,10 @@ void MusicPlayer::updateState(QMediaPlayer::State state)
         playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
     }
 }
-
+/**
+ * @brief MusicPlayer::updatePosition
+ * @param position
+ */
 void MusicPlayer::updatePosition(qint64 position)
 {
     positionSlider->setValue(position);
@@ -164,21 +191,29 @@ void MusicPlayer::updatePosition(qint64 position)
     QTime duration(0, position / 60000, qRound((position % 60000) / 1000.0));
     positionLabel->setText(duration.toString(tr("mm:ss")));
 }
-
+/**
+ * @brief MusicPlayer::updateDuration
+ * @param duration
+ */
 void MusicPlayer::updateDuration(qint64 duration)
 {
     positionSlider->setRange(0, duration);
     positionSlider->setEnabled(duration > 0);
     positionSlider->setPageStep(duration / 10);
 }
-
+/**
+ * @brief MusicPlayer::setPosition
+ * @param position
+ */
 void MusicPlayer::setPosition(int position)
 {
     // avoid seeking when the slider value change is triggered from updatePosition()
     if (qAbs(mediaPlayer.position() - position) > 99)
         mediaPlayer.setPosition(position);
 }
-
+/**
+ * @brief MusicPlayer::updateInfo
+ */
 void MusicPlayer::updateInfo()
 {
     QStringList info;
@@ -197,8 +232,9 @@ void MusicPlayer::handleError()
     playButton->setEnabled(false);
     infoLabel->setText(tr("Error: %1").arg(mediaPlayer.errorString()));
 }
-
-//! [2]
+/**
+ * @brief MusicPlayer::updateTaskbar
+ */
 void MusicPlayer::updateTaskbar()
 {
     switch (mediaPlayer.state()) {
@@ -218,9 +254,9 @@ void MusicPlayer::updateTaskbar()
         break;
     }
 }
-//! [2]
-
-//! [3]
+/**
+ * @brief MusicPlayer::updateThumbnailToolBar
+ */
 void MusicPlayer::updateThumbnailToolBar()
 {
     playToolButton->setEnabled(mediaPlayer.duration() > 0);
@@ -235,41 +271,45 @@ void MusicPlayer::updateThumbnailToolBar()
         playToolButton->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
     }
 }
-//! [3]
-
-void MusicPlayer::createWidgets()
+/**
+ * @brief MusicPlayer::createWidgets
+ * @param parent
+ */
+void MusicPlayer::createWidgets(QWidget *parent)
 {
-    playButton = new QToolButton(this);
+    playButton = new QToolButton(parent);
     playButton->setEnabled(false);
     playButton->setToolTip(tr("Play"));
     playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
     connect(playButton, &QAbstractButton::clicked, this, &MusicPlayer::togglePlayback);
 
-    volumeButton = new VolumeButton(this);
+    volumeButton = new VolumeButton(parent);
     volumeButton->setToolTip(tr("Adjust volume"));
     volumeButton->setVolume(mediaPlayer.volume());
     connect(volumeButton, &VolumeButton::volumeChanged, &mediaPlayer, &QMediaPlayer::setVolume);
 
-    positionSlider = new QSlider(Qt::Horizontal, this);
+    positionSlider = new QSlider(Qt::Horizontal, parent);
     positionSlider->setMinimumHeight(25);
     positionSlider->setEnabled(false);
     positionSlider->setToolTip(tr("Seek"));
     connect(positionSlider, &QAbstractSlider::valueChanged, this, &MusicPlayer::setPosition);
 
-    infoLabel = new QLabel(this);
-    positionLabel = new QLabel(tr("00:00"), this);
+    infoLabel = new QLabel( parent );
+
+    positionLabel = new QLabel(tr("00:00"), parent);
     positionLabel->setMinimumWidth(positionLabel->sizeHint().width());
 
-    QBoxLayout *controlLayout = new QHBoxLayout;
-    controlLayout->setMargin(0);
+    QBoxLayout *controlLayout = new QHBoxLayout(parent);
     controlLayout->addWidget(playButton);
     controlLayout->addWidget(positionSlider);
     controlLayout->addWidget(positionLabel);
     controlLayout->addWidget(volumeButton);
 
-    QBoxLayout *mainLayout = new QVBoxLayout(this);
+    QVBoxLayout *mainLayout = new QVBoxLayout(parent);
+    mainLayout->setContentsMargins(0,10,0,0);
     mainLayout->addWidget(infoLabel);
     mainLayout->addLayout(controlLayout);
+    //setLayout(mainLayout);
 }
 /**
  * @brief MusicPlayer::createShortcuts
@@ -294,16 +334,17 @@ void MusicPlayer::createShortcuts()
     QShortcut *decreaseShortcut = new QShortcut(Qt::Key_Down, this);
     connect(decreaseShortcut, &QShortcut::activated, volumeButton, &VolumeButton::descreaseVolume);
 }
-
-//! [4]
+/**
+ * @brief MusicPlayer::createJumpList
+ */
 void MusicPlayer::createJumpList()
 {
     QWinJumpList jumplist;
     jumplist.recent()->setVisible(true);
 }
-//! [4]
-
-//! [5]
+/**
+ * @brief MusicPlayer::createTaskbar
+ */
 void MusicPlayer::createTaskbar()
 {
     taskbarButton = new QWinTaskbarButton(this);
@@ -315,9 +356,9 @@ void MusicPlayer::createTaskbar()
 
     connect(&mediaPlayer, &QMediaPlayer::stateChanged, this, &MusicPlayer::updateTaskbar);
 }
-//! [5]
-
-//! [6]
+/**
+ * @brief MusicPlayer::createThumbnailToolBar
+ */
 void MusicPlayer::createThumbnailToolBar()
 {
     thumbnailToolBar = new QWinThumbnailToolBar(this);
@@ -349,4 +390,3 @@ void MusicPlayer::createThumbnailToolBar()
     connect(&mediaPlayer, &QMediaPlayer::durationChanged, this, &MusicPlayer::updateThumbnailToolBar);
     connect(&mediaPlayer, &QMediaPlayer::stateChanged, this, &MusicPlayer::updateThumbnailToolBar);
 }
-//! [6]

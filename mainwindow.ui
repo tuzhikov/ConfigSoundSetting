@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>640</width>
-    <height>600</height>
+    <height>607</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -132,777 +132,42 @@
              <attribute name="title">
               <string>Sounds</string>
              </attribute>
-             <layout class="QGridLayout" name="gridLayout_17">
-              <item row="0" column="0">
-               <widget class="QGroupBox" name="groupBox_5">
-                <property name="title">
-                 <string>Track</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-                <layout class="QVBoxLayout" name="verticalLayout_5">
-                 <item>
-                  <layout class="QGridLayout" name="gridLayout_16">
-                   <item row="0" column="0">
-                    <widget class="QLabel" name="lbZSO">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>ZSO</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="1">
-                    <widget class="QLineEdit" name="leZSO">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="frame">
-                      <bool>true</bool>
-                     </property>
-                     <property name="echoMode">
-                      <enum>QLineEdit::Normal</enum>
-                     </property>
-                     <property name="readOnly">
-                      <bool>true</bool>
-                     </property>
-                     <property name="cursorMoveStyle">
-                      <enum>Qt::LogicalMoveStyle</enum>
-                     </property>
-                     <property name="clearButtonEnabled">
-                      <bool>false</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="2">
-                    <widget class="QLabel" name="lbZSP">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>ZSP</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="3">
-                    <widget class="QLineEdit" name="leZSP">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="frame">
-                      <bool>true</bool>
-                     </property>
-                     <property name="echoMode">
-                      <enum>QLineEdit::Normal</enum>
-                     </property>
-                     <property name="readOnly">
-                      <bool>true</bool>
-                     </property>
-                     <property name="cursorMoveStyle">
-                      <enum>Qt::LogicalMoveStyle</enum>
-                     </property>
-                     <property name="clearButtonEnabled">
-                      <bool>false</bool>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                 <item>
-                  <widget class="Line" name="line_5">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <layout class="QGridLayout" name="gridLayout_15">
-                   <item row="0" column="0">
-                    <widget class="QLabel" name="lbZSR">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>ZSR</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="1">
-                    <widget class="QLineEdit" name="leZSR">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="frame">
-                      <bool>true</bool>
-                     </property>
-                     <property name="echoMode">
-                      <enum>QLineEdit::Normal</enum>
-                     </property>
-                     <property name="readOnly">
-                      <bool>true</bool>
-                     </property>
-                     <property name="cursorMoveStyle">
-                      <enum>Qt::LogicalMoveStyle</enum>
-                     </property>
-                     <property name="clearButtonEnabled">
-                      <bool>false</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="2">
-                    <widget class="QLabel" name="lbZSZ">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>ZSZ</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="3">
-                    <widget class="QLineEdit" name="leZSZ">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="frame">
-                      <bool>true</bool>
-                     </property>
-                     <property name="echoMode">
-                      <enum>QLineEdit::Normal</enum>
-                     </property>
-                     <property name="readOnly">
-                      <bool>true</bool>
-                     </property>
-                     <property name="cursorMoveStyle">
-                      <enum>Qt::LogicalMoveStyle</enum>
-                     </property>
-                     <property name="clearButtonEnabled">
-                      <bool>false</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="0">
-                    <widget class="QLabel" name="lbZSVRR70">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>ZSVRR&gt;60</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="1">
-                    <widget class="QLineEdit" name="leZSVRR70">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="frame">
-                      <bool>true</bool>
-                     </property>
-                     <property name="echoMode">
-                      <enum>QLineEdit::Normal</enum>
-                     </property>
-                     <property name="readOnly">
-                      <bool>true</bool>
-                     </property>
-                     <property name="cursorMoveStyle">
-                      <enum>Qt::LogicalMoveStyle</enum>
-                     </property>
-                     <property name="clearButtonEnabled">
-                      <bool>false</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="2">
-                    <widget class="QLabel" name="lbZSVRZ70">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>ZSVRZ&gt;60</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="3">
-                    <widget class="QLineEdit" name="leZSVRZ70">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="frame">
-                      <bool>true</bool>
-                     </property>
-                     <property name="echoMode">
-                      <enum>QLineEdit::Normal</enum>
-                     </property>
-                     <property name="readOnly">
-                      <bool>true</bool>
-                     </property>
-                     <property name="cursorMoveStyle">
-                      <enum>Qt::LogicalMoveStyle</enum>
-                     </property>
-                     <property name="clearButtonEnabled">
-                      <bool>false</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="0">
-                    <widget class="QLabel" name="lbZSVRR60">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>ZSVRR&lt;60</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="1">
-                    <widget class="QLineEdit" name="leZSVRR60">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="frame">
-                      <bool>true</bool>
-                     </property>
-                     <property name="echoMode">
-                      <enum>QLineEdit::Normal</enum>
-                     </property>
-                     <property name="dragEnabled">
-                      <bool>true</bool>
-                     </property>
-                     <property name="readOnly">
-                      <bool>true</bool>
-                     </property>
-                     <property name="cursorMoveStyle">
-                      <enum>Qt::LogicalMoveStyle</enum>
-                     </property>
-                     <property name="clearButtonEnabled">
-                      <bool>false</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="2">
-                    <widget class="QLabel" name="lbZSVRZ60">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>ZSVRZ&lt;60</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="3">
-                    <widget class="QLineEdit" name="leZSVRZ60">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="frame">
-                      <bool>true</bool>
-                     </property>
-                     <property name="echoMode">
-                      <enum>QLineEdit::Normal</enum>
-                     </property>
-                     <property name="readOnly">
-                      <bool>true</bool>
-                     </property>
-                     <property name="cursorMoveStyle">
-                      <enum>Qt::LogicalMoveStyle</enum>
-                     </property>
-                     <property name="clearButtonEnabled">
-                      <bool>false</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="3" column="0">
-                    <widget class="QLabel" name="lbZSVRR50">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>ZSVRR&lt;50</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="3" column="1">
-                    <widget class="QLineEdit" name="leZSVRR50">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="frame">
-                      <bool>true</bool>
-                     </property>
-                     <property name="echoMode">
-                      <enum>QLineEdit::Normal</enum>
-                     </property>
-                     <property name="readOnly">
-                      <bool>true</bool>
-                     </property>
-                     <property name="cursorMoveStyle">
-                      <enum>Qt::LogicalMoveStyle</enum>
-                     </property>
-                     <property name="clearButtonEnabled">
-                      <bool>false</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="3" column="2">
-                    <widget class="QLabel" name="lbZSVRZ50">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>ZSVRZ&lt;50</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="3" column="3">
-                    <widget class="QLineEdit" name="leZSVRZ50">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="frame">
-                      <bool>true</bool>
-                     </property>
-                     <property name="echoMode">
-                      <enum>QLineEdit::Normal</enum>
-                     </property>
-                     <property name="readOnly">
-                      <bool>true</bool>
-                     </property>
-                     <property name="cursorMoveStyle">
-                      <enum>Qt::LogicalMoveStyle</enum>
-                     </property>
-                     <property name="clearButtonEnabled">
-                      <bool>false</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="4" column="0">
-                    <widget class="QLabel" name="lbZSVRR40">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>ZSVRR&lt;40</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="4" column="1">
-                    <widget class="QLineEdit" name="leZSVRR40">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="frame">
-                      <bool>true</bool>
-                     </property>
-                     <property name="echoMode">
-                      <enum>QLineEdit::Normal</enum>
-                     </property>
-                     <property name="readOnly">
-                      <bool>true</bool>
-                     </property>
-                     <property name="cursorMoveStyle">
-                      <enum>Qt::LogicalMoveStyle</enum>
-                     </property>
-                     <property name="clearButtonEnabled">
-                      <bool>false</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="4" column="2">
-                    <widget class="QLabel" name="lbZSVRZ40">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>ZSVRZ&lt;40</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="4" column="3">
-                    <widget class="QLineEdit" name="leZSVRZ40">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="frame">
-                      <bool>true</bool>
-                     </property>
-                     <property name="echoMode">
-                      <enum>QLineEdit::Normal</enum>
-                     </property>
-                     <property name="readOnly">
-                      <bool>true</bool>
-                     </property>
-                     <property name="cursorMoveStyle">
-                      <enum>Qt::LogicalMoveStyle</enum>
-                     </property>
-                     <property name="clearButtonEnabled">
-                      <bool>false</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="5" column="0">
-                    <widget class="QLabel" name="lbZSVRR30">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>ZSVRR&lt;30</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="5" column="1">
-                    <widget class="QLineEdit" name="leZSVRR30">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="frame">
-                      <bool>true</bool>
-                     </property>
-                     <property name="echoMode">
-                      <enum>QLineEdit::Normal</enum>
-                     </property>
-                     <property name="readOnly">
-                      <bool>true</bool>
-                     </property>
-                     <property name="cursorMoveStyle">
-                      <enum>Qt::LogicalMoveStyle</enum>
-                     </property>
-                     <property name="clearButtonEnabled">
-                      <bool>false</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="5" column="2">
-                    <widget class="QLabel" name="lbZSVRZ30">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>ZSVRR&lt;30</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="5" column="3">
-                    <widget class="QLineEdit" name="leZSVRZ30">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="frame">
-                      <bool>true</bool>
-                     </property>
-                     <property name="echoMode">
-                      <enum>QLineEdit::Normal</enum>
-                     </property>
-                     <property name="readOnly">
-                      <bool>true</bool>
-                     </property>
-                     <property name="cursorMoveStyle">
-                      <enum>Qt::LogicalMoveStyle</enum>
-                     </property>
-                     <property name="clearButtonEnabled">
-                      <bool>false</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="6" column="0">
-                    <widget class="QLabel" name="lbZSVRR20">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>ZSVRR&lt;20</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="6" column="1">
-                    <widget class="QLineEdit" name="leZSVRR20">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="frame">
-                      <bool>true</bool>
-                     </property>
-                     <property name="echoMode">
-                      <enum>QLineEdit::Normal</enum>
-                     </property>
-                     <property name="readOnly">
-                      <bool>true</bool>
-                     </property>
-                     <property name="cursorMoveStyle">
-                      <enum>Qt::LogicalMoveStyle</enum>
-                     </property>
-                     <property name="clearButtonEnabled">
-                      <bool>false</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="6" column="2">
-                    <widget class="QLabel" name="lbZSVRZ20">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>ZSVRZ&lt;20</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="6" column="3">
-                    <widget class="QLineEdit" name="leZSVRZ20">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="frame">
-                      <bool>true</bool>
-                     </property>
-                     <property name="echoMode">
-                      <enum>QLineEdit::Normal</enum>
-                     </property>
-                     <property name="readOnly">
-                      <bool>true</bool>
-                     </property>
-                     <property name="cursorMoveStyle">
-                      <enum>Qt::LogicalMoveStyle</enum>
-                     </property>
-                     <property name="clearButtonEnabled">
-                      <bool>false</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="7" column="0">
-                    <widget class="QLabel" name="lbZSVRR10">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>ZSVRR&lt;10</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="7" column="1">
-                    <widget class="QLineEdit" name="leZSVRR10">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="frame">
-                      <bool>true</bool>
-                     </property>
-                     <property name="echoMode">
-                      <enum>QLineEdit::Normal</enum>
-                     </property>
-                     <property name="readOnly">
-                      <bool>true</bool>
-                     </property>
-                     <property name="cursorMoveStyle">
-                      <enum>Qt::LogicalMoveStyle</enum>
-                     </property>
-                     <property name="clearButtonEnabled">
-                      <bool>false</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="7" column="2">
-                    <widget class="QLabel" name="lbZSVRZ10">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>ZSVRZ&lt;10</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="7" column="3">
-                    <widget class="QLineEdit" name="leZSVRZ10">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="frame">
-                      <bool>true</bool>
-                     </property>
-                     <property name="echoMode">
-                      <enum>QLineEdit::Normal</enum>
-                     </property>
-                     <property name="readOnly">
-                      <bool>true</bool>
-                     </property>
-                     <property name="cursorMoveStyle">
-                      <enum>Qt::LogicalMoveStyle</enum>
-                     </property>
-                     <property name="clearButtonEnabled">
-                      <bool>false</bool>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                </layout>
-               </widget>
+             <layout class="QVBoxLayout" name="verticalLayout_5" stretch="1,0">
+              <property name="spacing">
+               <number>5</number>
+              </property>
+              <property name="sizeConstraint">
+               <enum>QLayout::SetMaximumSize</enum>
+              </property>
+              <property name="leftMargin">
+               <number>10</number>
+              </property>
+              <property name="topMargin">
+               <number>10</number>
+              </property>
+              <property name="rightMargin">
+               <number>10</number>
+              </property>
+              <property name="bottomMargin">
+               <number>10</number>
+              </property>
+              <item>
+               <widget class="QWidget" name="widgetTrack" native="true"/>
               </item>
-              <item row="1" column="0">
+              <item>
                <widget class="QGroupBox" name="gbPlayTrack">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>80</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
                 <property name="acceptDrops">
                  <bool>false</bool>
                 </property>
@@ -914,23 +179,7 @@
                 </property>
                </widget>
               </item>
-              <item row="2" column="0">
-               <spacer name="verticalSpacer_5">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>40</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
              </layout>
-             <zorder>gbPlayTrack</zorder>
-             <zorder>groupBox_5</zorder>
-             <zorder>verticalSpacer_5</zorder>
             </widget>
             <widget class="QWidget" name="volume">
              <attribute name="title">
@@ -1205,7 +454,7 @@
                   </layout>
                  </item>
                  <item>
-                  <spacer name="verticalSpacer_6">
+                  <spacer name="vsOneSpeaker">
                    <property name="orientation">
                     <enum>Qt::Vertical</enum>
                    </property>
@@ -1218,29 +467,7 @@
                   </spacer>
                  </item>
                 </layout>
-                <zorder>label_12</zorder>
-                <zorder>hs_general_spone</zorder>
-                <zorder>label_6</zorder>
-                <zorder>hs_one_zso</zorder>
-                <zorder>label_7</zorder>
-                <zorder>hs_one_zsp</zorder>
-                <zorder>label_8</zorder>
-                <zorder>hs_one_zsr</zorder>
-                <zorder>label_9</zorder>
-                <zorder>hs_one_zsvrr</zorder>
-                <zorder>label_10</zorder>
-                <zorder>hs_one_zsz</zorder>
-                <zorder>label_11</zorder>
-                <zorder>hs_one_zsvrz</zorder>
-                <zorder>lb_general_spone</zorder>
-                <zorder>lb_one_zso</zorder>
-                <zorder>lb_one_zsp</zorder>
-                <zorder>lb_one_zsr</zorder>
-                <zorder>lb_one_zsvrr</zorder>
-                <zorder>lb_one_zsz</zorder>
-                <zorder>lb_one_zsvrz</zorder>
-                <zorder>gb_speakertwo</zorder>
-                <zorder>verticalSpacer_6</zorder>
+                <zorder>vsOneSpeaker</zorder>
                </widget>
               </item>
               <item row="0" column="1">
@@ -1514,7 +741,7 @@
                   </layout>
                  </item>
                  <item>
-                  <spacer name="verticalSpacer_7">
+                  <spacer name="vsTwoSpeaker">
                    <property name="orientation">
                     <enum>Qt::Vertical</enum>
                    </property>
@@ -1535,152 +762,184 @@
              <attribute name="title">
               <string>Vibration</string>
              </attribute>
-             <layout class="QFormLayout" name="formLayout">
+             <layout class="QGridLayout" name="gridLayout_16">
               <item row="0" column="0">
-               <layout class="QHBoxLayout" name="horizontalLayout_7">
-                <item>
-                 <widget class="QLabel" name="label_3">
-                  <property name="minimumSize">
-                   <size>
-                    <width>0</width>
-                    <height>30</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <pointsize>13</pointsize>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>Intensity (%):</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QSpinBox" name="spinBox">
-                  <property name="minimumSize">
-                   <size>
-                    <width>70</width>
-                    <height>30</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <pointsize>10</pointsize>
-                   </font>
-                  </property>
-                  <property name="maximum">
-                   <number>100</number>
-                  </property>
-                  <property name="value">
-                   <number>50</number>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item row="1" column="0">
-               <layout class="QHBoxLayout" name="horizontalLayout_5">
-                <item>
-                 <widget class="QLabel" name="label_4">
-                  <property name="minimumSize">
-                   <size>
-                    <width>0</width>
-                    <height>30</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <pointsize>13</pointsize>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>Length   (ms):</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QSpinBox" name="sb_vibr_lenght">
-                  <property name="minimumSize">
-                   <size>
-                    <width>70</width>
-                    <height>30</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <pointsize>10</pointsize>
-                   </font>
-                  </property>
-                  <property name="minimum">
-                   <number>100</number>
-                  </property>
-                  <property name="maximum">
-                   <number>65535</number>
-                  </property>
-                  <property name="singleStep">
-                   <number>10</number>
-                  </property>
-                  <property name="displayIntegerBase">
-                   <number>10</number>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item row="2" column="0">
-               <layout class="QHBoxLayout" name="horizontalLayout_6">
-                <item>
-                 <widget class="QLabel" name="label_5">
-                  <property name="minimumSize">
-                   <size>
-                    <width>0</width>
-                    <height>30</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <pointsize>12</pointsize>
-                    <weight>75</weight>
-                    <bold>true</bold>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>Pause   (ms):</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QSpinBox" name="sb_vibr_pause">
-                  <property name="minimumSize">
-                   <size>
-                    <width>70</width>
-                    <height>30</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <pointsize>10</pointsize>
-                   </font>
-                  </property>
-                  <property name="minimum">
-                   <number>100</number>
-                  </property>
-                  <property name="maximum">
-                   <number>65535</number>
-                  </property>
-                  <property name="singleStep">
-                   <number>5</number>
-                  </property>
-                  <property name="value">
-                   <number>100</number>
-                  </property>
-                  <property name="displayIntegerBase">
-                   <number>10</number>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
+               <widget class="QGroupBox" name="gbVibration">
+                <property name="title">
+                 <string/>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_18">
+                 <item row="0" column="0">
+                  <layout class="QGridLayout" name="gridLayout_17" columnstretch="0,1" rowminimumheight="0,0,0" columnminimumwidth="0,0">
+                   <property name="sizeConstraint">
+                    <enum>QLayout::SetFixedSize</enum>
+                   </property>
+                   <property name="spacing">
+                    <number>5</number>
+                   </property>
+                   <item row="0" column="0">
+                    <widget class="QLabel" name="label_3">
+                     <property name="minimumSize">
+                      <size>
+                       <width>0</width>
+                       <height>30</height>
+                      </size>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <pointsize>10</pointsize>
+                      </font>
+                     </property>
+                     <property name="text">
+                      <string>Intensity (%):</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="1">
+                    <widget class="QSpinBox" name="spinBox">
+                     <property name="minimumSize">
+                      <size>
+                       <width>70</width>
+                       <height>30</height>
+                      </size>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <pointsize>10</pointsize>
+                      </font>
+                     </property>
+                     <property name="maximum">
+                      <number>100</number>
+                     </property>
+                     <property name="value">
+                      <number>50</number>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="0">
+                    <widget class="QLabel" name="label_4">
+                     <property name="minimumSize">
+                      <size>
+                       <width>0</width>
+                       <height>30</height>
+                      </size>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <pointsize>10</pointsize>
+                      </font>
+                     </property>
+                     <property name="text">
+                      <string>Length   (ms):</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="1">
+                    <widget class="QSpinBox" name="sb_vibr_lenght">
+                     <property name="minimumSize">
+                      <size>
+                       <width>70</width>
+                       <height>30</height>
+                      </size>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <pointsize>10</pointsize>
+                      </font>
+                     </property>
+                     <property name="minimum">
+                      <number>100</number>
+                     </property>
+                     <property name="maximum">
+                      <number>65535</number>
+                     </property>
+                     <property name="singleStep">
+                      <number>10</number>
+                     </property>
+                     <property name="displayIntegerBase">
+                      <number>10</number>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="2" column="0">
+                    <widget class="QLabel" name="label_5">
+                     <property name="minimumSize">
+                      <size>
+                       <width>0</width>
+                       <height>30</height>
+                      </size>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <pointsize>10</pointsize>
+                       <weight>50</weight>
+                       <bold>false</bold>
+                      </font>
+                     </property>
+                     <property name="text">
+                      <string>Pause   (ms):</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="2" column="1">
+                    <widget class="QSpinBox" name="sb_vibr_pause">
+                     <property name="minimumSize">
+                      <size>
+                       <width>70</width>
+                       <height>30</height>
+                      </size>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <pointsize>10</pointsize>
+                      </font>
+                     </property>
+                     <property name="minimum">
+                      <number>100</number>
+                     </property>
+                     <property name="maximum">
+                      <number>65535</number>
+                     </property>
+                     <property name="singleStep">
+                      <number>5</number>
+                     </property>
+                     <property name="value">
+                      <number>100</number>
+                     </property>
+                     <property name="displayIntegerBase">
+                      <number>10</number>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QCheckBox" name="checkBox_10">
+                   <property name="font">
+                    <font>
+                     <pointsize>10</pointsize>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>Enable confirmation of button click.</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0">
+                  <spacer name="verticalSpacer_5">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </widget>
               </item>
              </layout>
             </widget>
@@ -2250,7 +1509,7 @@
                    <string>Sound acceleration</string>
                   </property>
                   <property name="alignment">
-                   <set>Qt::AlignCenter</set>
+                   <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
                   </property>
                   <property name="flat">
                    <bool>false</bool>
@@ -2313,7 +1572,7 @@
                    <string>Motion sensor</string>
                   </property>
                   <property name="alignment">
-                   <set>Qt::AlignCenter</set>
+                   <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
                   </property>
                   <property name="checkable">
                    <bool>true</bool>
@@ -2365,7 +1624,7 @@
                    <string>Noise sensor</string>
                   </property>
                   <property name="alignment">
-                   <set>Qt::AlignCenter</set>
+                   <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
                   </property>
                   <property name="checkable">
                    <bool>true</bool>
@@ -2560,7 +1819,10 @@
               <item>
                <widget class="QGroupBox" name="groupBox_2">
                 <property name="title">
-                 <string>GroupBox</string>
+                 <string/>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_4">
                  <item>
@@ -2681,8 +1943,8 @@
                   </widget>
                  </item>
                  <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_3">
-                   <item>
+                  <layout class="QGridLayout" name="gridLayout_15">
+                   <item row="0" column="0">
                     <widget class="QLabel" name="label_27">
                      <property name="minimumSize">
                       <size>
@@ -2695,7 +1957,7 @@
                      </property>
                     </widget>
                    </item>
-                   <item>
+                   <item row="0" column="1">
                     <widget class="QSpinBox" name="sb_time_button">
                      <property name="minimumSize">
                       <size>
@@ -2714,11 +1976,7 @@
                      </property>
                     </widget>
                    </item>
-                  </layout>
-                 </item>
-                 <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_4">
-                   <item>
+                   <item row="1" column="0">
                     <widget class="QLabel" name="label_28">
                      <property name="minimumSize">
                       <size>
@@ -2727,11 +1985,11 @@
                       </size>
                      </property>
                      <property name="text">
-                      <string>Period ZSO and ZSP (c.):</string>
+                      <string>Period ZSO and ZSP (mc.):</string>
                      </property>
                     </widget>
                    </item>
-                   <item>
+                   <item row="1" column="1">
                     <widget class="QSpinBox" name="sb_zso_period">
                      <property name="minimumSize">
                       <size>
@@ -2740,21 +1998,17 @@
                       </size>
                      </property>
                      <property name="minimum">
-                      <number>1</number>
+                      <number>200</number>
                      </property>
                      <property name="maximum">
-                      <number>10</number>
+                      <number>10000</number>
                      </property>
                      <property name="value">
-                      <number>1</number>
+                      <number>200</number>
                      </property>
                     </widget>
                    </item>
-                  </layout>
-                 </item>
-                 <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_8">
-                   <item>
+                   <item row="2" column="0">
                     <widget class="QLabel" name="label_29">
                      <property name="minimumSize">
                       <size>
@@ -2767,7 +2021,7 @@
                      </property>
                     </widget>
                    </item>
-                   <item>
+                   <item row="2" column="1">
                     <widget class="QSpinBox" name="sb_zso_delay">
                      <property name="minimumSize">
                       <size>
@@ -2776,7 +2030,7 @@
                       </size>
                      </property>
                      <property name="minimum">
-                      <number>1</number>
+                      <number>0</number>
                      </property>
                      <property name="maximum">
                       <number>10</number>
@@ -3284,7 +2538,7 @@
              <item row="1" column="0">
               <widget class="QLabel" name="label_37">
                <property name="text">
-                <string>Sensitivity of noise sen:</string>
+                <string>Noise sensor Volume:</string>
                </property>
               </widget>
              </item>
@@ -3889,6 +3143,10 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/ico/win48x48.ico</normaloff>:/ico/win48x48.ico</iconset>
+   </property>
    <property name="text">
     <string>WinProtocol</string>
    </property>
@@ -3909,6 +3167,10 @@
    <property name="checked">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/ico/gnomeplanner48x48.ico</normaloff>:/ico/gnomeplanner48x48.ico</iconset>
+   </property>
    <property name="text">
     <string>Setting</string>
    </property>
@@ -3916,6 +3178,10 @@
   <action name="actionDiagnosis">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/ico/test.ico</normaloff>:/ico/test.ico</iconset>
    </property>
    <property name="text">
     <string>Diagnosis</string>
@@ -3928,16 +3194,24 @@
    <property name="checked">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/ico/usb48x48.ico</normaloff>:/ico/usb48x48.ico</iconset>
+   </property>
    <property name="text">
-    <string>Connect USB</string>
+    <string>USB</string>
    </property>
   </action>
   <action name="actionConnect_WIFI">
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/ico/net48x48.ico</normaloff>:/ico/net48x48.ico</iconset>
+   </property>
    <property name="text">
-    <string>Connect WIFI</string>
+    <string>WIFI</string>
    </property>
   </action>
   <action name="actionShow_Toolbar">

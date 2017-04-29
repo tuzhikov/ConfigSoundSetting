@@ -23,7 +23,6 @@ namespace UnitHolidays{
         QLabel *lbText;
         QDateEdit *dataEdit;
         QSpinBox *sbNumberPlan;
-        QPushButton *btDelete;
         QSpacerItem *horizontalSpacer;
 
     public:

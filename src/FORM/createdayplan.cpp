@@ -14,7 +14,6 @@ CreateDayPlan::CreateDayPlan(QWidget *parent,
     value1->setValue(val1);value1->setRange(0,100); //100 %
     value2 = new QSpinBox(parent);
     value2->setValue(val2);value2->setRange(0,100); //100%
-    //btDelete = new QPushButton(tr("REMOVE"),parent);
     horizontalSpacer = new QSpacerItem(217, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
     QHBoxLayout*hLayout = new QHBoxLayout(parent);
     hLayout->addWidget(lbText);
@@ -27,12 +26,9 @@ CreateDayPlan::CreateDayPlan(QWidget *parent,
     QLabel *text3 = new QLabel(tr("Speaker 2 (%): "),parent);
     hLayout->addWidget(text3);
     hLayout->addWidget(value2);
-    //hLayout->addWidget(btDelete);
     hLayout->addSpacerItem(horizontalSpacer);
     this->setLayout(hLayout);
     this->setMinimumHeight(30);
-    // connect
-    //connect(btDelete,SIGNAL(clicked(bool)),this,SIGNAL(click(bool)));
 }
 /**
  * @brief CreateDayPlan::setNumberItem

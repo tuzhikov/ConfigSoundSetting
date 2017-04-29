@@ -3,8 +3,8 @@
 
 #include <QQueue>
 #include <QWidget>
-//class QWidget;
-//class QByteArray;
+#include <QByteArray>
+
 
 /**
  * @brief The InterfaceForms class
@@ -13,7 +13,7 @@ class InterfaceForms : public QWidget
 {
 public:
     explicit InterfaceForms(QWidget *parent = 0):QWidget(parent){}
-    //virtual ~InterfaceForms(){}
+    virtual ~InterfaceForms(){}
     //virtual void ReadData(QQueue<QByteArray> &)=0;
     //virtual void WriteData(QQueue<QByteArray> &)=0;
     //virtual const int retMaxNumberElements()=0;

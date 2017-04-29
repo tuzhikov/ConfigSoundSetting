@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui multimedia winextras
+QT       += core gui multimedia winextras serialport network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets multimedia winextras
 
@@ -24,25 +24,39 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
-    createholidays.cpp \
-    createdayplan.cpp \
-    accessdata.cpp \
-    volumebutton.cpp \
-    musicplayer.cpp
+    src/mainwindow.cpp \
+    src/ACCESSDATE/accessdata.cpp \
+    src/FORM/createdayplan.cpp \
+    src/FORM/createholidays.cpp \
+    src/PLAYER/musicplayer.cpp \
+    src/PLAYER/volumebutton.cpp \
+    src/FORM/createformplaylist.cpp \
+    src/INTERFACE/settingsdialog.cpp \
+    src/INTERFACE/settingdialogwifi.cpp \
+    src/INTERFACE/comport.cpp \
+    src/INTERFACE/wifi.cpp
 
-HEADERS  += mainwindow.h \
-    InterfaceForms.h \
-    createholidays.h \
-    createdayplan.h \
-    accessdata.h \
-    volumebutton.h \
-    musicplayer.h
+HEADERS  += src/mainwindow.h \
+    src/ACCESSDATE/accessdata.h \
+    src/FORM/createdayplan.h \
+    src/FORM/createholidays.h \
+    src/FORM/InterfaceForms.h \
+    src/PLAYER/musicplayer.h \
+    src/PLAYER/volumebutton.h \
+    src/FORM/createformplaylist.h \
+    src/INTERFACE/LinkInterface.h \
+    src/INTERFACE/settingsdialog.h \
+    src/INTERFACE/settingdialogwifi.h \
+    src/INTERFACE/comport.h \
+    src/INTERFACE/wifi.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    settingsdialog.ui \
+    settingdialogwifi.ui
 
 SUBDIRS += \
     configurator.pro
 
 RESOURCES += \
     Resources.qrc
+QMAKE_CXXFLAGS += -std=c++0x

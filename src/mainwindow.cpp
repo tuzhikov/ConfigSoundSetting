@@ -4,6 +4,7 @@
 
 using namespace UnitHolidays;
 using namespace UnitDeyPlan;
+using namespace UnitFormPlayList;
 
 /**
  * @brief MainWindow::MainWindow
@@ -11,55 +12,41 @@ using namespace UnitDeyPlan;
  */
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    settings( new SettingsDialog(parent) ),
+    settingsWifi( new SettingDialogWifi( parent ) ),
+    statusBar(new QLabel(parent))
 {
     ui->setupUi(this);
-    /*create control*/
+    //create
     createStatusBar();
     createToolBar();
     createToolTip();
     createConnectionGUI();
     createGroupMenu();
     createGroupSlider();
-    createPlans();
-    createHolidays();
+    createPlans(ui->planWidget);
+    createHolidays(ui->wHoliday);
     createPlayer(ui->gbPlayTrack);
+    createFormPlayList(ui->widgetTrack);
     createStyle();
-    /*Read setting in register*/
-    readSettings();
     // install wigen
     installDiagnosisPage();
-    // install event filter
-    ui->leZSO->installEventFilter(this);
-    ui->leZSP->installEventFilter(this);
-    ui->leZSR->installEventFilter(this);
-    ui->leZSZ->installEventFilter(this);
-    ui->leZSVRR10->installEventFilter(this);
-    ui->leZSVRR20->installEventFilter(this);
-    ui->leZSVRR30->installEventFilter(this);
-    ui->leZSVRR40->installEventFilter(this);
-    ui->leZSVRR50->installEventFilter(this);
-    ui->leZSVRR60->installEventFilter(this);
-    ui->leZSVRR70->installEventFilter(this);
-    ui->leZSVRZ10->installEventFilter(this);
-    ui->leZSVRZ20->installEventFilter(this);
-    ui->leZSVRZ30->installEventFilter(this);
-    ui->leZSVRZ40->installEventFilter(this);
-    ui->leZSVRZ50->installEventFilter(this);
-    ui->leZSVRZ60->installEventFilter(this);
-    ui->leZSVRZ70->installEventFilter(this);
-    //qApp->installEventFilter(this);
-    //////////////////////////////////////////
-    // test wiget
-    QTimer *timer = new QTimer(this);
-    timer->start(1000);
-    connect(timer,SIGNAL(timeout()),this,SLOT(onTimeout()));
+    //Read setting in register
+    readSettings();
+
+//    // test wiget
+//    QTimer *timer = new QTimer(this);
+//    timer->start(1000);
+//    connect(timer,SIGNAL(timeout()),this,SLOT(onTimeout()));
 }
 /**
  * @brief MainWindow::~MainWindow
  */
 MainWindow::~MainWindow()
 {
+    delete settings;
+    delete settingsWifi;
     delete ui;
 }
 /**
@@ -94,47 +81,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
         delete mainWindowFormMap[ui->actionWin];
     event->accept();
 }
-
-void MainWindow::focusInEvent(QFocusEvent *someEvent)
-{
-    if (someEvent->gotFocus())
-        ui->leZSO->selectAll();
-}
-/**
- * @brief MainWindow::eventFilter
- * @param obj
- * @param evt
- * @return
- */
-bool MainWindow::eventFilter(QObject *obj, QEvent *evt)
-{
-    if( evt->type() == QEvent::MouseButtonDblClick )
-    {
-        QLineEdit *edit = qobject_cast< QLineEdit * >( obj );
-        if (edit)
-        {
-            const QStringList musicPaths = QStandardPaths::standardLocations(QStandardPaths::MusicLocation);
-            const QString file =
-                QFileDialog::getOpenFileName(this,tr("Open File"),
-                                                musicPaths.isEmpty() ? QDir::homePath() : musicPaths.first(),
-                                                tr("TRACK (*.wav);;All files (*.*)"));
-            if(!file.isEmpty())
-            {
-                edit->setText(file);
-            }
-        }
-    }
-    // one click play trask
-    if( evt->type() == QEvent::MouseButtonRelease )
-    {
-        QLineEdit *edit = qobject_cast< QLineEdit * >( obj );
-        if (edit)
-        {
-            player->playFile(edit->text());
-        }
-    }
-    return QMainWindow::eventFilter( obj, evt );
-}
 /**
  * @brief MainWindow::createToolTip
  */
@@ -144,8 +90,9 @@ void MainWindow::createToolTip()
     ui->actionRead->setToolTip(tr("Read data"));
     ui->actionDevice->setToolTip(tr("Get the type of device."));
     //set tool tip sound track
-    ui->leZSO->setToolTip(tr("The file name must begin with <0200_>"));
+    /*ui->leZSO->setToolTip(tr("The file name must begin with <0200_>"));
     ui->leZSP->setToolTip(tr("The file name must begin with <0210_>"));
+
     ui->leZSR->setToolTip(tr("The file name must begin with <0001_>"));
     ui->leZSZ->setToolTip(tr("The file name must begin with <0002_>"));
 
@@ -163,7 +110,7 @@ void MainWindow::createToolTip()
     ui->leZSVRZ40->setToolTip(tr("The file name must begin with <0140_>"));
     ui->leZSVRZ30->setToolTip(tr("The file name must begin with <0130_>"));
     ui->leZSVRZ20->setToolTip(tr("The file name must begin with <0120_>"));
-    ui->leZSVRZ10->setToolTip(tr("The file name must begin with <0110_>"));
+    ui->leZSVRZ10->setToolTip(tr("The file name must begin with <0110_>"));*/
 }
 /**
  * @brief MainWindow::createToolBar
@@ -173,6 +120,7 @@ void MainWindow::createToolBar()
     // add ListCommand
     ListCommand<<ui->actionWrite<<ui->actionRead<<ui->actionDevice;
     ui->mainToolBar->addActions(ListCommand);
+    ui->actionDevice->setVisible(false); //
     ui->mainToolBar->addSeparator();
     // add ListView
     ListView<<ui->actionSetting<<ui->actionDiagnosis;
@@ -180,11 +128,15 @@ void MainWindow::createToolBar()
     ui->mainToolBar->addSeparator();
     // add ListConnect
     ListConnect<<ui->actionConnect_USB<<ui->actionConnect_WIFI;
-    ui->actionConnect_WIFI->setDisabled(true);
+    //ui->actionConnect_WIFI->setDisabled(true);
     ui->mainToolBar->addActions(ListConnect);
-    wificon = new QLabel(this);
-    wificon->setText("TEST");
-    ui->mainToolBar->addWidget(wificon);
+    ui->mainToolBar->addSeparator();
+//    wificon = new QLabel(this);
+//       //wificon->setWindowIcon(QPixmap(":/ico/win48x48.ico"));
+//       //QString str="<img src=\":/ico/win48x48.ico\"> Открытые ссылки";
+//       //wificon->setTextFormat(Qt::RichText);
+//       //wificon->setText(str);
+//    ui->mainToolBar->addWidget(wificon);
 }
 /**
  * @brief MainWindow::createStatusBar
@@ -193,8 +145,8 @@ void MainWindow::createStatusBar()
 {
     /*Add progress in status bar*/
     progress = new QProgressBar(this);
-    progress->setVisible(false);
-    progress->setTextVisible(false);
+    progress->setVisible(true);
+    progress->setTextVisible(true);
     //connect(usb,SIGNAL(signalProgressRange(int,int)),progress,SLOT(setRange(int,int)));
     //connect(usb,SIGNAL(signalProgressValue(int,bool)),this,SLOT(on_setValueProgress(int,bool)));
     ui->statusBar->addPermanentWidget(progress,0);
@@ -203,6 +155,8 @@ void MainWindow::createStatusBar()
     p->setText(tr("version 1.1"));
     p->setOpenExternalLinks(true);
     ui->statusBar->addPermanentWidget(p);
+    //statusBar->setText(tr("Sound Configurator is open."));
+    ui->statusBar->addWidget(statusBar);
     ui->statusBar->showMessage(tr("Sound Configurator is open."),2000);
 }
 /**
@@ -230,7 +184,7 @@ void MainWindow::createConnectionGUI()
     connect(ui->actionShow_Toolbar,SIGNAL(triggered(bool)),this,SLOT(onToolBar(bool)));
     // windows out
     connect(ui->actionWin,SIGNAL(triggered(bool)),this,SLOT(onWindowsOut()));
-    /*connect view panel*/
+    //connect view panel
     QSignalMapper *signalMapper = new QSignalMapper(this);
     connect(signalMapper,SIGNAL(mapped(int)),this,SLOT(onSwitchPanelMode(int)));
     for (int i = 0; i <ListView.size(); i++)
@@ -255,10 +209,12 @@ void MainWindow::createConnectionGUI()
     // connect save \ open files
     connect(ui->actionSave_project,SIGNAL(triggered(bool)),this,SLOT(onSaveFiles()));
     connect(ui->actionOpen_project,SIGNAL(triggered(bool)),this,SLOT(onOpenFile()));
-    // connect lineedit
-    //connect(ui->leZSO,SIGNAL())
     //connect week
     connect(ui->sbTotalPlan,SIGNAL(valueChanged(int)),this,SLOT(onSetMaxPlanWeek(int)));
+    // win setting uart
+    connect(ui->actionConfig_USB, &QAction::triggered, settings, &MainWindow::show);
+    // win setting wifi
+    connect(ui->actionConfig_WIFI, &QAction::triggered, settingsWifi, &MainWindow::show);
 }
 /**
  * @brief MainWindow::createGroupMenu
@@ -271,7 +227,7 @@ void MainWindow::createGroupMenu()
 
     QActionGroup *grouAactionConnect = new QActionGroup(this);
     grouAactionConnect->addAction(ui->actionConnect_USB);
-    grouAactionConnect->addAction(ui->actionConfig_WIFI);
+    grouAactionConnect->addAction(ui->actionConnect_WIFI);
 
 }
 /**
@@ -306,10 +262,37 @@ void MainWindow::createGroupSlider()
         qDebug()<<"class MainWindow functions createGroupSlider: ERROR size";
     }
 }
-
-void MainWindow::createSoundMenu()
+/**
+ * @brief MainWindow::makeItemLabel
+ * @param lstWgt
+ * @param text
+ */
+void MainWindow::makeItemLabel(QListWidget *lstWgt, const QString text)
 {
-
+    QLabel *form = new QLabel( text, lstWgt );
+    form->setAlignment(Qt::AlignCenter); //qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #707070, stop: 1 #FFFFFF)
+    form->setStyleSheet("QLabel {background-color: #D3D3D3;"
+                        "border: 1px solid gray;border-radius: 5px;margin-top: 5ex;}");
+    QListWidgetItem *item = new QListWidgetItem( lstWgt );
+    item->setSizeHint( form->sizeHint() );
+    lstWgt->setItemWidget( item, form );
+}
+/**
+ * @brief MainWindow::makeItemPlayList
+ * @param parent
+ * @param text
+ * @param path
+ */
+void MainWindow::makeItemPlayList(QListWidget *lstWgt,
+                                  const QString text,
+                                  const QString path)
+{
+    CreateFormPlayList *form = new CreateFormPlayList(this, text, path);
+    QListWidgetItem *item = new QListWidgetItem( lstWgt );
+    item->setSizeHint( form->sizeHint() );
+    lstWgt->setItemWidget( item, form );
+    connect( form->getQToolButton(), SIGNAL(clicked()), SLOT(onItemButtonPlay()) );
+    connect( form->getQToolButtonOpen(), SIGNAL(clicked()), SLOT(onOpenSoundFile()) );
 }
 /**
  * @brief MainWindow::makeItemPlan
@@ -444,13 +427,12 @@ bool MainWindow::indexSorting(QListWidget *lWgt)
 /**
  * @brief MainWindow::createPlans
  */
-void MainWindow::createPlans()
+void MainWindow::createPlans( QWidget * const page )
 {
     // read database
     MaxPnan = 24;
     const int MaxItem = 4;
     // create form plans
-    QWidget *const page = ui->planWidget;
     swPlans = new QStackedWidget(page);
     for(int i=0; i<MaxPnan;i++)
     {
@@ -464,14 +446,13 @@ void MainWindow::createPlans()
     page->setLayout(layout);
     qDebug("Count stack %d",swPlans->count());
 }
-
-void MainWindow::createPlayer(QWidget *page)
+/**
+ * @brief MainWindow::createPlayer
+ * @param page
+ */
+void MainWindow::createPlayer(QWidget *const page)
 {
-    QLayout* vlayout = new QVBoxLayout;
     player = new MusicPlayer(page);
-    player->resize(page->size());
-    vlayout->addWidget(player);
-    page->setLayout(vlayout);
 }
 /**
  * @brief MainWindow::createOnePlan
@@ -481,8 +462,11 @@ void MainWindow::createPlayer(QWidget *page)
 void MainWindow::createOnePlan( QWidget *page, const int maxItem )
 {
     QListWidget* lWgt = new QListWidget;
+
     QLayout* vlayout = new QVBoxLayout;
+    vlayout->setContentsMargins(0,0,0,0);
     vlayout->addWidget( lWgt );
+
     page->setLayout(vlayout);
     for (int i = 1; i<=maxItem; i++)
     {
@@ -495,11 +479,10 @@ void MainWindow::createOnePlan( QWidget *page, const int maxItem )
 /**
  * @brief MainWindow::createHolidays
  */
-void MainWindow::createHolidays()
+void MainWindow::createHolidays(QWidget *const page)
 {
     // read items database
     MaxHoliday = 20;
-    QWidget *const page = ui->wHoliday;
     // create form holiday
     createOneHoliday(page,MaxHoliday);
 }
@@ -511,8 +494,11 @@ void MainWindow::createHolidays()
 void MainWindow::createOneHoliday(QWidget *page, const int maxItem)
 {
     QListWidget* lWgt = new QListWidget;
+
     QLayout* vlayout = new QVBoxLayout;
+    vlayout->setContentsMargins(0,0,0,0);
     vlayout->addWidget( lWgt );
+
     page->setLayout(vlayout);
     const int maxPlan = ui->sbTotalPlan->value();
     for (int i = 1; i<=maxItem; i++)
@@ -524,6 +510,47 @@ void MainWindow::createOneHoliday(QWidget *page, const int maxItem)
     lWgtHoliday = lWgt;
 }
 /**
+ * @brief MainWindow::createFormPlayList
+ * @param page
+ */
+void MainWindow::createFormPlayList(QWidget * const page)
+{
+    QListWidget* lWgt = new QListWidget;
+
+    QLayout* vlayout = new QVBoxLayout;
+    vlayout->setContentsMargins(0,0,0,0);
+    vlayout->addWidget( lWgt );
+
+    page->setLayout(vlayout);
+
+    // create general
+    makeItemLabel(lWgt, tr("GENERAL TRACK"));
+    QStringList generallist;
+        generallist<<tr("ZSO:")<<tr("ZSP:");
+    foreach(QString txt,generallist)
+        makeItemPlayList( lWgt,txt );
+    // create allowed
+    QStringList allowedlist;
+        allowedlist<<tr("ZSR:")<<tr("ZSVRR>60:")<<tr("ZSVRR<60:")
+                  <<tr("ZSVRR>50:")<<tr("ZSVRR>40:")<<tr("ZSVRR>30:")<<tr("ZSVRR>20:")<<tr("ZSVRR>10:");
+    makeItemLabel(lWgt, tr("ALLOWED TRACK"));
+    foreach(QString txt,allowedlist)
+        makeItemPlayList( lWgt,txt );
+    // create prohibitive
+    QStringList prohibitivelist;
+        prohibitivelist<<tr("ZSZ:")<<tr("ZSVRZ>60:")<<tr("ZSVRZ<60:")
+                          <<tr("ZSVRZ>50:")<<tr("ZSVRZ>40:")<<tr("ZSVRZ>30:")<<tr("ZSVRZ>20:")<<tr("ZSVRZ>10:");
+    makeItemLabel(lWgt, tr("PROHIBITIVE TRACK"));
+    foreach(QString txt,prohibitivelist)
+        makeItemPlayList( lWgt,txt );
+    // create TVP track
+    QStringList tvplist; tvplist<<tr("TVP:");
+    makeItemLabel(lWgt, tr("TVP TRACK"));
+    foreach(QString txt,tvplist)
+        makeItemPlayList( lWgt,txt );
+
+}
+/**
  * @brief MainWindow::onWindowsOut
  */
 void MainWindow::onWindowsOut()
@@ -531,7 +558,9 @@ void MainWindow::onWindowsOut()
     QAction *action = qobject_cast<QAction *>(sender());
     QTextEdit *window = mainWindowFormMap[action];
     if(!window){
-          window = new QTextEdit();
+          // create debug windows
+          window = new QTextEdit;
+          window->setWindowIcon(QPixmap(":/ico/win48x48.ico"));
           window->installEventFilter(this);
           mainWindowFormMap.insert(action, window);
           }
@@ -560,19 +589,29 @@ void MainWindow::onToolBar(bool visible)
 
 void MainWindow::onTimeout()
 {
-static bool flag = false;
+//static bool flag = false;
 
-if(flag){
-    wificon->setText("CONNECT OK");
-    //wificon->setTextFormat(Qt::TextColorRole);
-    //wificon->setStyleSheet("background: green;");
-}
-else{
-    wificon->setText("CONNECT ERROR");
-    //wificon->setStyleSheet("background: red;");
-}
+//if(flag){
+//    wificon->setText("CONNECT OK");
+//    wificon->setEnabled(true);
+//    QString str="CONNECT";
+//            //"<img src=\":/ico/win48x48.ico\"> Открытые ссылки";
+//    //wificon->setTextFormat(Qt::RichText);
+//    wificon->setText(str);
+//    //wificon->setTextFormat(Qt::TextColorRole);
+//    //wificon->setStyleSheet("background: green;");
+//}
+//else{
+//    wificon->setText("CONNECT ERROR");
+//    QString str="DISCONNECT";
+//            //"<img src=\":/ico/win48x48.ico\"> Открытые ссылки";
+//    //wificon->setTextFormat(Qt::RichText);
+//    wificon->setText(str);
+//    wificon->setEnabled(false);
+//    //wificon->setStyleSheet("background: red;");
+//}
 
-flag=!flag;
+//flag=!flag;
 }
 /**
  * @brief MainWindow::onSwitchPanelMode
@@ -793,12 +832,26 @@ void MainWindow::onSaveFiles(void)
  */
 void MainWindow::onOpenSoundFile()
 {
-    static QString file = "/";
-    file = QFileDialog::getOpenFileName(this,tr("Open File"),file,tr("TRACK (*.wav);;"));
+
+    const QStringList musicPaths = QStandardPaths::standardLocations(QStandardPaths::MusicLocation);
+    const QString file =
+        QFileDialog::getOpenFileName(this,tr("Open File"),
+                                        musicPaths.isEmpty() ? QDir::homePath() : musicPaths.first(),
+                                        tr("TRACK (*.wav);;All files (*.*)"));
     if(!file.isEmpty())
     {
-        //loadFile(file);
+        if( QToolButton* btn = qobject_cast< QToolButton* >( sender() ) )
+        {
+            if( QLineEdit* edit = btn->parent()->findChild< QLineEdit* >() )
+            {
+                edit->setText(file);
+                return;
+            }
+        }
+    }else{
+        qDebug()<<"Class MainWindow functions onOpenSoundFile: file is Empty";
     }
+
 }
 /**
  * @brief MainWindow::onSaveSoundFile
@@ -809,6 +862,73 @@ void MainWindow::onSaveSoundFile()
     file = QFileDialog::getSaveFileName(this,tr("Save File"),file,tr("TRACK (*.wav);;"));
     if(!file.isEmpty())
     {
-        //saveFile(file);
+
     }
+}
+/**
+ * @brief MainWindow::onItemButtonPlay
+ */
+void MainWindow::onItemButtonPlay()
+{
+    if( QToolButton* btn = qobject_cast< QToolButton* >( sender() ) )
+    {
+        if( QLineEdit* edit = btn->parent()->findChild< QLineEdit* >() )
+        {
+            const QString path = edit->text();
+            if ( !path.isEmpty() )
+            {
+                player->playFile(path);
+            }else{
+                qDebug()<<"Class MainWindow functions onItemButtonPlay: file is Empty";
+            }
+            return;
+        }
+    }
+}
+/**
+ * @brief MainWindow::eventFilter
+ * @param obj
+ * @param evt
+ * @return
+ */
+bool MainWindow::eventFilter(QObject *obj, QEvent *evt)
+{
+
+    if ( evt->type() == QEvent::Close)
+    {
+        if (QTextEdit *win = static_cast<QTextEdit *>(obj))
+        {
+            win->append("Close windows!");
+            ui->actionWin->setChecked(false);
+        }
+
+    }
+    if( evt->type() == QEvent::MouseButtonDblClick )
+    {
+
+    }
+    if( evt->type() == QEvent::MouseButtonRelease )
+    {
+
+    }
+    return QMainWindow::eventFilter( obj, evt );
+}
+/**
+ * @brief MainWindow::showStatusMessage
+ * @param message
+ */
+void MainWindow::showStatusMessage(const QString &message)
+{
+    statusBar->setText(message);
+}
+/**
+ * @brief MainWindow::createPopurMenuFiles
+ * @param page
+ */
+void MainWindow::createPopurMenuFiles(QWidget * const page)
+{
+    QAction* pOpen = new QAction(tr("Open sound file..."),page);
+    page->addAction(pOpen);
+    page->setContextMenuPolicy(Qt::ActionsContextMenu);
+    page->connect(pOpen,SIGNAL(triggered()),this,SLOT(onOpenSoundFile()));
 }

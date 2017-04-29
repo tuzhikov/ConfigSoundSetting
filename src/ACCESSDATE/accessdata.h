@@ -2,8 +2,9 @@
 #define ACCESSDATA_H
 
 #include <stdint.h>
-//#include <QByteArray>
-
+#include <QByteArray>
+#include <QString>
+#include <QStringList>
 
 namespace ACCESS_DATE{
 

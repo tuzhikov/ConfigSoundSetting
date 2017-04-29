@@ -85,7 +85,7 @@ private slots:
     void updateThumbnailToolBar();
 
 private:
-    void createWidgets();
+    void createWidgets(QWidget *);
     void createShortcuts();
     void createJumpList();
     void createTaskbar();

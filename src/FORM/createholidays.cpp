@@ -30,11 +30,11 @@ CreateHolidays::CreateHolidays(QWidget *parent,
     QLabel *text2 = new QLabel(tr("Plan: "),parent);
     hLayout->addWidget(text2);
     hLayout->addWidget(sbNumberPlan);
-    //hLayout->addWidget(btDelete);
     hLayout->addSpacerItem(horizontalSpacer);
     this->setLayout(hLayout);
     this->setMinimumSize(0,30);
     // create connect
+    dataEdit->setToolTip(tr("Duble clisk to set parametrs!"));
 }
 /**
  * @brief CreateHolidays::setNumberItem
