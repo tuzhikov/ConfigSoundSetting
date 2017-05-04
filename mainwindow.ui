@@ -1587,7 +1587,7 @@
                       </size>
                      </property>
                      <property name="text">
-                      <string>Measuring time (c.):</string>
+                      <string> Dead time (c.):</string>
                      </property>
                     </widget>
                    </item>
@@ -1600,13 +1600,20 @@
                       </size>
                      </property>
                      <property name="minimum">
-                      <number>1</number>
+                      <number>2</number>
                      </property>
                      <property name="maximum">
-                      <number>10</number>
+                      <number>15</number>
                      </property>
                      <property name="value">
-                      <number>3</number>
+                      <number>5</number>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="0">
+                    <widget class="QCheckBox" name="checkBox_12">
+                     <property name="text">
+                      <string>Motion sensor as TVP.</string>
                      </property>
                     </widget>
                    </item>
@@ -1641,7 +1648,7 @@
                         </size>
                        </property>
                        <property name="text">
-                        <string>Measuring time (c.):</string>
+                        <string>Measuring time (min.):</string>
                        </property>
                       </widget>
                      </item>
@@ -1657,10 +1664,10 @@
                         <number>1</number>
                        </property>
                        <property name="maximum">
-                        <number>10</number>
+                        <number>120</number>
                        </property>
                        <property name="value">
-                        <number>3</number>
+                        <number>1</number>
                        </property>
                       </widget>
                      </item>
@@ -1943,6 +1950,13 @@
                   </widget>
                  </item>
                  <item>
+                  <widget class="QCheckBox" name="checkBox_11">
+                   <property name="text">
+                    <string>Apply button as TVP</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
                   <layout class="QGridLayout" name="gridLayout_15">
                    <item row="0" column="0">
                     <widget class="QLabel" name="label_27">
@@ -2137,6 +2151,21 @@
            <set>Qt::AlignCenter</set>
           </property>
           <layout class="QGridLayout" name="gridLayout_10">
+           <property name="leftMargin">
+            <number>5</number>
+           </property>
+           <property name="topMargin">
+            <number>15</number>
+           </property>
+           <property name="rightMargin">
+            <number>5</number>
+           </property>
+           <property name="bottomMargin">
+            <number>5</number>
+           </property>
+           <property name="spacing">
+            <number>5</number>
+           </property>
            <item row="0" column="0">
             <layout class="QFormLayout" name="formLayout_8">
              <item row="0" column="0">
@@ -2538,7 +2567,7 @@
              <item row="1" column="0">
               <widget class="QLabel" name="label_37">
                <property name="text">
-                <string>Noise sensor Volume:</string>
+                <string>Noise sensor volume:</string>
                </property>
               </widget>
              </item>
@@ -2618,6 +2647,21 @@
            <set>Qt::AlignCenter</set>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_3">
+           <property name="spacing">
+            <number>5</number>
+           </property>
+           <property name="leftMargin">
+            <number>5</number>
+           </property>
+           <property name="topMargin">
+            <number>15</number>
+           </property>
+           <property name="rightMargin">
+            <number>5</number>
+           </property>
+           <property name="bottomMargin">
+            <number>5</number>
+           </property>
            <item>
             <widget class="QPushButton" name="pbWriteProject">
              <property name="text">

@@ -20,6 +20,7 @@ namespace UnitFormPlayList{
     public:
             explicit CreateFormPlayList(QWidget *parent = 0,
                                         const QString text = tr("Number trask"),
+                                        const QString tip = "",
                                         const QString path = "");
             void setNumberItem( const int ){}
             QToolButton *getQToolButton(void) const {return but!=NULL?but:NULL;}
@@ -30,6 +31,7 @@ namespace UnitFormPlayList{
             QToolButton *but;
             QToolButton *butOpen;
             QSpacerItem *horizontalSpacer;
+            QString PathTrack;
 
             void createPopurMenu(QWidget * const wd);
     };

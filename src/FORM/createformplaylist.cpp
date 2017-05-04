@@ -4,13 +4,16 @@ using namespace UnitFormPlayList;
 
 CreateFormPlayList::CreateFormPlayList(QWidget *parent,
                                        const QString text,
-                                       const QString path): InterfaceForms(parent)
+                                       const QString tip,
+                                       const QString path ): InterfaceForms(parent)
 {
     txt = new QLabel(text,parent);
     txt->setMinimumWidth(70);
 
+    PathTrack = path;
     edit = new QLineEdit(path, parent);
     edit->setReadOnly(true);
+    edit->setToolTip(tip);
 
     but = new QToolButton(parent);
     but->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));

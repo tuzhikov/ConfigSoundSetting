@@ -31,10 +31,10 @@ SOURCES += main.cpp\
     src/PLAYER/musicplayer.cpp \
     src/PLAYER/volumebutton.cpp \
     src/FORM/createformplaylist.cpp \
-    src/INTERFACE/settingsdialog.cpp \
-    src/INTERFACE/settingdialogwifi.cpp \
     src/INTERFACE/comport.cpp \
-    src/INTERFACE/wifi.cpp
+    src/INTERFACE/wifi.cpp \
+    src/FORM/settingdialogwifi.cpp \
+    src/FORM/settingsdialog.cpp
 
 HEADERS  += src/mainwindow.h \
     src/ACCESSDATE/accessdata.h \
@@ -45,10 +45,10 @@ HEADERS  += src/mainwindow.h \
     src/PLAYER/volumebutton.h \
     src/FORM/createformplaylist.h \
     src/INTERFACE/LinkInterface.h \
-    src/INTERFACE/settingsdialog.h \
-    src/INTERFACE/settingdialogwifi.h \
     src/INTERFACE/comport.h \
-    src/INTERFACE/wifi.h
+    src/INTERFACE/wifi.h \
+    src/FORM/settingdialogwifi.h \
+    src/FORM/settingsdialog.h
 
 FORMS    += mainwindow.ui \
     settingsdialog.ui \

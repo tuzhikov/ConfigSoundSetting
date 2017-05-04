@@ -19,9 +19,10 @@
 #include "src/FORM/createholidays.h"
 #include "src/FORM/createdayplan.h"
 #include "src/FORM/createformplaylist.h"
+#include "src/FORM/settingsdialog.h"
+#include "src/FORM/settingdialogwifi.h"
 #include "src/PLAYER/musicplayer.h"
-#include "src/INTERFACE/settingsdialog.h"
-#include "src/INTERFACE/settingdialogwifi.h"
+
 
 namespace Ui {
 class MainWindow;
@@ -73,6 +74,9 @@ private:
     void createOneHoliday( QWidget *page, const int maxItem );
     void createPopurMenuFiles( QWidget * const page );
     void createFormPlayList( QWidget * const page );
+    void createItemPlay( QListWidget * const page,
+                         QStringList &list,
+                         QStringList &tip);
     void writeSettings();
     void readSettings();
     void showStatusMessage(const QString &message);
@@ -80,6 +84,7 @@ private:
                        const QString text = "");
     void makeItemPlayList(QListWidget *lstWgt = 0,
                           const QString text = tr("Trask"),
+                          const QString tip = "",
                           const QString path = "");
 
     void makeItemPlan( QListWidget *lstWgt=0,

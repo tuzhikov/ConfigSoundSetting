@@ -39,14 +39,57 @@ MainWindow::MainWindow(QWidget *parent) :
 //    QTimer *timer = new QTimer(this);
 //    timer->start(1000);
 //    connect(timer,SIGNAL(timeout()),this,SLOT(onTimeout()));
+
+    const char* const FILE_NAME = "test.bin";
+
+    QFile file( FILE_NAME );
+    QDataStream stream( &file );
+
+        file.open( QIODevice::WriteOnly );
+        stream << 5 << 3.14 << QString( "Hello, world!" ) << QRect( 0, 0, 20, 10 );
+        file.close();
+
+        file.open( QIODevice::ReadOnly );
+        int x = 0;
+        float y = 0.0;
+        QString str;
+        QRect r;
+        stream >> x >> y >> str >> r;
+        qDebug() << x << y << str << r;
+        file.close();
+
+        QDir dirconf;
+        QFile filedata;
+
+        dirconf.setPath( QString("%1/.qconf").arg( QDir::homePath() ) );
+        filedata.setFileName( QString("%1/qnote.dat").arg(dirconf.path()) );
+
+        if (!dirconf.exists()){
+               // printf("\n%s: directory not exist.\nBegin creating directory...\n", dirconf.path().toAscii().constData());
+                if ( !dirconf.mkpath( dirconf.dirName() ) ){
+                    printf("Error: directory not created.\n");
+                    exit(1);
+                } else
+                    printf("OK: directory created.\n");
+            }
+
+            if (!filedata.exists()){
+                /*printf("\n%s: file not exist.\nBegin creating file...\n", filedata.fileName().toAscii().constData());
+                if ( !filedata.open(QIODevice::WriteOnly) ){
+                    printf("Error: file not created.\n");
+                    exit(1);
+                } else {
+                    filedata.close();
+                    printf("OK: file created.\n");
+                }*/
+            }
+
 }
 /**
  * @brief MainWindow::~MainWindow
  */
 MainWindow::~MainWindow()
 {
-    delete settings;
-    delete settingsWifi;
     delete ui;
 }
 /**
@@ -77,6 +120,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
     writeSettings();
     // delete form output
+    delete settings;
+    delete settingsWifi;
     if(mainWindowFormMap[ui->actionWin])
         delete mainWindowFormMap[ui->actionWin];
     event->accept();
@@ -89,28 +134,6 @@ void MainWindow::createToolTip()
     ui->actionWrite->setToolTip(tr("Write data"));
     ui->actionRead->setToolTip(tr("Read data"));
     ui->actionDevice->setToolTip(tr("Get the type of device."));
-    //set tool tip sound track
-    /*ui->leZSO->setToolTip(tr("The file name must begin with <0200_>"));
-    ui->leZSP->setToolTip(tr("The file name must begin with <0210_>"));
-
-    ui->leZSR->setToolTip(tr("The file name must begin with <0001_>"));
-    ui->leZSZ->setToolTip(tr("The file name must begin with <0002_>"));
-
-    ui->leZSVRR70->setToolTip(tr("The file name must begin with <0090_>"));
-    ui->leZSVRR60->setToolTip(tr("The file name must begin with <0060_>"));
-    ui->leZSVRR50->setToolTip(tr("The file name must begin with <0050_>"));
-    ui->leZSVRR40->setToolTip(tr("The file name must begin with <0040_>"));
-    ui->leZSVRR30->setToolTip(tr("The file name must begin with <0030_>"));
-    ui->leZSVRR20->setToolTip(tr("The file name must begin with <0020_>"));
-    ui->leZSVRR10->setToolTip(tr("The file name must begin with <0010_>"));
-
-    ui->leZSVRZ70->setToolTip(tr("The file name must begin with <0190_>"));
-    ui->leZSVRZ60->setToolTip(tr("The file name must begin with <0160_>"));
-    ui->leZSVRZ50->setToolTip(tr("The file name must begin with <0150_>"));
-    ui->leZSVRZ40->setToolTip(tr("The file name must begin with <0140_>"));
-    ui->leZSVRZ30->setToolTip(tr("The file name must begin with <0130_>"));
-    ui->leZSVRZ20->setToolTip(tr("The file name must begin with <0120_>"));
-    ui->leZSVRZ10->setToolTip(tr("The file name must begin with <0110_>"));*/
 }
 /**
  * @brief MainWindow::createToolBar
@@ -285,9 +308,10 @@ void MainWindow::makeItemLabel(QListWidget *lstWgt, const QString text)
  */
 void MainWindow::makeItemPlayList(QListWidget *lstWgt,
                                   const QString text,
+                                  const QString tip,
                                   const QString path)
 {
-    CreateFormPlayList *form = new CreateFormPlayList(this, text, path);
+    CreateFormPlayList *form = new CreateFormPlayList(this, text, tip, path);
     QListWidgetItem *item = new QListWidgetItem( lstWgt );
     item->setSizeHint( form->sizeHint() );
     lstWgt->setItemWidget( item, form );
@@ -527,28 +551,47 @@ void MainWindow::createFormPlayList(QWidget * const page)
     makeItemLabel(lWgt, tr("GENERAL TRACK"));
     QStringList generallist;
         generallist<<tr("ZSO:")<<tr("ZSP:");
-    foreach(QString txt,generallist)
-        makeItemPlayList( lWgt,txt );
+    QStringList generaltip;
+        generaltip<<tr("The file name must begin with <2000_>")<<tr("The file name must begin with <2100_>");
+    createItemPlay(lWgt, generallist, generaltip);
     // create allowed
     QStringList allowedlist;
         allowedlist<<tr("ZSR:")<<tr("ZSVRR>60:")<<tr("ZSVRR<60:")
                   <<tr("ZSVRR>50:")<<tr("ZSVRR>40:")<<tr("ZSVRR>30:")<<tr("ZSVRR>20:")<<tr("ZSVRR>10:");
+    QStringList allowedtip;
+        allowedtip<<tr("The file name must begin with <0001_>")<<tr("The file name must begin with <0090_>")
+                    <<tr("The file name must begin with <0060_>")<<tr("The file name must begin with <0050_>")
+                      <<tr("The file name must begin with <0040_>")<<tr("The file name must begin with <0030_>")
+                        <<tr("The file name must begin with <0020_>")<<tr("The file name must begin with <0010_>");
     makeItemLabel(lWgt, tr("ALLOWED TRACK"));
-    foreach(QString txt,allowedlist)
-        makeItemPlayList( lWgt,txt );
+    createItemPlay(lWgt, allowedlist, allowedtip);
     // create prohibitive
     QStringList prohibitivelist;
         prohibitivelist<<tr("ZSZ:")<<tr("ZSVRZ>60:")<<tr("ZSVRZ<60:")
                           <<tr("ZSVRZ>50:")<<tr("ZSVRZ>40:")<<tr("ZSVRZ>30:")<<tr("ZSVRZ>20:")<<tr("ZSVRZ>10:");
+    QStringList prohibitivetip;
+        prohibitivetip<<tr("The file name must begin with <0002_>")<<tr("The file name must begin with <0900_>")
+                        <<tr("The file name must begin with <0600_>")<<tr("The file name must begin with <0500_>")
+                            <<tr("The file name must begin with <0400_>")<<tr("The file name must begin with <0300_>")
+                                <<tr("The file name must begin with <0200_>")<<tr("The file name must begin with <0100_>");
     makeItemLabel(lWgt, tr("PROHIBITIVE TRACK"));
-    foreach(QString txt,prohibitivelist)
-        makeItemPlayList( lWgt,txt );
+    createItemPlay(lWgt, prohibitivelist, prohibitivetip);
     // create TVP track
     QStringList tvplist; tvplist<<tr("TVP:");
+    QStringList tvptip; tvptip<<tr("The file name must begin with <3000_>");
     makeItemLabel(lWgt, tr("TVP TRACK"));
-    foreach(QString txt,tvplist)
-        makeItemPlayList( lWgt,txt );
-
+    createItemPlay(lWgt, tvplist, tvptip);
+}
+/**
+ * @brief MainWindow::createItemPlay
+ * @param page
+ * @param list
+ * @param tip
+ */
+void MainWindow::createItemPlay(QListWidget * const page, QStringList &list, QStringList &tip)
+{
+    foreach(QString txt, list)
+        makeItemPlayList( page, txt, ((!tip.isEmpty())?tip.takeFirst():"") );
 }
 /**
  * @brief MainWindow::onWindowsOut
@@ -844,6 +887,7 @@ void MainWindow::onOpenSoundFile()
         {
             if( QLineEdit* edit = btn->parent()->findChild< QLineEdit* >() )
             {
+                //QFileInfo fi(file);
                 edit->setText(file);
                 return;
             }
