@@ -10,7 +10,10 @@ int main(int argc, char *argv[])
     QTranslator trn;
     //trn.load(QString(":/TR/TR/TestCountDown_en"));
     a.installTranslator(&trn);
-    /*create main windows*/
+    //
+    QApplication::setOrganizationName("Software Ltd. CyberSB");
+    QApplication::setApplicationName("Setting SoundConffigurator");
+    //create main windows
     MainWindow w;
     w.setWindowIcon(QPixmap(":/ico/logo.ico"));
     w.setWindowTitle(QObject::tr("UZTVOP"));

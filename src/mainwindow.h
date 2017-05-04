@@ -22,7 +22,7 @@
 #include "src/FORM/settingsdialog.h"
 #include "src/FORM/settingdialogwifi.h"
 #include "src/PLAYER/musicplayer.h"
-
+#include "src/SETTING/settings.h"
 
 namespace Ui {
 class MainWindow;

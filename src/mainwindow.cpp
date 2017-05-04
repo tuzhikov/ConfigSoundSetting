@@ -45,18 +45,17 @@ MainWindow::MainWindow(QWidget *parent) :
     QFile file( FILE_NAME );
     QDataStream stream( &file );
 
-        file.open( QIODevice::WriteOnly );
-        stream << 5 << 3.14 << QString( "Hello, world!" ) << QRect( 0, 0, 20, 10 );
-        file.close();
-
-        file.open( QIODevice::ReadOnly );
-        int x = 0;
-        float y = 0.0;
-        QString str;
-        QRect r;
-        stream >> x >> y >> str >> r;
-        qDebug() << x << y << str << r;
-        file.close();
+   file.open( QIODevice::WriteOnly );
+   stream << 5 << 3.14 << QString( "Hello, world!" ) << QRect( 0, 0, 20, 10 );
+   file.close();
+   file.open( QIODevice::ReadOnly );
+   int x = 0;
+   float y = 0.0;
+   QString str;
+   QRect r;
+   stream >> x >> y >> str >> r;
+   qDebug() << x << y << str << r;
+   file.close();
 
         QDir dirconf;
         QFile filedata;
@@ -97,20 +96,25 @@ MainWindow::~MainWindow()
  */
 void MainWindow::writeSettings()
 {
-    QSettings settings("Software Ltd. CyberSB", "Setting SoundConffigurator");
-    settings.beginGroup("MainForm");
-    settings.setValue("geometry", saveGeometry());
-    settings.endGroup();
+    Settings::set(Settings::GEOMETRY,Settings::GENERAL) = saveGeometry();
+    Settings::set(Settings::IP,Settings::NETWORK) = settingsWifi->getIP();
+    Settings::set(Settings::PORT,Settings::NETWORK) = settingsWifi->getPORT();
 }
 /**
  * @brief MainWin::readSettings
  */
 void MainWindow::readSettings()
 {
-    QSettings settings("Software Ltd. CyberSB", "Setting SoundConffigurator");
-    settings.beginGroup("MainForm");
-    restoreGeometry(settings.value("geometry").toByteArray());
-    settings.endGroup();
+    Settings::setDefaults("NETWORK/IP: 192.168.0.0");
+
+    const QByteArray gemData = Settings::get(Settings::GEOMETRY,Settings::GENERAL).toByteArray();
+    restoreGeometry(gemData);
+    const QString ip = Settings::get(Settings::IP,Settings::NETWORK).toString();
+    if (!ip.isEmpty())
+        settingsWifi->setIP(ip);
+    const QString port = Settings::get(Settings::PORT,Settings::NETWORK).toString();
+    if (!ip.isEmpty())
+        settingsWifi->setPORT(port);
 }
 /**
  * @brief MainWindow::closeEvent
