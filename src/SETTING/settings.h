@@ -54,6 +54,7 @@ public:
         GEOMETRY,
         IP,
         PORT,
+        COMNAME,
         BAUDRATE,
         DATABITS,
         PARITY,

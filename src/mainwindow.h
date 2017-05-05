@@ -28,6 +28,39 @@ namespace Ui {
 class MainWindow;
 }
 
+//class TextEdit : public QTextEdit
+//{
+//    Q_OBJECT
+
+//public:
+
+//    TextEdit( QWidget* parent = 0 ) : QTextEdit( parent )
+//    {
+//          resize_timer_.setInterval( 50 );
+//          resize_timer_.setSingleShot( true );
+//          //connect( resize_timer_, SIGNAL( timeout() ), this, SLOT( delayed_resize() ) );
+//    }
+//    virtual ~TextEdit() {}
+
+//protected slots:
+//    void delayed_resize()
+//    {
+//        QTextEdit::resizeEvent( &QResizeEvent( size(), old_size_ ) );
+//    }
+
+//protected:
+//     void resizeEvent( QResizeEvent* e )
+//     {
+//          if( !resize_timer_.isActive() )
+//            old_size_ = e->oldSize();
+//          resize_timer_.start();
+//     }
+
+//private:
+//    QTimer   resize_timer_;
+//    QSize    old_size_;
+//};
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -53,6 +86,7 @@ private:
     QMultiMap<int,QList<QSlider*> > soundValue;
     MusicPlayer *player;
     QListWidget* lWgtHoliday;
+    QListWidget* lWgtPlayList;
     QList< QListWidget* > lWgtPlansList;
     QStackedWidget *swPlans;
     SettingsDialog *settings;
@@ -106,6 +140,8 @@ private:
     void showLabelEnabled( QLabel *const lb );
     void showLabelDisabled( QLabel *const lb );
     void installDiagnosisPage( void );
+    bool checkSoundFiles( const QString path);
+    QByteArray dataSoundFile(const QString path) const;
 protected:
     void closeEvent(QCloseEvent *event);
     bool eventFilter( QObject *obj, QEvent *evt );
@@ -130,6 +166,7 @@ private slots:
     void onSetSliderValue( const int );
     void onSetMessageOutWin(const QByteArray&,const QColor&);
     void onSetMaxPlanWeek(const int);
+    void ontest();
 signals:
     void signalSendMessage(const QByteArray&,const QColor&);
 

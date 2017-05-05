@@ -88,7 +88,18 @@ public:
     explicit SettingsDialog(QWidget *parent = nullptr);
     ~SettingsDialog();
     Settings settings() const;
-
+    void setComName(const QString value);
+    void setBaudRate(const QString value);
+    void setDataBits(const QString value);
+    void setStopBits(const QString value);
+    void setParity(const QString value);
+    void setFlowControl(const QString value);
+    QString getComName()const {return currentSettings.name;}
+    QString getBaudRate()const {return currentSettings.stringBaudRate;}
+    QString getDataBits()const {return currentSettings.stringDataBits;}
+    QString getStopBits()const {return currentSettings.stringStopBits;}
+    QString getParity()const {return currentSettings.stringParity;}
+    QString getFlowControl()const {return currentSettings.stringFlowControl;}
 private:
     Ui::SettingsDialog *ui;
     Settings currentSettings;
@@ -97,6 +108,7 @@ private:
     void fillPortsParameters();
     void fillPortsInfo();
     void updateSettings();
+    void updateWidget();
 
 private slots:
     void showPortInfo(int idx);

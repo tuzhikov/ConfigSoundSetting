@@ -20,5 +20,6 @@
         <file>ico/usb48x48.ico</file>
         <file>ico/net48x48.ico</file>
         <file>ico/win48x48.ico</file>
+        <file>config/default.ini</file>
     </qresource>
 </RCC>

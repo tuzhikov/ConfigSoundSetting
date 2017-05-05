@@ -40,48 +40,48 @@ MainWindow::MainWindow(QWidget *parent) :
 //    timer->start(1000);
 //    connect(timer,SIGNAL(timeout()),this,SLOT(onTimeout()));
 
-    const char* const FILE_NAME = "test.bin";
+//    const char* const FILE_NAME = "test.bin";
 
-    QFile file( FILE_NAME );
-    QDataStream stream( &file );
+//    QFile file( FILE_NAME );
+//    QDataStream stream( &file );
 
-   file.open( QIODevice::WriteOnly );
-   stream << 5 << 3.14 << QString( "Hello, world!" ) << QRect( 0, 0, 20, 10 );
-   file.close();
-   file.open( QIODevice::ReadOnly );
-   int x = 0;
-   float y = 0.0;
-   QString str;
-   QRect r;
-   stream >> x >> y >> str >> r;
-   qDebug() << x << y << str << r;
-   file.close();
+//   file.open( QIODevice::WriteOnly );
+//   stream << 5 << 3.14 << QString( "Hello, world!" ) << QRect( 0, 0, 20, 10 );
+//   file.close();
+//   file.open( QIODevice::ReadOnly );
+//   int x = 0;
+//   float y = 0.0;
+//   QString str;
+//   QRect r;
+//   stream >> x >> y >> str >> r;
+//   qDebug() << x << y << str << r;
+//   file.close();
 
-        QDir dirconf;
-        QFile filedata;
+//    QDir dirconf;
+//    QFile filedata;
 
-        dirconf.setPath( QString("%1/.qconf").arg( QDir::homePath() ) );
-        filedata.setFileName( QString("%1/qnote.dat").arg(dirconf.path()) );
+//    dirconf.setPath( QString("%1/.qconf").arg( QDir::homePath() ) );
+//    filedata.setFileName( QString("%1/qnote.dat").arg(dirconf.path()) );
 
-        if (!dirconf.exists()){
-               // printf("\n%s: directory not exist.\nBegin creating directory...\n", dirconf.path().toAscii().constData());
-                if ( !dirconf.mkpath( dirconf.dirName() ) ){
-                    printf("Error: directory not created.\n");
-                    exit(1);
-                } else
-                    printf("OK: directory created.\n");
-            }
+//    if (!dirconf.exists()){
+//               // printf("\n%s: directory not exist.\nBegin creating directory...\n", dirconf.path().toAscii().constData());
+//                if ( !dirconf.mkpath( dirconf.dirName() ) ){
+//                    printf("Error: directory not created.\n");
+//                    exit(1);
+//                } else
+//                    printf("OK: directory created.\n");
+//    }
 
-            if (!filedata.exists()){
-                /*printf("\n%s: file not exist.\nBegin creating file...\n", filedata.fileName().toAscii().constData());
-                if ( !filedata.open(QIODevice::WriteOnly) ){
-                    printf("Error: file not created.\n");
-                    exit(1);
-                } else {
-                    filedata.close();
-                    printf("OK: file created.\n");
-                }*/
-            }
+//            if (!filedata.exists()){
+//                printf("\n%s: file not exist.\nBegin creating file...\n", filedata.fileName().toAscii().constData());
+//                if ( !filedata.open(QIODevice::WriteOnly) ){
+//                    printf("Error: file not created.\n");
+//                    exit(1);
+//                } else {
+//                    filedata.close();
+//                    printf("OK: file created.\n");
+//                }
+//            }
 
 }
 /**
@@ -96,18 +96,27 @@ MainWindow::~MainWindow()
  */
 void MainWindow::writeSettings()
 {
-    Settings::set(Settings::GEOMETRY,Settings::GENERAL) = saveGeometry();
+    Settings::set(Settings::GEOMETRY) = saveGeometry();
     Settings::set(Settings::IP,Settings::NETWORK) = settingsWifi->getIP();
     Settings::set(Settings::PORT,Settings::NETWORK) = settingsWifi->getPORT();
+    Settings::set(Settings::COMNAME,Settings::COMPORT) = settings->getComName();
+    Settings::set(Settings::BAUDRATE,Settings::COMPORT) = settings->getBaudRate();
+    Settings::set(Settings::DATABITS,Settings::COMPORT) = settings->getDataBits();
+    Settings::set(Settings::STOPBITS,Settings::COMPORT) = settings->getStopBits();
+    Settings::set(Settings::PARITY,Settings::COMPORT) = settings->getParity();
+    Settings::set(Settings::FLOWCONTROL,Settings::COMPORT) = settings->getFlowControl();
 }
 /**
  * @brief MainWin::readSettings
  */
 void MainWindow::readSettings()
 {
-    Settings::setDefaults("NETWORK/IP: 192.168.0.0");
-
-    const QByteArray gemData = Settings::get(Settings::GEOMETRY,Settings::GENERAL).toByteArray();
+    // set default
+    QFile file(":/config/default.ini");
+    file.open(QIODevice::ReadOnly);
+    Settings::setDefaults(file.readAll());
+    // read
+    const QByteArray gemData = Settings::get(Settings::GEOMETRY).toByteArray();
     restoreGeometry(gemData);
     const QString ip = Settings::get(Settings::IP,Settings::NETWORK).toString();
     if (!ip.isEmpty())
@@ -115,6 +124,24 @@ void MainWindow::readSettings()
     const QString port = Settings::get(Settings::PORT,Settings::NETWORK).toString();
     if (!ip.isEmpty())
         settingsWifi->setPORT(port);
+    const QString comname = Settings::get(Settings::COMNAME,Settings::COMPORT).toString();
+    if (!comname.isEmpty())
+        settings->setComName(comname);
+    const QString baudRate = Settings::get(Settings::BAUDRATE,Settings::COMPORT).toString();
+    if (!baudRate.isEmpty())
+        settings->setBaudRate(baudRate);
+    const QString databits = Settings::get(Settings::DATABITS,Settings::COMPORT).toString();
+    if (!databits.isEmpty())
+        settings->setDataBits(databits);
+    const QString stopbits = Settings::get(Settings::STOPBITS,Settings::COMPORT).toString();
+    if (!stopbits.isEmpty())
+        settings->setStopBits(stopbits);
+    const QString parity = Settings::get(Settings::PARITY,Settings::COMPORT).toString();
+    if (!parity.isEmpty())
+        settings->setParity(parity);
+    const QString flowcnt = Settings::get(Settings::FLOWCONTROL,Settings::COMPORT).toString();
+    if (!flowcnt.isEmpty())
+        settings->setFlowControl(flowcnt);
 }
 /**
  * @brief MainWindow::closeEvent
@@ -222,8 +249,7 @@ void MainWindow::createConnectionGUI()
     // connect add plan
     connect(ui->pbAddPlan,SIGNAL(clicked(bool)),this,SLOT(onAddPlan()));
     connect(ui->pbRemotePlan,SIGNAL(clicked(bool)),this,SLOT(onRemotePlan()));
-    connect(ui->cbSelectPlan,SIGNAL(currentIndexChanged(int)),
-            this,SLOT(onPagePlan(int)));
+    connect(ui->cbSelectPlan,SIGNAL(currentIndexChanged(int)),this,SLOT(onPagePlan(int)));
     // connect holiday
     connect(ui->pbAddHoliday,SIGNAL(clicked(bool)),this,SLOT(onAddHoliday()));
     connect(ui->pbRemoteHoliday,SIGNAL(clicked(bool)),this,SLOT(onRemoteHoliday()));
@@ -242,6 +268,27 @@ void MainWindow::createConnectionGUI()
     connect(ui->actionConfig_USB, &QAction::triggered, settings, &MainWindow::show);
     // win setting wifi
     connect(ui->actionConfig_WIFI, &QAction::triggered, settingsWifi, &MainWindow::show);
+    // write read
+    connect(ui->actionRead, &QAction::triggered, this, &MainWindow::ontest);
+}
+
+void MainWindow::ontest()
+{
+    QByteArray tmp;
+    QFile file( "C:/QtProject/example/wav/motroskin.wav" );
+    if( file.open( QIODevice::ReadOnly ) )
+    {
+        QByteArray fileContents = file.readAll();
+
+//        QDataStream stream(&file);
+//        stream.setVersion (QDataStream::Qt_5_7) ;
+//        stream >> tmp;
+//        if(stream.status() != QDataStream::Ok)
+//            {
+//                qDebug() << "Ошибка чтения файла";
+//            }
+//        file.close();
+    }
 }
 /**
  * @brief MainWindow::createGroupMenu
@@ -543,8 +590,7 @@ void MainWindow::createOneHoliday(QWidget *page, const int maxItem)
  */
 void MainWindow::createFormPlayList(QWidget * const page)
 {
-    QListWidget* lWgt = new QListWidget;
-
+    QListWidget* lWgt = new QListWidget;lWgtPlayList = lWgt;
     QLayout* vlayout = new QVBoxLayout;
     vlayout->setContentsMargins(0,0,0,0);
     vlayout->addWidget( lWgt );
@@ -786,6 +832,40 @@ void MainWindow::installDiagnosisPage()
     showLabelDisabled(ui->lbMotionSens);
 }
 /**
+ * @brief MainWindow::checkSoundFiles
+ * @param path
+ */
+bool MainWindow::checkSoundFiles(const QString path)
+{
+    QFileInfo info(path);
+    const QString typeWav("WAV");
+    const QString typeMp3("MP3");
+    const QString suffix(info.suffix().toUpper());
+
+    if ( (suffix != typeWav) && (suffix != typeMp3) )
+    {
+        QMessageBox::critical(this, QObject::tr("ERROR"), QObject::tr("Open the file of the format \"*.wav\"") );
+        return false;
+    }
+    return true;
+}
+/**
+ * @brief MainWindow::dataSoundFile
+ * @param path
+ * @return
+ */
+QByteArray MainWindow::dataSoundFile(const QString path) const
+{
+    QFile file( path );
+    if( file.open( QIODevice::ReadOnly ) )
+    {
+        QByteArray data = file.readAll();
+        file.close();
+        return data;
+    }
+    return QByteArray();
+}
+/**
  * @brief MainWindow::onSetSliderValue
  * @param value
  */
@@ -833,6 +913,7 @@ void MainWindow::onSetMessageOutWin(const QByteArray &st, const QColor &color)
         winTest->setTextColor(color);
         QByteArray str(st.toHex().toUpper().trimmed());
         winTest->append(str);
+        qDebug()<<str;
     }else{
         qDebug() << "metod:onSetMessageOutWin - Error object winTest";
     }
@@ -856,10 +937,23 @@ void MainWindow::onSetMaxPlanWeek(const int maxPlan)
 void MainWindow::onOpenFile(void)
 {
     static QString file = "/";
-    file = QFileDialog::getOpenFileName(this,tr("Open File"),file,tr("XML (*.xml);;"));
+    file = QFileDialog::getOpenFileName(this,tr("Open File"),file,tr("SPG (*.spg);;"));
     if(!file.isEmpty())
     {
         //loadFile(file);
+        QFile in( file );
+        if( in.open( QIODevice::ReadOnly ) )
+        {
+            //QByteArray fileContents = in.readAll();
+//            QString str;
+//            QDataStream stream( &in );
+//            stream >> str;
+            //QString str(fileContents);
+            //QByteArray str("12345");
+            //onSetMessageOutWin(str,Qt::red);
+            in.close();
+       }
+
     }
 }
 /**
@@ -868,10 +962,10 @@ void MainWindow::onOpenFile(void)
 void MainWindow::onSaveFiles(void)
 {
     static QString file = "/";
-    file = QFileDialog::getSaveFileName(this,tr("Save File"),file,tr("XML (*.xml);;"));
+    file = QFileDialog::getSaveFileName(this,tr("Save File"),file,tr("SPG (*.spg);;"));
     if(!file.isEmpty())
     {
-        //saveFile(file);
+
     }
 }
 /**
@@ -891,8 +985,8 @@ void MainWindow::onOpenSoundFile()
         {
             if( QLineEdit* edit = btn->parent()->findChild< QLineEdit* >() )
             {
-                //QFileInfo fi(file);
-                edit->setText(file);
+                if ( checkSoundFiles(file) )
+                    edit->setText(file);
                 return;
             }
         }

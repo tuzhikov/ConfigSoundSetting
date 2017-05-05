@@ -55,7 +55,7 @@
 #include <QtSerialPort/QSerialPortInfo>
 #include <QIntValidator>
 #include <QLineEdit>
-
+#include <QDebug>
 QT_USE_NAMESPACE
 
 /**
@@ -90,6 +90,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     fillPortsInfo();
 
     updateSettings();
+
 }
 /**
  * @brief SettingsDialog::~SettingsDialog
@@ -106,6 +107,77 @@ SettingsDialog::Settings SettingsDialog::settings() const
 {
     return currentSettings;
 }
+/**
+ * @brief SettingsDialog::setComName
+ * @param value
+ */
+void SettingsDialog::setComName(const QString value)
+{
+    currentSettings.name = value;
+    ui->serialPortInfoListBox->setCurrentText(value);
+}
+/**
+ * @brief SettingsDialog::setBaudRate
+ * @param value
+ */
+void SettingsDialog::setBaudRate(const QString value)
+{
+    QComboBox *const baudRate(ui->baudRateBox);
+
+    currentSettings.stringBaudRate = value;
+    baudRate->setCurrentText(value);
+    currentSettings.baudRate = (baudRate->currentIndex() == 4)?baudRate->currentText().toInt():
+                                                               static_cast<QSerialPort::BaudRate>(baudRate->itemData(baudRate->currentIndex()).toInt());
+}
+/**
+ * @brief SettingsDialog::setDataBits
+ * @param value
+ */
+void SettingsDialog::setDataBits(const QString value)
+{
+    QComboBox *const dataBits(ui->dataBitsBox);
+
+    currentSettings.stringDataBits = value;
+    dataBits->setCurrentText(value);
+    currentSettings.dataBits = static_cast<QSerialPort::DataBits>(dataBits->itemData(dataBits->currentIndex()).toInt());
+}
+/**
+ * @brief SettingsDialog::setStopBits
+ * @param value
+ */
+void SettingsDialog::setStopBits(const QString value)
+{
+    QComboBox *const stopBits(ui->stopBitsBox);
+
+    currentSettings.stringStopBits = value;
+    stopBits->setCurrentText(value);
+    currentSettings.stopBits = static_cast<QSerialPort::StopBits>(stopBits->itemData(stopBits->currentIndex()).toInt());
+}
+/**
+ * @brief SettingsDialog::setParity
+ * @param value
+ */
+void SettingsDialog::setParity(const QString value)
+{
+    QComboBox *const parity(ui->parityBox);
+
+    currentSettings.stringParity = value;
+    parity->setCurrentText(value);
+    currentSettings.parity = static_cast<QSerialPort::Parity>(parity->itemData(parity->currentIndex()).toInt());
+}
+/**
+ * @brief SettingsDialog::setFlowControl
+ * @param value
+ */
+void SettingsDialog::setFlowControl(const QString value)
+{
+    QComboBox *const flowControl(ui->flowControlBox);
+
+    currentSettings.stringFlowControl = value;
+    flowControl->setCurrentText(value);
+    currentSettings.flowControl = static_cast<QSerialPort::FlowControl>(flowControl->itemData(flowControl->currentIndex()).toInt());
+}
+
 /**
  * @brief SettingsDialog::showPortInfo
  * @param idx
@@ -249,4 +321,26 @@ void SettingsDialog::updateSettings()
                 ui->flowControlBox->itemData(ui->flowControlBox->currentIndex()).toInt());
     currentSettings.stringFlowControl = ui->flowControlBox->currentText();
 
+    qDebug()<<currentSettings.name<<currentSettings.stringBaudRate<<currentSettings.stringDataBits
+           <<currentSettings.stringParity<<currentSettings.stringFlowControl;
+}
+/**
+ * @brief SettingsDialog::updateWidget
+ */
+void SettingsDialog::updateWidget()
+{
+    QComboBox *const name(ui->serialPortInfoListBox);
+    QComboBox *const baudRate(ui->baudRateBox);
+    QComboBox *const dataBits(ui->dataBitsBox);
+    QComboBox *const stopBits(ui->stopBitsBox);
+    QComboBox *const parity(ui->parityBox);
+    QComboBox *const flowControl(ui->flowControlBox);
+
+    name->setCurrentIndex(name->findText(currentSettings.name));
+    baudRate->setCurrentIndex(baudRate->findText(currentSettings.stringBaudRate));
+    baudRate->setCurrentText(currentSettings.stringBaudRate);
+    dataBits->setCurrentIndex(dataBits->findText(currentSettings.stringDataBits));
+    stopBits->setCurrentIndex(stopBits->findText(currentSettings.stringStopBits));
+    parity->setCurrentIndex(parity->findText(currentSettings.stringParity));
+    flowControl->setCurrentIndex(flowControl->findText(currentSettings.stringFlowControl));
 }

@@ -166,6 +166,9 @@ void SettingDialogWifi::setPORT(const QString port)
     }else{
         paremetrIP << port;
     }
+    // wiev PORT
+    QLineEdit *const leport(ui->lePORT);
+    leport->setText(port);
 }
 /**
  * @brief SettingDialogWifi::setIP
@@ -179,6 +182,9 @@ void SettingDialogWifi::setIP(const QString ip)
     }else{
         paremetrIP << ip;
     }
+    // wiev IP
+    QLineEdit *const leip(ui->leIP);
+    leip->setText(ip);
 }
 /**
  * @brief SettingDialogWifi::setEditParametrIP
