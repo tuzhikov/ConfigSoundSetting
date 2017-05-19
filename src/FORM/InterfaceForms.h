@@ -16,9 +16,8 @@ public:
     virtual ~InterfaceForms(){}
     //virtual void ReadData(QQueue<QByteArray> &)=0;
     //virtual void WriteData(QQueue<QByteArray> &)=0;
-    //virtual const int retMaxNumberElements()=0;
-    //virtual const int retMaxValue()=0;
     virtual void setNumberItem( const int number ) = 0;
+    virtual int getNumberItem() const = 0;
 };
 
 #endif // INTERFACEFORMS_H

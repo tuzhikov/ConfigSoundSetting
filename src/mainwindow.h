@@ -23,6 +23,7 @@
 #include "src/FORM/settingdialogwifi.h"
 #include "src/PLAYER/musicplayer.h"
 #include "src/SETTING/settings.h"
+#include  "src/CONTROLLER/controller.h"
 
 namespace Ui {
 class MainWindow;
@@ -67,15 +68,13 @@ class MainWindow : public QMainWindow
 
 public:
     enum PANEL{pnSETTING,pnDIAGNOSIS,pnEND};
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(QWidget *parent = 0, Controller *pdata=0);
     ~MainWindow();
 
 private:
     Ui::MainWindow *ui;
-    int MaxPnan = 24;      // set from database
-    int MaxHoliday = 186;  // set from database
-    uint8_t value_speaker1 = 50;
-    uint8_t value_speaker2 = 50;
+
+    uint8_t value_speaker[2] = {50,50};
 
     QMap<QAction*,QTextEdit*> mainWindowFormMap;
     QList<QAction*> ListCommand;
@@ -83,7 +82,7 @@ private:
     QList<QAction*> ListView;
     QProgressBar *progress;
     QLabel *wificon;
-    QMultiMap<int,QList<QSlider*> > soundValue;
+    QMap<int,QList<QSlider*> > soundValue;
     MusicPlayer *player;
     QListWidget* lWgtHoliday;
     QListWidget* lWgtPlayList;
@@ -92,6 +91,7 @@ private:
     SettingsDialog *settings;
     SettingDialogWifi *settingsWifi;
     QLabel *statusBar;
+    Controller *ptrController;
 
     void createToolTip(void);
     void createToolBar(void);
@@ -103,7 +103,7 @@ private:
     void createSoundMenu(void);
     void createPlans( QWidget * const page );
     void createPlayer( QWidget * const page );
-    void createOnePlan( QWidget *page, const int maxItem );
+    void createOnePlan(QWidget *page, const int, const int );
     void createHolidays( QWidget * const page );
     void createOneHoliday( QWidget *page, const int maxItem );
     void createPopurMenuFiles( QWidget * const page );
@@ -131,7 +131,9 @@ private:
                           const QDate date = QDate::currentDate(),
                           const int num_plan  = 1 );
     void addItemPlan ( QListWidget * );
+    void addItemPlanFromDatabase(QListWidget *const, const int , const int );
     void remoteItemPlan( QListWidget * );
+    void clearItemPlan ();
     void addItemHoliday ( QListWidget* );
     void remoteItemHoliday( QListWidget* );
     bool remoteItem( QListWidget* );
@@ -142,6 +144,30 @@ private:
     void installDiagnosisPage( void );
     bool checkSoundFiles( const QString path);
     QByteArray dataSoundFile(const QString path) const;
+    void updateGuiToTracks();
+    void updateTracksToGui();
+    void updateGuiToVolume();
+    void updateVolumeToGui();
+    void updateGuiToVibration();
+    void updateVibrationToGui();
+    void updateGuiToPlan();
+    void updateOneGuiToPlan(QListWidget * const lWgt,
+                         const int numberPlan );
+    void updatePlanToGui();
+    void updateOnePlanToGui(QListWidget * const lWgt,
+                         const int numberPlan);
+    void updateGuiToHoliday();
+    void updateHolidayToGui();
+    void updateGuiToWeek();
+    void updateWeekToGui();
+    void updateGuiToOther();
+    void updateOtherToGui();
+    void updateGuiToData();
+    void updateDataToGui();
+    AccessData &retDataBase()const{
+        AccessData &data(ptrController->retDataProject().retDataProject());
+        return data;
+    }
 protected:
     void closeEvent(QCloseEvent *event);
     bool eventFilter( QObject *obj, QEvent *evt );
@@ -166,7 +192,6 @@ private slots:
     void onSetSliderValue( const int );
     void onSetMessageOutWin(const QByteArray&,const QColor&);
     void onSetMaxPlanWeek(const int);
-    void ontest();
 signals:
     void signalSendMessage(const QByteArray&,const QColor&);
 

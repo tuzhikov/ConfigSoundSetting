@@ -26,8 +26,12 @@ namespace UnitDeyPlan{
                                const int val1 = 30,
                                const int val2 = 70);
         void setNumberItem( const int number );
+        int getNumberItem( void ) const;
+        void setTime(const QTime time );
+        QTime getTime( void ) const;
+        void setVolume( const int val1, const int val2 );
+        void getVolume( int *const val1, int *const val2 );
     signals:
-        void click(bool);
     public slots:
     };
 }

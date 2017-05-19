@@ -23,6 +23,7 @@ namespace UnitFormPlayList{
                                         const QString tip = "",
                                         const QString path = "");
             void setNumberItem( const int ){}
+            int getNumberItem() const {return 0;}
             QToolButton *getQToolButton(void) const {return but!=NULL?but:NULL;}
             QToolButton *getQToolButtonOpen(void) const {return butOpen!=NULL?butOpen:NULL;}
         private:

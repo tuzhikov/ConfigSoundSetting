@@ -35,7 +35,9 @@ SOURCES += main.cpp\
     src/INTERFACE/wifi.cpp \
     src/FORM/settingdialogwifi.cpp \
     src/FORM/settingsdialog.cpp \
-    src/SETTING/settings.cpp
+    src/SETTING/settings.cpp \
+    src/ACCESSDATE/accessdataproject.cpp \
+    src/CONTROLLER/controller.cpp
 
 HEADERS  += src/mainwindow.h \
     src/ACCESSDATE/accessdata.h \
@@ -50,7 +52,11 @@ HEADERS  += src/mainwindow.h \
     src/INTERFACE/wifi.h \
     src/FORM/settingdialogwifi.h \
     src/FORM/settingsdialog.h \
-    src/SETTING/settings.h
+    src/SETTING/settings.h \
+    src/ACCESSDATE/accessdataproject.h \
+    src/ACCESSDATE/datastructure.h \
+    src/CONTROLLER/cmd_device.h \
+    src/CONTROLLER/controller.h
 
 FORMS    += mainwindow.ui \
     settingsdialog.ui \

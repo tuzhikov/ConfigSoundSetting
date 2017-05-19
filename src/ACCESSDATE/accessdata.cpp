@@ -15,14 +15,14 @@ AccessData::~AccessData()
     delete pDataProject;
 }
 /**
-*/
-/*AccessData::QByteArray getAllDate() const
-{
-    QByteArray tmp((char)&data,sizeof(data));
-    return tmp;
-}*/
+ * @brief AccessData::setDefault
+ * @param pPrg
+ */
 void AccessData::setDefault(TYPEPROJECT *const pPrg)
 {
+    memset(pDataProject,0,sizeof(TYPEPROJECT));
+    clearHoliday();
+    clearPlans();
     pPrg->acceleration.on = true;
     pPrg->acceleration.time = 100;
 
@@ -37,6 +37,42 @@ void AccessData::setDefault(TYPEPROJECT *const pPrg)
     pPrg->motion.on = false;
 
     pPrg->noise.on = false;
+}
+/**
+ * @brief AccessData::setNoise
+ * @param time
+ * @param min_level
+ * @param max_level
+ * @param min_ct
+ * @param max_ct
+ * @param on
+ * @return
+ */
+bool AccessData::setNoise(const uint32_t time,
+                          const uint8_t min_level,
+                          const uint8_t max_level,
+                          const uint8_t min_ct,
+                          const uint8_t max_ct,
+                          const uint8_t on)
+{
+    pDataProject->noise.time = time;
+    pDataProject->noise.min_level = min_level;
+    pDataProject->noise.max_level = max_level;
+    pDataProject->noise.min_ct = min_ct;
+    pDataProject->noise.max_ct = max_ct;
+    pDataProject->noise.on = on;
+    return true;
+}
+/**
+ * @brief AccessData::setNoise
+ * @param prm
+ * @return
+ */
+bool AccessData::setNoise(const TYPENOISE prm)
+{
+    TYPENOISE *const pNoise = &pDataProject->noise;
+    memcpy(pNoise,&prm,sizeof(TYPENOISE));
+    return true;
 }
 /**
 */
@@ -101,7 +137,7 @@ void AccessData::setAcceleration( const uint32_t time,
 }
 /**
 */
-void AccessData::setAcceleration( const TYPEACCELERATION prm )
+void AccessData:: setAcceleration( const TYPEACCELERATION prm )
 {
     TYPEACCELERATION *const pPrm = &pDataProject->acceleration;
     memcpy(pPrm,&prm,sizeof(TYPEACCELERATION));
@@ -181,18 +217,61 @@ bool AccessData::setOneHoliday( const uint8_t item,
     return false;
 }
 /**
-*/
-void AccessData::setOneWeek( const uint8_t day, const uint8_t plan )
+ * @brief AccessData::clearHoliday
+ * @return
+ */
+bool AccessData::clearHoliday()
 {
-    pDataProject->week.day = day;
-    pDataProject->week.plan = plan;
+    for ( uint32_t i=0; i<getMaxHoliday(); i++ )
+    {
+        TYPEHOLIDAY *const pPrm = &pDataProject->holidays[i];
+        pPrm->month = 0xFF;
+        pPrm->day = 0xFF;
+        pPrm->plan = 1;
+    }
+    return true;
+}
+/**
+ * @brief AccessData::clearPlans
+ * @return
+ */
+bool AccessData::clearPlans()
+{
+    for ( uint32_t i=0; i<getMaxPlans(); i++ )
+    {
+        for ( uint32_t j=0; j<getMaxItemDday(); j++ )
+        {
+            TYPEPLANITEMS *const pday = &pDataProject->day_plans[i].Items[j];
+            pday->hour = 0xFF;
+            pday->min = 0xFF;
+            pday->value_speaker1 = 0;
+            pday->value_speaker2 = 0;
+        }
+    }
+    return true;
 }
 /**
 */
-void AccessData::setOneWeek( const TYPEWEEK prm )
+bool AccessData::setOneWeek( const uint8_t day, const uint8_t plan )
 {
-    TYPEWEEK *const pPrm = &pDataProject->week;
-    memcpy(pPrm,&prm,sizeof(TYPEWEEK));
+    if ( day<MAX_DAY_WEEK )
+    {
+        pDataProject->week[day].plan = plan;
+        return true;
+    }
+    return false;
+}
+/**
+*/
+bool AccessData::setOneWeek( const uint8_t day, const TYPEWEEK *prm )
+{
+    if ( day<MAX_DAY_WEEK )
+    {
+        TYPEWEEK *const pPrm = &pDataProject->week[day];
+        memcpy(pPrm,prm,sizeof(TYPEWEEK));
+        return true;
+    }
+    return false;
 }
 /**
 */
@@ -203,7 +282,7 @@ bool AccessData::setSoundValue (const uint8_t numspeaker,
 {
     if ( (numspeaker<getMaxSpeaker())&&(size<getMaxSpeakerLevel()) )
     {
-        pDataProject->sound_value.value_sound[numspeaker].global = global;
+        pDataProject->sound_value.value_sound[numspeaker].global = global   ;
         uint8_t *const pPrm = pDataProject->sound_value.value_sound[numspeaker].separate;
         memcpy(pPrm,separate,size);
         return true;
@@ -221,6 +300,48 @@ bool AccessData::setSoundValue (const uint8_t numspeaker, const TYPESOUNDVALUE p
         return true;
     }
     return false;
+}
+/**
+ * @brief AccessData::getNoise
+ * @param time
+ * @param min_level
+ * @param max_level
+ * @param min_ct
+ * @param max_ct
+ * @param on
+ * @return
+ */
+bool AccessData::getNoise(uint32_t * const time,
+                          uint8_t * const min_level,
+                          uint8_t * const max_level,
+                          uint8_t * const min_ct,
+                          uint8_t * const max_ct,
+                          uint8_t * const on)
+{
+    *time = pDataProject->noise.time;
+    *min_level = pDataProject->noise.min_level;
+    *max_level = pDataProject->noise.max_level;
+    *min_ct = pDataProject->noise.min_ct;
+    *max_ct = pDataProject->noise.max_ct;
+    *on = pDataProject->noise.on;
+
+    return true;
+}
+/**
+ * @brief AccessData::getNoise
+ * @param prm
+ * @return
+ */
+bool AccessData::getNoise(TYPENOISE * const prm)
+{
+    prm->time = pDataProject->noise.time;
+    prm->min_level = pDataProject->noise.min_level;
+    prm->max_level = pDataProject->noise.max_level;
+    prm->min_ct = pDataProject->noise.min_ct;
+    prm->max_ct = pDataProject->noise.max_ct;
+    prm->on = pDataProject->noise.on;
+
+    return true;
 }
 /**
 */
@@ -242,6 +363,7 @@ bool AccessData::getSetting ( TYPESETTING *const prm )
     prm->delay = pDataProject->setting.delay;
     prm->period = pDataProject->setting.period;
     prm->flag = pDataProject->setting.flag;
+
     return true;
 }
 /**
@@ -255,6 +377,7 @@ bool AccessData::getVibration(  uint32_t *const time_lenght,
     *time_pause = pDataProject->vibration.time_pause;
     *intensity = pDataProject->vibration.intensity;
     *on = pDataProject->vibration.on;
+
     return true;
 }
 /**
@@ -265,6 +388,7 @@ bool AccessData::getVibration( TYPEVIBRATION *const prm )
     prm->time_pause = pDataProject->vibration.time_pause;
     prm->intensity = pDataProject->vibration.intensity;
     prm->on = pDataProject->vibration.on;
+
     return true;
 }
 /**
@@ -274,14 +398,16 @@ bool AccessData::getButton( uint32_t *const time,
 {
     *time = pDataProject->button.time;
     *on = pDataProject->button.on;
+
     return true;
 }
 /**
 */
-bool AccessData::getButton( TYPEBUTTON *prm )
+bool AccessData::getButton( TYPEBUTTON *const prm )
 {
     prm->time = pDataProject->button.time;
     prm->on = pDataProject->button.on;
+
     return true;
 }
 /**
@@ -291,6 +417,7 @@ bool AccessData::getAcceleration(   uint32_t *const time,
 {
     *time = pDataProject->acceleration.time;
     *on = pDataProject->acceleration.on;
+
     return true;
 }
 /**
@@ -299,13 +426,19 @@ bool AccessData::getAcceleration( TYPEACCELERATION *const prm )
 {
     prm->time = pDataProject->acceleration.time;
     prm->on = pDataProject->acceleration.on;
+
     return true;
 }
 /**
 */
-bool AccessData::getMotion( uint8_t *const on )
+bool AccessData::getMotion( uint32_t *const time,
+                            uint8_t *const asTVP,
+                            uint8_t *const on )
 {
+    *time = pDataProject->motion.time;
+    *asTVP = pDataProject->motion.asTVP;
     *on = pDataProject->motion.on;
+
     return true;
 }
 /**
@@ -313,6 +446,9 @@ bool AccessData::getMotion( uint8_t *const on )
 bool AccessData::getMotion( TYPEMOTION *const prm )
 {
     prm->on = pDataProject->motion.on;
+    prm->asTVP = pDataProject->motion.asTVP;
+    prm->time = pDataProject->motion.time;
+
     return true;
 }
 /**
@@ -330,6 +466,7 @@ bool AccessData::getOnePlanDay( const uint8_t num_plan,
         *min = pDataProject->day_plans[num_plan].Items[item].min;
         *value_speaker1 = pDataProject->day_plans[num_plan].Items[item].value_speaker1;
         *value_speaker2 = pDataProject->day_plans[num_plan].Items[item].value_speaker2;
+
         return true;
     }
     return false;
@@ -346,6 +483,7 @@ bool AccessData::getOnePlanDay( const uint8_t num_plan,
         prm->min = pDataProject->day_plans[num_plan].Items[item].min;
         prm->value_speaker1 = pDataProject->day_plans[num_plan].Items[item].value_speaker1;
         prm->value_speaker2 = pDataProject->day_plans[num_plan].Items[item].value_speaker2;
+
         return true;
     }
     return false;
@@ -362,6 +500,7 @@ bool AccessData::getOneHoliday( const uint8_t item,
         *month = pDataProject->holidays[item].month;
         *day = pDataProject->holidays[item].day;
         *plan = pDataProject->holidays[item].plan;
+
         return true;
     }
     return false;
@@ -376,39 +515,49 @@ bool AccessData::getOneHoliday( const uint8_t item,
         prm->month = pDataProject->holidays[item].month;
         prm->day = pDataProject->holidays[item].day;
         prm->plan = pDataProject->holidays[item].plan;
+
         return true;
     }
     return false;
 }
 /**
 */
-bool AccessData::getOneWeek( uint8_t *const day,
+bool AccessData::getOneWeek( const uint8_t day,
                              uint8_t *const plan )
 {
-    *day = pDataProject->week.day;
-    *plan = pDataProject->week.plan;
-    return true;
+    if ( day<MAX_DAY_WEEK )
+    {
+        *plan = pDataProject->week[day].plan;
+
+        return true;
+    }
+    return false;
 }
 /**
 */
-bool AccessData::getOneWeek( TYPEWEEK *const prm )
+bool AccessData::getOneWeek( const uint8_t day, TYPEWEEK *const prm )
 {
-    prm->day = pDataProject->week.day;
-    prm->plan = pDataProject->week.plan;
-    return true;
+    if ( day<MAX_DAY_WEEK )
+    {
+        prm->plan = pDataProject->week[day].plan;
+
+        return true;
+    }
+    return false;
 }
 /**
 */
 bool AccessData::getSoundValue (const uint8_t numspeaker,
-                                const uint8_t size,
                                 uint8_t *const global,
-                                uint8_t *const pMass)
+                                uint8_t *const pMass,
+                                const uint8_t size)
 {
     if ((numspeaker<getMaxSpeaker())&&(size<getMaxSpeakerLevel()))
     {
         uint8_t *const pStr = pDataProject->sound_value.value_sound[numspeaker].separate;
         memcpy(pMass,pStr,size);
         *global = pDataProject->sound_value.value_sound[numspeaker].global;
+
         return true;
     }
     return false;
@@ -423,7 +572,75 @@ bool AccessData::getSoundValue (const uint8_t numspeaker,
         uint8_t *const pStr = pDataProject->sound_value.value_sound[numspeaker].separate;
         memcpy(prm->separate,pStr,size);
         prm->global = pDataProject->sound_value.value_sound[numspeaker].global;
+
         return true;
     }
     return false;
+}
+/**
+ * @brief AccessData::countItemHoliday
+ * @return
+ */
+uint32_t AccessData::countItemHoliday()
+{
+    uint32_t count = 0;
+    for ( uint32_t i=0; i<getMaxHoliday(); i++ )
+    {
+        TYPEHOLIDAY *const pPrm = &pDataProject->holidays[i];
+        if ( (pPrm->month<1)||(pPrm->month>12) ||
+             (pPrm->day<1)||(pPrm->day>31) ||
+             (pPrm->plan<1)
+           )
+        {
+            break;
+        }
+        count++;
+    }
+    return count;
+}
+/**
+ * @brief AccessData::countItemPlan
+ * @param plan_number
+ * @return
+ */
+uint32_t AccessData::countItemPlan(const uint8_t plan_number)
+{
+    uint32_t count = 0;
+
+    if ( plan_number < getMaxPlans())
+    {
+        for ( uint32_t i=0; i<getMaxItemDday(); i++ )
+        {
+            TYPEPLANITEMS *const pPrm = &pDataProject->day_plans[plan_number].Items[i];
+
+            if ( (pPrm->hour>24) || (pPrm->min>60) ||
+                 (pPrm->value_speaker1>100) ||
+                 (pPrm->value_speaker2>100)
+               )
+            {
+                break;
+            }
+            count++;
+        }
+    }
+    return count;
+}
+/**
+ * @brief AccessData::countPlan
+ * @return
+ */
+uint32_t AccessData::countPlan()
+{
+    uint32_t count = 0;
+
+    for ( uint32_t i=0; i<getMaxPlans(); i++ )
+    {
+        const uint32_t item = countItemPlan(i);
+        if (!item)
+        {
+            break;
+        }
+        count++;
+    }
+    return count;
 }

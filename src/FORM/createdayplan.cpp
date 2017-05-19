@@ -38,3 +38,47 @@ void CreateDayPlan::setNumberItem(const int number)
 {
     lbText->setText(QString::number(number)+": ");
 }
+/**
+ * @brief CreateDayPlan::getNumberItem
+ * @return
+ */
+int CreateDayPlan::getNumberItem() const
+{
+    return lbText->text().toInt();
+}
+/**
+ * @brief CreateDayPlan::setTime
+ * @param date
+ */
+void CreateDayPlan::setTime(const QTime time)
+{
+    timeEdit->setTime(time);
+}
+/**
+ * @brief CreateDayPlan::getTime
+ * @return
+ */
+QTime CreateDayPlan::getTime() const
+{
+    return timeEdit->time();
+}
+/**
+ * @brief CreateDayPlan::setValume
+ * @param val1
+ * @param val2
+ */
+void CreateDayPlan::setVolume(const int val1, const int val2)
+{
+    value1->setValue(val1);
+    value2->setValue(val2);
+}
+/**
+ * @brief CreateDayPlan::getValume
+ * @param val1
+ * @param val2
+ */
+void CreateDayPlan::getVolume(int * const val1, int * const val2)
+{
+    *val1 = value1->value();
+    *val2 = value2->value();
+}

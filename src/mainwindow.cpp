@@ -10,12 +10,13 @@ using namespace UnitFormPlayList;
  * @brief MainWindow::MainWindow
  * @param parent
  */
-MainWindow::MainWindow(QWidget *parent) :
+MainWindow::MainWindow(QWidget *parent, Controller *pdata) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     settings( new SettingsDialog(parent) ),
     settingsWifi( new SettingDialogWifi( parent ) ),
-    statusBar(new QLabel(parent))
+    statusBar(new QLabel(parent)),
+    ptrController(pdata)
 {
     ui->setupUi(this);
     //create
@@ -35,6 +36,8 @@ MainWindow::MainWindow(QWidget *parent) :
     //Read setting in register
     readSettings();
 
+    updateGuiToData();
+    updateDataToGui();
 //    // test wiget
 //    QTimer *timer = new QTimer(this);
 //    timer->start(1000);
@@ -269,26 +272,7 @@ void MainWindow::createConnectionGUI()
     // win setting wifi
     connect(ui->actionConfig_WIFI, &QAction::triggered, settingsWifi, &MainWindow::show);
     // write read
-    connect(ui->actionRead, &QAction::triggered, this, &MainWindow::ontest);
-}
-
-void MainWindow::ontest()
-{
-    QByteArray tmp;
-    QFile file( "C:/QtProject/example/wav/motroskin.wav" );
-    if( file.open( QIODevice::ReadOnly ) )
-    {
-        QByteArray fileContents = file.readAll();
-
-//        QDataStream stream(&file);
-//        stream.setVersion (QDataStream::Qt_5_7) ;
-//        stream >> tmp;
-//        if(stream.status() != QDataStream::Ok)
-//            {
-//                qDebug() << "Ошибка чтения файла";
-//            }
-//        file.close();
-    }
+    //connect(ui->actionRead, &QAction::triggered, this, &MainWindow::ontest);
 }
 /**
  * @brief MainWindow::createGroupMenu
@@ -386,7 +370,6 @@ void MainWindow::makeItemPlan( QListWidget *lstWgt,
     QListWidgetItem *item = new QListWidgetItem( lstWgt );
     item->setSizeHint( form->sizeHint() );
     lstWgt->setItemWidget( item, form );
-    // connect( btn, SIGNAL( clicked() ), SLOT( onBtnClicked() ) );
 }
 /**
  * @brief MainWindow::makeItemHoliday
@@ -408,15 +391,31 @@ void MainWindow::makeItemHoliday(QListWidget *lstWgt,
     connect(ui->sbTotalPlan,SIGNAL(valueChanged(int)),form,SLOT(setMaxPlan(int)));
 }
 /**
+ * @brief MainWindow::addItemPlanFromDatabase
+ * @param lWgt
+ * @param number_plan
+ */
+void MainWindow::addItemPlanFromDatabase(QListWidget *const lWgt, const int number_plan, const int item)
+{
+    const int index_item = item+1;
+    TYPEPLANITEMS day = {};
+    retDataBase().getOnePlanDay(number_plan, item, &day);
+    const QTime time(day.hour, day.min);
+    // create new item
+    makeItemPlan(lWgt, index_item, time, day.value_speaker1, day.value_speaker2);
+    //qDebug("MainWindow::addItemPlanFromDatabase numberPlan = %d index_item = %d", number_plan, index_item );
+}
+/**
  * @brief MainWindow::addItemPlan
  */
 void MainWindow::addItemPlan(QListWidget *lWgt)
 {
     if( !lWgt ) return ;
     // read from database
+    const int max_plan = retDataBase().getMaxPlans();
     // add new item
     const int indexShow = lWgt->count()+1;
-    if(indexShow<=MaxPnan)
+    if(indexShow<=max_plan)
     {
         makeItemPlan( lWgt, indexShow );
         qDebug("add items plan %d",indexShow);
@@ -428,7 +427,24 @@ void MainWindow::addItemPlan(QListWidget *lWgt)
 void MainWindow::remoteItemPlan(QListWidget *lWgt)
 {
     remoteItem(lWgt);
-    // write to database
+}
+/**
+ * @brief MainWindow::clearItemPlan
+ */
+void MainWindow::clearItemPlan()
+{
+    QList< QListWidget* > lWgts(lWgtPlansList);
+
+    foreach (QListWidget* lWd, lWgts)
+    {
+        if (lWd)
+        {
+            for (int i=0; i<lWd->count(); i++)
+            {
+                remoteItemPlan(lWd);
+            }
+        }
+    }
 }
 /**
  * @brief MainWindow::addItemHoliday
@@ -438,9 +454,10 @@ void MainWindow::addItemHoliday(QListWidget *lWgt)
 {
     if( !lWgt ) return ;
     // read from database
+    const int max_holiday = retDataBase().getMaxHoliday();
     // add new item
     const int indexShow = lWgt->count()+1;
-    if(indexShow<=MaxHoliday)
+    if(indexShow<=max_holiday)
     {
         makeItemHoliday( lWgt, indexShow );
         qDebug("add items%d",indexShow);
@@ -453,8 +470,6 @@ void MainWindow::addItemHoliday(QListWidget *lWgt)
 void MainWindow::remoteItemHoliday(QListWidget *lWgt)
 {
     remoteItem(lWgt);
-    // write to database
-
 }
 /**
  * @brief MainWindow::remoteItem
@@ -504,22 +519,25 @@ bool MainWindow::indexSorting(QListWidget *lWgt)
  */
 void MainWindow::createPlans( QWidget * const page )
 {
-    // read database
-    MaxPnan = 24;
-    const int MaxItem = 4;
+    // read from database max plan
+    const int max_plans = retDataBase().getMaxPlans();
     // create form plans
     swPlans = new QStackedWidget(page);
-    for(int i=0; i<MaxPnan;i++)
+    for(int i=0; i<max_plans;i++)
     {
+        //read from database
+        const int item_plan = retDataBase().countItemPlan(i);
+        // create one plan
         QWidget *wdg = new QWidget;
-        createOnePlan(wdg,MaxItem);
+        createOnePlan(wdg, i, item_plan);
         swPlans->addWidget(wdg);
+        qDebug("MainWindow::createPlans: item_plan=%d",item_plan);
     }
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(swPlans);
     layout->setContentsMargins(0,0,0,0);
     page->setLayout(layout);
-    qDebug("Count stack %d",swPlans->count());
+    qDebug("MainWindow::createPlans: swPlans->count()=%d",swPlans->count());
 }
 /**
  * @brief MainWindow::createPlayer
@@ -534,7 +552,7 @@ void MainWindow::createPlayer(QWidget *const page)
  * @param page
  * @param maxItem
  */
-void MainWindow::createOnePlan( QWidget *page, const int maxItem )
+void MainWindow::createOnePlan( QWidget *page, const int number_plan, const int maxItem )
 {
     QListWidget* lWgt = new QListWidget;
 
@@ -543,10 +561,9 @@ void MainWindow::createOnePlan( QWidget *page, const int maxItem )
     vlayout->addWidget( lWgt );
 
     page->setLayout(vlayout);
-    for (int i = 1; i<=maxItem; i++)
+    for (int i = 0; i<maxItem; i++)
     {
-        // read item database
-        makeItemPlan( lWgt, i );
+        addItemPlanFromDatabase( lWgt, number_plan, i);
     }
     // add list
     lWgtPlansList.append(lWgt);
@@ -556,10 +573,10 @@ void MainWindow::createOnePlan( QWidget *page, const int maxItem )
  */
 void MainWindow::createHolidays(QWidget *const page)
 {
-    // read items database
-    MaxHoliday = 20;
+    // read from database
+    const int count_holiday = retDataBase().countItemHoliday();
     // create form holiday
-    createOneHoliday(page,MaxHoliday);
+    createOneHoliday(page,count_holiday);
 }
 /**
  * @brief MainWindow::createOneHoliday
@@ -575,11 +592,16 @@ void MainWindow::createOneHoliday(QWidget *page, const int maxItem)
     vlayout->addWidget( lWgt );
 
     page->setLayout(vlayout);
-    const int maxPlan = ui->sbTotalPlan->value();
+
     for (int i = 1; i<=maxItem; i++)
     {
-        // read item database
-        makeItemHoliday( lWgt,i,QDate::currentDate(),maxPlan );
+        // read from database
+        const int max_plan = retDataBase().countPlan();
+        TYPEHOLIDAY item = {};
+        retDataBase().getOneHoliday(i,&item);
+        QDate date(QDate::currentDate().year(),item.month,item.day);
+        // make item
+        makeItemHoliday( lWgt,i,date,max_plan );
     }
     // private pointer
     lWgtHoliday = lWgt;
@@ -722,8 +744,11 @@ void MainWindow::onSwitchPanelMode(int numberPanel)
  */
 void MainWindow::onAddPlan()
 {
+    // read from database max parametr
+    const int max_plans = retDataBase().getMaxPlans();
+    // add
     const int index = ui->sbTotalPlan->value()+1;
-    if (index<MaxPnan)
+    if (index<max_plans)
     {
         ui->sbTotalPlan->setValue(index);
         // set item combobox
@@ -757,16 +782,29 @@ void MainWindow::onRemotePlan()
  */
 void MainWindow::onAddItemPlan()
 {
-    addItemPlan(lWgtPlansList[ui->cbSelectPlan->currentIndex()]);
-    qDebug("index add %d",ui->cbSelectPlan->currentIndex());
+    const int index = ui->cbSelectPlan->currentIndex();
+    if ( ( !lWgtPlansList.isEmpty()) && (index<lWgtPlansList.count()))
+    {
+        addItemPlan(lWgtPlansList.at(index));
+        qDebug("onAddItemPlan add %d",ui->cbSelectPlan->currentIndex());
+    }else{
+        qDebug("onAddItemPlan ERROR LENGH %d",index);
+    }
+
 }
 /**
  * @brief MainWindow::onRemoteItemPlan
  */
 void MainWindow::onRemoteItemPlan()
 {
-    remoteItemPlan(lWgtPlansList[ui->cbSelectPlan->currentIndex()]);
-    qDebug("index remote %d",ui->cbSelectPlan->currentIndex());
+    const int index = ui->cbSelectPlan->currentIndex();
+    if ( ( !lWgtPlansList.isEmpty()) && (index<lWgtPlansList.count()))
+    {
+        remoteItemPlan(lWgtPlansList.at(index));
+        qDebug("onRemoteItemPlan remote %d",ui->cbSelectPlan->currentIndex());
+    }else{
+        qDebug("onRemoteItemPlan ERROR LENGH %d",index);
+    }
 }
 /**
  * @brief MainWindow::onPagePlan
@@ -866,6 +904,350 @@ QByteArray MainWindow::dataSoundFile(const QString path) const
     return QByteArray();
 }
 /**
+ * @brief MainWindow::updateGuiToTracks
+ */
+void MainWindow::updateGuiToTracks()
+{
+    AccessDataProject &data(ptrController->retDataProject());
+}
+/**
+ * @brief MainWindow::updateTracksToGui
+ */
+void MainWindow::updateTracksToGui()
+{
+
+}
+/**
+ * @brief MainWindow::updateGuiToVolume
+ */
+void MainWindow::updateGuiToVolume()
+{
+    for (int i=0;i<soundValue.size();i++)
+    {
+        QMap<int,QList<QSlider*> >::const_iterator sp = soundValue.lowerBound(i);
+        QList<QSlider*> speaker = sp.value();
+        uint8_t general = speaker.at(0)->value();
+        const uint8_t max_separate = speaker.count()-1;
+        uint8_t separate[max_separate];
+        for ( int j=1; j<max_separate; j++ )
+        {
+            separate[j-1] = speaker.at(j)->value();
+        }
+        retDataBase().setSoundValue( i, general, separate, max_separate );
+    }
+}
+/**
+ * @brief MainWindow::updateVolumeToGui
+ */
+void MainWindow::updateVolumeToGui()
+{
+    for (int i=0;i<soundValue.size();i++)
+    {
+        QMap<int,QList<QSlider*> >::const_iterator sp = soundValue.lowerBound(i);
+        QList<QSlider*> speaker = sp.value();
+        uint8_t general = 0;
+        const uint8_t max_separate = speaker.count()-1;
+        uint8_t separate[max_separate];
+        if (retDataBase().getSoundValue(i, &general, separate, max_separate) )
+        {
+            speaker.at(0)->setValue(general);
+            value_speaker[i] = general;
+            for (int j=1; j<max_separate; j++)
+            {
+                speaker.at(j)->setValue(separate[j-1]);
+            }
+        }else{
+             qDebug("updateDataToGui size: %d, %d", general, max_separate);
+        }
+    }
+}
+/**
+ * @brief MainWindow::updateGuiToVibration
+ */
+void MainWindow::updateGuiToVibration()
+{
+    const uint32_t time_lenght = ui->sb_vibr_lenght->value();
+    const uint32_t time_pause = ui->sb_vibr_pause->value();
+    const uint32_t intensity = ui->sb_vibr_intensity->value();
+    const uint8_t on = ui->cb_enable_button->isChecked();
+    // set database
+    retDataBase().setVibration(time_lenght, time_pause, intensity, on);
+}
+/**
+ * @brief MainWindow::updateVibrationToGui
+ */
+void MainWindow::updateVibrationToGui()
+{
+    TYPEVIBRATION vibration={};
+    retDataBase().getVibration(&vibration);
+    // set GUI
+    ui->sb_vibr_lenght->setValue( vibration.time_lenght );
+    ui->sb_vibr_pause->setValue( vibration.time_pause );
+    ui->sb_vibr_intensity->setValue( vibration.intensity );
+    ui->cb_enable_button->setChecked( vibration.on );
+}
+/**
+ * @brief MainWindow::updateGuiToPlan
+ * @param numberPlan
+ */
+void MainWindow::updateOneGuiToPlan(QListWidget *const lWgt, const int numberPlan)
+{
+    for ( int i=0; i<lWgt->count(); i++ )
+    {
+        QListWidgetItem *const item = lWgt->item(i);
+        CreateDayPlan *const formItem = dynamic_cast<CreateDayPlan *>( lWgt->itemWidget(item) );
+        int volume1 = 0;
+        int volume2 = 0;
+        formItem->getVolume( &volume1, &volume2 );
+            const TYPEPLANITEMS plan = {
+                .hour = (uint8_t)formItem->getTime().hour(),
+                .min = (uint8_t)formItem->getTime().minute(),
+                .value_speaker1 = (uint8_t)volume1,
+                .value_speaker2 = (uint8_t)volume2
+            };
+            if ( retDataBase().setOnePlanDay( numberPlan, i, plan) == false )
+            {
+                qDebug() << "Class MainWindow: functions updateGuiToPlan: ERROR";
+            }
+    }
+}
+/**
+ * @brief MainWindow::updateGuiToPlan
+ */
+void MainWindow::updateGuiToPlan()
+{
+    QList< QListWidget* > lWgts(lWgtPlansList);
+    retDataBase().clearPlans();
+
+    for (int i=0;i<lWgts.count(); i++)
+    {
+        QListWidget *const lWgt(lWgts.at(i));
+        updateOneGuiToPlan(lWgt, i);
+    }
+}
+void MainWindow::updateOnePlanToGui(QListWidget * const lWgt,
+                                 const int numberPlan)
+{
+    const int count_item = retDataBase().countItemPlan(numberPlan);
+    for ( int i=0; i<count_item; i++)
+    {
+        addItemPlanFromDatabase(lWgt, numberPlan, i);
+    }
+    qDebug("MainWindow::updateOnePlanToGui count_item=%d",count_item);
+}
+/**
+ * @brief MainWindow::updatePlanToGui
+ */
+void MainWindow::updatePlanToGui()
+{
+    // delete item
+    clearItemPlan();
+    // add new items
+    QList< QListWidget* > lWgts(lWgtPlansList);
+    const int count_plan = retDataBase().countPlan();
+    for ( int i=0; i<count_plan; i++)
+    {
+        QListWidget *const iwd = lWgts.at(i);
+        updateOnePlanToGui(iwd, i);
+    }
+    qDebug("MainWindow::updatePlanToGui count_plan=%d",count_plan);
+}
+/**
+ * @brief MainWindow::updateGuiToHoliday
+ */
+void MainWindow::updateGuiToHoliday()
+{
+    QListWidget const *const lWgt(lWgtHoliday);
+
+    retDataBase().clearHoliday();
+
+    for(int i=0;i<lWgt->count();i++)
+    {
+        QListWidgetItem *const item = lWgt->item(i);
+        CreateHolidays *const formItem = dynamic_cast<CreateHolidays *>( lWgt->itemWidget(item) );
+        const TYPEHOLIDAY holiday = {
+            .month = (uint8_t)formItem->getDateEdit().month(),
+            .day = (uint8_t)formItem->getDateEdit().day(),
+            .plan = (uint8_t)formItem->getNumberPlan(),
+            .reserved = (uint8_t)0
+        };
+        if ( retDataBase().setOneHoliday(i,holiday) == false )
+        {
+            qDebug() << "Class MainWindow: functions updateGuiToHoliday: ERROR";
+        }
+    }
+}
+/**
+ * @brief MainWindow::updateHolidayToGui
+ */
+void MainWindow::updateHolidayToGui()
+{
+
+    QListWidget *const lWgt(lWgtHoliday);
+
+    if (!lWgt) return;
+    // remote old page
+    for ( int i=0; i<lWgt->count();i++ )
+    {
+        remoteItemHoliday(lWgt);
+    }
+    // create new page
+    for ( uint32_t i=0; i<retDataBase().countItemHoliday(); i++)
+    {
+        TYPEHOLIDAY holiday = {};
+        retDataBase().getOneHoliday(i, &holiday);
+        const QDate date(QDate::currentDate().year(), holiday.month, holiday.day);
+        makeItemHoliday( lWgt, (i+1), date, holiday.plan);
+        qDebug("updateHolidayToGui %d",(i+1));
+    }
+}
+/**
+ * @brief MainWindow::updateGuiToWeek
+ */
+void MainWindow::updateGuiToWeek()
+{
+    QList <QSpinBox*> list; list<<ui->sbMonday<<ui->sbTuesday<<ui->sbWednesday
+                               <<ui->sbThursday<<ui->sbFriday<<ui->sbSaturday<<ui->sbSunday;
+    for (uint32_t i; i<retDataBase().getMaxDayWeek(); i++)
+    {
+        const int plan = list.at(i)->value();
+        retDataBase().setOneWeek(i, plan);
+    }
+}
+/**
+ * @brief MainWindow::updateWeekToGui
+ */
+void MainWindow::updateWeekToGui()
+{
+    QList <QSpinBox*> list; list<<ui->sbMonday<<ui->sbTuesday<<ui->sbWednesday
+                               <<ui->sbThursday<<ui->sbFriday<<ui->sbSaturday<<ui->sbSunday;
+    for (int i; i<list.count(); i++)
+    {
+        uint8_t plan = 0;
+        retDataBase().getOneWeek(i, &plan);
+        list.at(i)->setValue(plan);
+    }
+}
+/**
+ * @brief MainWindow::updateGuiToOther
+ */
+void MainWindow::updateGuiToOther()
+{
+    // sound acceleration
+    const TYPEACCELERATION acceleration = {
+        .time = (uint32_t)ui->sb_time_acceleration->value(),
+        .on = (uint8_t)ui->gb_acceleration->isChecked()
+    };
+    retDataBase().setAcceleration( acceleration );
+    // motion
+    const TYPEMOTION motion ={
+        .time = (uint32_t)ui->sb_motion_time->value(),
+        .asTVP = (uint8_t)ui->check_motion_as_tvp->isChecked(),
+        .on = (uint8_t)ui->gb_motion_sensor->isChecked(),
+        .reserved = (uint8_t)0
+    };
+    retDataBase().setMotion( motion );
+    // noise
+    const TYPENOISE noise={
+        .time = (uint32_t)ui->sb_noise_time->value(),
+        .min_level = (uint8_t)ui->sb_noise_min_level->value(),
+        .max_level = (uint8_t)ui->sb_noise_max_level->value(),
+        .min_ct = (uint8_t)ui->sb_noise_min_coef->value(),
+        .max_ct = (uint8_t)ui->sb_noise_max_coef->value(),
+        .on = (uint8_t)ui->gb_noise_sensor->isChecked(),
+        .reserved = (uint8_t)0
+    };
+    retDataBase().setNoise( noise );
+    // button
+    const TYPEBUTTON button = {
+        .time = (uint32_t)ui->sb_time_button->value(),
+        .on = (uint8_t)true
+    };
+    retDataBase().setButton( button );
+    // setting
+    const TYPESETTING setting ={
+        .flag = (uint64_t)false,
+        .period = (uint32_t)ui->sb_zso_period->value(),
+        .delay = (uint32_t)ui->sb_zso_delay->value()
+    };
+    retDataBase().setSetting( setting );
+}
+/**
+ * @brief MainWindow::updateOtherToGui
+ */
+void MainWindow::updateOtherToGui()
+{
+    // sound acceleration
+    TYPEACCELERATION acceleration = {};
+    retDataBase().getAcceleration(&acceleration);
+    ui->gb_acceleration->setChecked(acceleration.on);
+    ui->sb_time_acceleration->setValue(acceleration.time);
+    // motion
+    TYPEMOTION motion ={};
+    retDataBase().getMotion(&motion);
+    ui->gb_motion_sensor->setChecked(motion.on);
+    ui->check_motion_as_tvp->setChecked(motion.asTVP);
+    ui->sb_motion_time->setValue(motion.time);
+    // noise
+    TYPENOISE noise={};
+    retDataBase().getNoise(&noise);
+    ui->gb_noise_sensor->setChecked(noise.on);
+    ui->sb_noise_time->setValue(noise.time);
+    ui->sb_noise_min_level->setValue(noise.min_level);
+    ui->sb_noise_max_level->setValue(noise.max_level);
+    ui->sb_noise_min_coef->setValue(noise.min_ct);
+    ui->sb_noise_max_coef->setValue(noise.max_ct);
+    // button
+    TYPEBUTTON button = {};
+    retDataBase().getButton(&button);
+    ui->sb_time_button->setValue(button.time);
+    // setting
+    TYPESETTING setting ={};
+    retDataBase().getSetting( &setting );
+    ui->sb_zso_period->setValue(setting.period);
+    ui->sb_zso_delay->setValue(setting.delay);
+}
+/**
+ * @brief MainWindow::updateGuiToData
+ */
+void MainWindow::updateGuiToData()
+{
+    // tracks
+    updateGuiToTracks();
+    // volume
+    updateGuiToVolume();
+    // vibration
+    updateGuiToVibration();
+    // plan
+    updateGuiToPlan();
+    //week
+    updateGuiToWeek();
+    // holiday
+    updateGuiToHoliday();
+    // setting
+    updateGuiToOther();
+}
+/**
+ * @brief MainWindow::updateDataToGui
+ */
+void MainWindow::updateDataToGui()
+{
+    // tracks
+    updateTracksToGui();
+    // volume speaker
+    updateVolumeToGui();
+    // vibration
+    updateVibrationToGui();
+    // plan
+    updatePlanToGui();
+    //week
+    updateWeekToGui();
+    // holiday
+    updateHolidayToGui();
+    // setting
+    updateOtherToGui();
+}
+/**
  * @brief MainWindow::onSetSliderValue
  * @param value
  */
@@ -873,24 +1255,24 @@ void MainWindow::onSetSliderValue(const int value)
 {
     if( QSlider* curSlid = qobject_cast< QSlider* >( sender() ) )
     {
-        QMultiMap<int,QList<QSlider*> >::const_iterator sp1 = soundValue.lowerBound(0);
-        QMultiMap<int,QList<QSlider*> >::const_iterator sp2 = soundValue.lowerBound(1);
+        QMap<int,QList<QSlider*> >::const_iterator sp1 = soundValue.lowerBound(0);
+        QMap<int,QList<QSlider*> >::const_iterator sp2 = soundValue.lowerBound(1);
 
         QList<QSlider*> speakerOneMass = sp1.value();
         QList<QSlider*> speakerTwoMass = sp2.value();
 
         if(speakerOneMass.at(0)==curSlid)
         {
-            const int16_t delta = value-value_speaker1;
-            value_speaker1 = curSlid->value();
+            const int16_t delta = value-value_speaker[0];
+            value_speaker[0] = curSlid->value();
             resultSliderValue(speakerOneMass,delta);
             qDebug("Slider one %d",delta);
             return;
         }
         if(speakerTwoMass.at(0)==curSlid)
         {
-            const int16_t delta = value-value_speaker2;
-            value_speaker2 = curSlid->value();
+            const int16_t delta = value-value_speaker[1];
+            value_speaker[1] = curSlid->value();
             resultSliderValue(speakerTwoMass,delta);
             qDebug("Slider one %d",delta);
             return;
@@ -936,24 +1318,16 @@ void MainWindow::onSetMaxPlanWeek(const int maxPlan)
  */
 void MainWindow::onOpenFile(void)
 {
-    static QString file = "/";
+    static QString file = QDir::homePath();
     file = QFileDialog::getOpenFileName(this,tr("Open File"),file,tr("SPG (*.spg);;"));
     if(!file.isEmpty())
     {
-        //loadFile(file);
-        QFile in( file );
-        if( in.open( QIODevice::ReadOnly ) )
-        {
-            //QByteArray fileContents = in.readAll();
-//            QString str;
-//            QDataStream stream( &in );
-//            stream >> str;
-            //QString str(fileContents);
-            //QByteArray str("12345");
-            //onSetMessageOutWin(str,Qt::red);
-            in.close();
-       }
-
+        QFile readFile(file);
+        readFile.open(QFile::ReadOnly);
+        QDataStream outFile(&readFile);
+        outFile.setVersion(QDataStream::Qt_5_7);
+        ptrController->retDataProject().readFileToProject(outFile);
+        readFile.close();
     }
 }
 /**
@@ -961,11 +1335,17 @@ void MainWindow::onOpenFile(void)
  */
 void MainWindow::onSaveFiles(void)
 {
-    static QString file = "/";
+    static QString file = QDir::homePath();
     file = QFileDialog::getSaveFileName(this,tr("Save File"),file,tr("SPG (*.spg);;"));
     if(!file.isEmpty())
     {
-
+        QFile appFile(file);
+        appFile.open(QFile::Append); // открываем файл для дозаписи;
+        QDataStream inFile(&appFile); // передаем потоку указатель на QIODevice;
+        inFile.setVersion(QDataStream::Qt_5_7); //  явно указываем версию Qt, для сериализации;
+        ptrController->retDataProject().writeProjectToFile(inFile);
+        appFile.flush(); // записываем весь буффер в файл;
+        appFile.close();
     }
 }
 /**
@@ -974,10 +1354,12 @@ void MainWindow::onSaveFiles(void)
 void MainWindow::onOpenSoundFile()
 {
 
-    const QStringList musicPaths = QStandardPaths::standardLocations(QStandardPaths::MusicLocation);
-    const QString file =
-        QFileDialog::getOpenFileName(this,tr("Open File"),
-                                        musicPaths.isEmpty() ? QDir::homePath() : musicPaths.first(),
+    //const QStringList musicPaths = QStandardPaths::standardLocations(QStandardPaths::MusicLocation);
+    //const QString file =
+    static QString file = QDir::homePath();
+    file = QFileDialog::getOpenFileName(this,tr("Open File"),
+                                        //musicPaths.isEmpty() ? QDir::homePath() : musicPaths.first(),
+                                        file,
                                         tr("TRACK (*.wav);;All files (*.*)"));
     if(!file.isEmpty())
     {
