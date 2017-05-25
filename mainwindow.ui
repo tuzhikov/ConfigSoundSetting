@@ -123,7 +123,7 @@
              <enum>QTabWidget::Rounded</enum>
             </property>
             <property name="currentIndex">
-             <number>4</number>
+             <number>0</number>
             </property>
             <property name="elideMode">
              <enum>Qt::ElideNone</enum>
@@ -1059,6 +1059,9 @@
                    <property name="toolTipDuration">
                     <number>0</number>
                    </property>
+                   <property name="currentIndex">
+                    <number>0</number>
+                   </property>
                    <item>
                     <property name="text">
                      <string>Number Plan 1</string>
@@ -1833,7 +1836,7 @@
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_4">
                  <item>
-                  <widget class="QCheckBox" name="checkBox">
+                  <widget class="QCheckBox" name="cbGREEN_BLINK_TABU">
                    <property name="minimumSize">
                     <size>
                      <width>0</width>
@@ -1846,7 +1849,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QCheckBox" name="checkBox_2">
+                  <widget class="QCheckBox" name="cbZSZ_BEGIN_BAN_TIME">
                    <property name="minimumSize">
                     <size>
                      <width>0</width>
@@ -1859,7 +1862,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QCheckBox" name="checkBox_3">
+                  <widget class="QCheckBox" name="cbZSZ_BUTT_CLICK">
                    <property name="minimumSize">
                     <size>
                      <width>0</width>
@@ -1872,7 +1875,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QCheckBox" name="checkBox_4">
+                  <widget class="QCheckBox" name="cbZSVRZ_PERIODICALLY">
                    <property name="minimumSize">
                     <size>
                      <width>0</width>
@@ -1885,7 +1888,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QCheckBox" name="checkBox_5">
+                  <widget class="QCheckBox" name="cbZSVRZ_BUTT_CLICK">
                    <property name="minimumSize">
                     <size>
                      <width>0</width>
@@ -1898,7 +1901,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QCheckBox" name="checkBox_6">
+                  <widget class="QCheckBox" name="cbZSR_BEGIN_BAN_TIME">
                    <property name="minimumSize">
                     <size>
                      <width>0</width>
@@ -1911,7 +1914,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QCheckBox" name="checkBox_7">
+                  <widget class="QCheckBox" name="cbZSR_BUTT_CLICK">
                    <property name="minimumSize">
                     <size>
                      <width>0</width>
@@ -1924,7 +1927,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QCheckBox" name="checkBox_8">
+                  <widget class="QCheckBox" name="cbZSVRR_PERIODICALLY">
                    <property name="minimumSize">
                     <size>
                      <width>0</width>
@@ -1937,7 +1940,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QCheckBox" name="checkBox_9">
+                  <widget class="QCheckBox" name="cbZSVRR_BUTT_CLICK">
                    <property name="minimumSize">
                     <size>
                      <width>0</width>
@@ -1950,7 +1953,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QCheckBox" name="checkBox_11">
+                  <widget class="QCheckBox" name="cbAPPLY_BUTTON_AS_TVP">
                    <property name="text">
                     <string>Apply button as TVP</string>
                    </property>

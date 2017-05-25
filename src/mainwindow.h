@@ -73,9 +73,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
-
     uint8_t value_speaker[2] = {50,50};
-
     QMap<QAction*,QTextEdit*> mainWindowFormMap;
     QList<QAction*> ListCommand;
     QList<QAction*> ListConnect;
@@ -111,6 +109,7 @@ private:
     void createItemPlay( QListWidget * const page,
                          QStringList &list,
                          QStringList &tip);
+    void setTitle(const QString file_name);
     void writeSettings();
     void readSettings();
     void showStatusMessage(const QString &message);
@@ -126,10 +125,11 @@ private:
                        const QTime time = QTime::currentTime(),
                        const int val1 = 30,
                        const int val2 = 70 );
-    void makeItemHoliday( QListWidget *lstWgt=0,
-                          const int index     = 1,
-                          const QDate date = QDate::currentDate(),
-                          const int num_plan  = 1 );
+    void makeItemHoliday(QListWidget *lstWgt=0,
+                          const int index    = 1,
+                          const int max_plan = 1,
+                          const QDate date   = QDate::currentDate(),
+                          const int num_plan = 1);
     void addItemPlan ( QListWidget * );
     void addItemPlanFromDatabase(QListWidget *const, const int , const int );
     void remoteItemPlan( QListWidget * );
@@ -142,10 +142,14 @@ private:
     void showLabelEnabled( QLabel *const lb );
     void showLabelDisabled( QLabel *const lb );
     void installDiagnosisPage( void );
-    bool checkSoundFiles( const QString path);
+    bool checkSuffixSoundFiles(const QString path)const;
     QByteArray dataSoundFile(const QString path) const;
-    void updateGuiToTracks();
-    void updateTracksToGui();
+    QString checkNameSoundFile(const QString sample_name,
+                            const QString file_name) const;
+    QString retPrefixNameFile(const QString sample_name)const;
+    void updateGuiToTracks() const;
+    void updateTracksToGui( const QString ) const;
+    void updateTracksPathToGui( const QString ) const;
     void updateGuiToVolume();
     void updateVolumeToGui();
     void updateGuiToVibration();
@@ -164,8 +168,15 @@ private:
     void updateOtherToGui();
     void updateGuiToData();
     void updateDataToGui();
-    AccessData &retDataBase()const{
+
+    AccessData &retDataBase()const
+    {
         AccessData &data(ptrController->retDataProject().retDataProject());
+        return data;
+    }
+    AccessDataProject &retDataProject()const
+    {
+        AccessDataProject &data(ptrController->retDataProject());
         return data;
     }
 protected:

@@ -29,10 +29,11 @@ namespace UnitHolidays{
         explicit CreateHolidays(QWidget *parent     = 0,
                                 const int index     = 1,
                                 const QDate date = QDate::currentDate(),
+                                const int max_plan  = 1,
                                 const int num_plan  = 1);
         void setNumberItem( const int number );
         void setDateEdit( const QDate date );
-        void setNumberPlan( const int number );
+        bool setNumberPlan( const int number );
         void setMaxNumberPlan( const int number );
         int getNumberItem( void ) const;
         QDate getDateEdit( void ) const;

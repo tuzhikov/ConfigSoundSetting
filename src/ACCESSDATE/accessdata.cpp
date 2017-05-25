@@ -20,23 +20,58 @@ AccessData::~AccessData()
  */
 void AccessData::setDefault(TYPEPROJECT *const pPrg)
 {
+    // clear
+    clearProject();
+    // set default data
+    // volume
+    for (int i=0;i<MAX_SPEAKER; i++)
+    {
+        pPrg->sound_value.value_sound[i].global = 50;
+        for (int j=0; j<MAX_SPEAKER_LEVEL; j++)
+        {
+            pPrg->sound_value.value_sound[i].separate[j] = 50;
+        }
+    }
+    //WEEK
+    for (int i=0;i<MAX_DAY_WEEK;i++)
+    {
+        pPrg->week[i].plan = 1;
+    }
+    //vibration
+    pPrg->vibration.on = true;
+    pPrg->vibration.intensity = 50;
+    pPrg->vibration.time_lenght = 100;
+    pPrg->vibration.time_pause = 100;
+    //acceleration
+    pPrg->acceleration.on = true;
+    pPrg->acceleration.time = 4;
+    //button
+    pPrg->button.on = true;
+    pPrg->button.time = 5;
+    //motion
+    pPrg->motion.on = false;
+    pPrg->motion.asTVP = false;
+    pPrg->motion.time = 5;
+    //noice
+    pPrg->noise.on = false;
+    pPrg->noise.time = 1;
+    pPrg->noise.max_level = 70;
+    pPrg->noise.min_level = 30;
+    pPrg->noise.max_ct = 10;
+    pPrg->noise.min_ct = 10;
+    // setting
+    pPrg->setting.flag = GREEN_BLINK_TABU|ZSVRZ_PERIODICALLY|ZSVRR_PERIODICALLY;
+    pPrg->setting.delay = 1;
+    pPrg->setting.period = 200;
+}
+/**
+ * @brief AccessData::clearProject
+ */
+void AccessData::clearProject()
+{
     memset(pDataProject,0,sizeof(TYPEPROJECT));
     clearHoliday();
     clearPlans();
-    pPrg->acceleration.on = true;
-    pPrg->acceleration.time = 100;
-
-    pPrg->button.on = true;
-    pPrg->button.time = 100;
-
-    pPrg->vibration.on = true;
-    pPrg->vibration.intensity = 1000;
-    pPrg->vibration.time_lenght = 10;
-    pPrg->vibration.time_pause = 10;
-
-    pPrg->motion.on = false;
-
-    pPrg->noise.on = false;
 }
 /**
  * @brief AccessData::setNoise

@@ -40,9 +40,10 @@ namespace ACCESS_DATE{
         }
         //default parametr
         void setDefault(TYPEPROJECT *const pPrg);
-        void clear( void ) {
-            setDefault(pDataProject);
-        }
+        //void clear( void ) {
+        //    setDefault(pDataProject);
+       // }
+        void clearProject();
         // Setters
         bool setNoise(const uint32_t time,
                       const uint8_t min_level,

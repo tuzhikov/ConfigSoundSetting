@@ -12,6 +12,20 @@ enum MAX_PROJRCT{
     MAX_HOLIDAYS        = 120,  // праздничный дней
     END_ENUM
 };
+// FLAG
+enum FLAG_SETTING{
+        GREEN_BLINK_TABU    = 0x00000001, // зеленое мигание воспринимать как запрещающий сигнал
+        ZSZ_BEGIN_BAN_TIME  = 0x00000002, // ЗСЗ при начале времени запрета (красный сигнал светофора)
+        ZSZ_BUTT_CLICK      = 0x00000004, // ЗСЗ при нажатии кнопки
+        ZSVRZ_PERIODICALLY  = 0x00000008, // ЗСВРЗ периодически
+        ZSVRZ_BUTT_CLICK    = 0x00000010, // ЗСВРЗ при нажатии кнопки
+        ZSR_BEGIN_BAN_TIME  = 0x00000020, // ЗСР при начале времени запрета
+        ZSR_BUTT_CLICK      = 0x00000040, // ЗСР при нажатии кнопки
+        ZSVRR_PERIODICALLY  = 0x00000080, // ЗСВРР периодически
+        ZSVRR_BUTT_CLICK    = 0x00000100, // ЗСВРР при нажатии кнопки
+        APPLY_BUTTON_AS_TVP = 0x00000200, // применить кнопку как ТПВ
+        END_FLAG_SETTING
+};
 
 #pragma pack(push,1)
 // описание одного плана

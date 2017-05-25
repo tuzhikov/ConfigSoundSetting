@@ -35,57 +35,8 @@ MainWindow::MainWindow(QWidget *parent, Controller *pdata) :
     installDiagnosisPage();
     //Read setting in register
     readSettings();
-
-    updateGuiToData();
+    // database to GUI
     updateDataToGui();
-//    // test wiget
-//    QTimer *timer = new QTimer(this);
-//    timer->start(1000);
-//    connect(timer,SIGNAL(timeout()),this,SLOT(onTimeout()));
-
-//    const char* const FILE_NAME = "test.bin";
-
-//    QFile file( FILE_NAME );
-//    QDataStream stream( &file );
-
-//   file.open( QIODevice::WriteOnly );
-//   stream << 5 << 3.14 << QString( "Hello, world!" ) << QRect( 0, 0, 20, 10 );
-//   file.close();
-//   file.open( QIODevice::ReadOnly );
-//   int x = 0;
-//   float y = 0.0;
-//   QString str;
-//   QRect r;
-//   stream >> x >> y >> str >> r;
-//   qDebug() << x << y << str << r;
-//   file.close();
-
-//    QDir dirconf;
-//    QFile filedata;
-
-//    dirconf.setPath( QString("%1/.qconf").arg( QDir::homePath() ) );
-//    filedata.setFileName( QString("%1/qnote.dat").arg(dirconf.path()) );
-
-//    if (!dirconf.exists()){
-//               // printf("\n%s: directory not exist.\nBegin creating directory...\n", dirconf.path().toAscii().constData());
-//                if ( !dirconf.mkpath( dirconf.dirName() ) ){
-//                    printf("Error: directory not created.\n");
-//                    exit(1);
-//                } else
-//                    printf("OK: directory created.\n");
-//    }
-
-//            if (!filedata.exists()){
-//                printf("\n%s: file not exist.\nBegin creating file...\n", filedata.fileName().toAscii().constData());
-//                if ( !filedata.open(QIODevice::WriteOnly) ){
-//                    printf("Error: file not created.\n");
-//                    exit(1);
-//                } else {
-//                    filedata.close();
-//                    printf("OK: file created.\n");
-//                }
-//            }
-
 }
 /**
  * @brief MainWindow::~MainWindow
@@ -381,10 +332,11 @@ void MainWindow::makeItemPlan( QListWidget *lstWgt,
  */
 void MainWindow::makeItemHoliday(QListWidget *lstWgt,
                                  const int index,
+                                 const int max_plan,
                                  const QDate date,
                                  const int num_plan)
 {
-    CreateHolidays *form = new CreateHolidays(this,index,date,num_plan);
+    CreateHolidays *form = new CreateHolidays( this,index,date,max_plan,num_plan );
     QListWidgetItem *item = new QListWidgetItem( lstWgt );
     item->setSizeHint( form->sizeHint() );
     lstWgt->setItemWidget(item,form);
@@ -455,11 +407,13 @@ void MainWindow::addItemHoliday(QListWidget *lWgt)
     if( !lWgt ) return ;
     // read from database
     const int max_holiday = retDataBase().getMaxHoliday();
+    //gui max plan
+    const int max_current_plan = ui->sbTotalPlan->value();
     // add new item
     const int indexShow = lWgt->count()+1;
     if(indexShow<=max_holiday)
     {
-        makeItemHoliday( lWgt, indexShow );
+        makeItemHoliday( lWgt, indexShow, max_current_plan);
         qDebug("add items%d",indexShow);
     }
 }
@@ -601,7 +555,7 @@ void MainWindow::createOneHoliday(QWidget *page, const int maxItem)
         retDataBase().getOneHoliday(i,&item);
         QDate date(QDate::currentDate().year(),item.month,item.day);
         // make item
-        makeItemHoliday( lWgt,i,date,max_plan );
+        makeItemHoliday( lWgt,i,max_plan,date,item.plan );
     }
     // private pointer
     lWgtHoliday = lWgt;
@@ -664,6 +618,15 @@ void MainWindow::createItemPlay(QListWidget * const page, QStringList &list, QSt
 {
     foreach(QString txt, list)
         makeItemPlayList( page, txt, ((!tip.isEmpty())?tip.takeFirst():"") );
+}
+/**
+ * @brief MainWindow::setTitle
+ * @param str
+ */
+void MainWindow::setTitle(const QString file_name)
+{
+    QString wintitle(QObject::tr("UZTVOP "));
+    this->setWindowTitle(wintitle+file_name);
 }
 /**
  * @brief MainWindow::onWindowsOut
@@ -870,10 +833,10 @@ void MainWindow::installDiagnosisPage()
     showLabelDisabled(ui->lbMotionSens);
 }
 /**
- * @brief MainWindow::checkSoundFiles
+ * @brief MainWindow::checkSuffixSoundFiles
  * @param path
  */
-bool MainWindow::checkSoundFiles(const QString path)
+bool MainWindow::checkSuffixSoundFiles(const QString path) const
 {
     QFileInfo info(path);
     const QString typeWav("WAV");
@@ -882,7 +845,6 @@ bool MainWindow::checkSoundFiles(const QString path)
 
     if ( (suffix != typeWav) && (suffix != typeMp3) )
     {
-        QMessageBox::critical(this, QObject::tr("ERROR"), QObject::tr("Open the file of the format \"*.wav\"") );
         return false;
     }
     return true;
@@ -904,18 +866,122 @@ QByteArray MainWindow::dataSoundFile(const QString path) const
     return QByteArray();
 }
 /**
+ * @brief MainWindow::retPrefixNameFile
+ * @param sample_name
+ * @return
+ */
+QString MainWindow::retPrefixNameFile(const QString sample_name) const
+{
+    QRegExp re( " <([^>]+)>" );
+    int lastPos = 0;
+    while( ( lastPos = re.indexIn( sample_name, lastPos ) ) != -1 )
+    {
+        lastPos += re.matchedLength();
+        return re.cap( 1 );
+    }
+    // error
+    qDebug() << "ERROR MainWindow::retPrefixNameFile";
+    return QString();
+}
+/**
+ * @brief MainWindow::checkNameSoundFile
+ * @param sample_name
+ * @param file_name
+ * @return
+ */
+QString MainWindow::checkNameSoundFile(const QString sample_name, const QString file_name) const
+{
+    QString return_name(file_name);
+    QString pattern(retPrefixNameFile(sample_name));
+    // add prefix
+    if (!file_name.contains(pattern))
+    {
+        return_name.prepend(pattern);
+    }
+    return return_name;
+}
+/**
  * @brief MainWindow::updateGuiToTracks
  */
-void MainWindow::updateGuiToTracks()
+void MainWindow::updateGuiToTracks() const
 {
-    AccessDataProject &data(ptrController->retDataProject());
+    // clear database
+    retDataProject().clearPlayList();
+    // updata database
+    QListWidget const *const lWgt(lWgtPlayList);
+    for(int i=0;i<lWgt->count();i++)
+    {
+        QListWidgetItem *const item = lWgt->item(i);
+        CreateFormPlayList *const formItem = dynamic_cast<CreateFormPlayList *>( lWgt->itemWidget(item) );
+        if ( formItem )
+        {
+            const QString path(formItem->getPath());
+            const QString file_name(QFileInfo(path).fileName());
+            const QString toolTip(formItem->getQLineEdit()->toolTip());
+            QString file_name_db(checkNameSoundFile(toolTip, file_name));
+            if ( checkSuffixSoundFiles(file_name_db) )
+            {
+                retDataProject().retPlayList()[file_name_db] = dataSoundFile(path);
+            }
+        }
+    }
+}
+/**
+ * @brief MainWindow::updateTracksPathToGui
+ * @param path_file
+ */
+void MainWindow::updateTracksPathToGui(const QString path_file) const
+{
+    //
+    QListWidget const *const lWgt(lWgtPlayList);
+    for(int i=0;i<lWgt->count();i++)
+    {
+        QListWidgetItem *const item = lWgt->item(i);
+        CreateFormPlayList *const formItem = dynamic_cast<CreateFormPlayList *>( lWgt->itemWidget(item) );
+        if ( formItem )
+        {
+            const QString pattern(retPrefixNameFile(formItem->getQLineEdit()->toolTip()));
+            if ( path_file.contains(pattern) )
+            {
+                formItem->getQLineEdit()->setText(path_file);
+                return;
+            }
+        }
+    }
 }
 /**
  * @brief MainWindow::updateTracksToGui
  */
-void MainWindow::updateTracksToGui()
+void MainWindow::updateTracksToGui(const QString path_file) const
 {
-
+    const QString name_folder(QFileInfo(path_file).fileName().remove(QChar('.'), Qt::CaseInsensitive).toUpper());
+    QDir dir(QFileInfo(path_file).path());
+    // create folder
+    if( !dir.exists(name_folder) )
+    {
+        dir.mkdir(name_folder);
+    }
+    //enter to folder
+    dir.cd(name_folder);
+    // extract sound files to folder
+    QMap <QString, QByteArray>::iterator it = retDataProject().retPlayList().begin();
+    for (;it!= retDataProject().retPlayList().end(); ++it)
+    {
+        const QString name_file(it.key());
+        if ( checkSuffixSoundFiles(name_file) )
+        {
+            const QString path(dir.filePath(name_file));
+            QFile soundFile(path);
+            soundFile.open (QIODevice::WriteOnly);
+            QDataStream inFile(&soundFile);
+            inFile.setVersion(QDataStream::Qt_5_7);
+            inFile<<it.value();
+            soundFile.flush();
+            soundFile.close();
+            // update GIU
+            updateTracksPathToGui(path);
+        }
+    }
 }
 /**
  * @brief MainWindow::updateGuiToVolume
@@ -928,8 +994,8 @@ void MainWindow::updateGuiToVolume()
         QList<QSlider*> speaker = sp.value();
         uint8_t general = speaker.at(0)->value();
         const uint8_t max_separate = speaker.count()-1;
-        uint8_t separate[max_separate];
-        for ( int j=1; j<max_separate; j++ )
+        uint8_t separate[max_separate] = {0};
+        for ( int j=1; j<=max_separate; j++ )
         {
             separate[j-1] = speaker.at(j)->value();
         }
@@ -947,12 +1013,12 @@ void MainWindow::updateVolumeToGui()
         QList<QSlider*> speaker = sp.value();
         uint8_t general = 0;
         const uint8_t max_separate = speaker.count()-1;
-        uint8_t separate[max_separate];
+        uint8_t separate[max_separate]= {0};
         if (retDataBase().getSoundValue(i, &general, separate, max_separate) )
         {
             speaker.at(0)->setValue(general);
             value_speaker[i] = general;
-            for (int j=1; j<max_separate; j++)
+            for (int j=1; j<=max_separate; j++)
             {
                 speaker.at(j)->setValue(separate[j-1]);
             }
@@ -1050,6 +1116,19 @@ void MainWindow::updatePlanToGui()
         QListWidget *const iwd = lWgts.at(i);
         updateOnePlanToGui(iwd, i);
     }
+    // set tool date
+    ui->sbTotalPlan->setValue(count_plan);
+    // set item combobox (If the plans are zero)
+    ui->cbSelectPlan->clear();
+    for(int i=0;i<count_plan;i++)
+    {
+        ui->cbSelectPlan->addItem(tr("Number Plan ")+QString::number(i+1));
+    }
+    // If the plans are zero,
+    if (!count_plan) // bug configurations
+    {
+        ui->cbSelectPlan->addItem(tr("Number Plan 1"));
+    }
     qDebug("MainWindow::updatePlanToGui count_plan=%d",count_plan);
 }
 /**
@@ -1091,13 +1170,15 @@ void MainWindow::updateHolidayToGui()
     {
         remoteItemHoliday(lWgt);
     }
+    const uint32_t max_current_plan = retDataBase().countPlan();
+    const uint32_t max_current_holiday = retDataBase().countItemHoliday();
     // create new page
-    for ( uint32_t i=0; i<retDataBase().countItemHoliday(); i++)
+    for ( uint32_t i=0; i<max_current_holiday; i++)
     {
         TYPEHOLIDAY holiday = {};
         retDataBase().getOneHoliday(i, &holiday);
         const QDate date(QDate::currentDate().year(), holiday.month, holiday.day);
-        makeItemHoliday( lWgt, (i+1), date, holiday.plan);
+        makeItemHoliday( lWgt, (i+1), max_current_plan, date, holiday.plan);
         qDebug("updateHolidayToGui %d",(i+1));
     }
 }
@@ -1108,7 +1189,7 @@ void MainWindow::updateGuiToWeek()
 {
     QList <QSpinBox*> list; list<<ui->sbMonday<<ui->sbTuesday<<ui->sbWednesday
                                <<ui->sbThursday<<ui->sbFriday<<ui->sbSaturday<<ui->sbSunday;
-    for (uint32_t i; i<retDataBase().getMaxDayWeek(); i++)
+    for (int i = 0; i<list.count(); i++)
     {
         const int plan = list.at(i)->value();
         retDataBase().setOneWeek(i, plan);
@@ -1121,7 +1202,7 @@ void MainWindow::updateWeekToGui()
 {
     QList <QSpinBox*> list; list<<ui->sbMonday<<ui->sbTuesday<<ui->sbWednesday
                                <<ui->sbThursday<<ui->sbFriday<<ui->sbSaturday<<ui->sbSunday;
-    for (int i; i<list.count(); i++)
+    for (int i = 0; i<list.count(); i++)
     {
         uint8_t plan = 0;
         retDataBase().getOneWeek(i, &plan);
@@ -1165,8 +1246,21 @@ void MainWindow::updateGuiToOther()
     };
     retDataBase().setButton( button );
     // setting
+    QList <QCheckBox*> list_check;
+    list_check<<ui->cbGREEN_BLINK_TABU<<ui->cbZSZ_BEGIN_BAN_TIME<<ui->cbZSZ_BUTT_CLICK<<ui->cbZSVRZ_PERIODICALLY
+            <<ui->cbZSVRZ_BUTT_CLICK<<ui->cbZSR_BEGIN_BAN_TIME<<ui->cbZSR_BUTT_CLICK<<ui->cbZSVRR_PERIODICALLY
+                <<ui->cbZSVRR_BUTT_CLICK<<ui->cbAPPLY_BUTTON_AS_TVP;
+    uint64_t flags = 0;
+    for (int i=0;i<list_check.count();i++)
+    {
+        QCheckBox *const ch = list_check.at(i);
+        if (ch->isChecked())
+        {
+            flags|=1<<i;
+        }
+    }
     const TYPESETTING setting ={
-        .flag = (uint64_t)false,
+        .flag = (uint64_t)flags,
         .period = (uint32_t)ui->sb_zso_period->value(),
         .delay = (uint32_t)ui->sb_zso_delay->value()
     };
@@ -1206,6 +1300,17 @@ void MainWindow::updateOtherToGui()
     retDataBase().getSetting( &setting );
     ui->sb_zso_period->setValue(setting.period);
     ui->sb_zso_delay->setValue(setting.delay);
+    // flag
+    QList <QCheckBox*> list_check;
+    list_check<<ui->cbGREEN_BLINK_TABU<<ui->cbZSZ_BEGIN_BAN_TIME<<ui->cbZSZ_BUTT_CLICK<<ui->cbZSVRZ_PERIODICALLY
+            <<ui->cbZSVRZ_BUTT_CLICK<<ui->cbZSR_BEGIN_BAN_TIME<<ui->cbZSR_BUTT_CLICK<<ui->cbZSVRR_PERIODICALLY
+                <<ui->cbZSVRR_BUTT_CLICK<<ui->cbAPPLY_BUTTON_AS_TVP;
+    for (int i=0;i<list_check.count();i++)
+    {
+        QCheckBox *const ch(list_check.at(i));
+        bool result = (setting.flag&(1<<i));
+        ch->setChecked(result);
+    }
 }
 /**
  * @brief MainWindow::updateGuiToData
@@ -1232,8 +1337,6 @@ void MainWindow::updateGuiToData()
  */
 void MainWindow::updateDataToGui()
 {
-    // tracks
-    updateTracksToGui();
     // volume speaker
     updateVolumeToGui();
     // vibration
@@ -1326,8 +1429,14 @@ void MainWindow::onOpenFile(void)
         readFile.open(QFile::ReadOnly);
         QDataStream outFile(&readFile);
         outFile.setVersion(QDataStream::Qt_5_7);
-        ptrController->retDataProject().readFileToProject(outFile);
+        retDataProject().readFileToProject(outFile);
+        //ptrController->retDataProject().readFileToProject(outFile);
         readFile.close();
+        //update GUI
+        updateDataToGui();
+        updateTracksToGui(file);
+        // set file to title
+        setTitle(QFileInfo(file).fileName());
     }
 }
 /**
@@ -1335,17 +1444,23 @@ void MainWindow::onOpenFile(void)
  */
 void MainWindow::onSaveFiles(void)
 {
+    //update
+    updateGuiToData();
+    //
     static QString file = QDir::homePath();
     file = QFileDialog::getSaveFileName(this,tr("Save File"),file,tr("SPG (*.spg);;"));
     if(!file.isEmpty())
     {
         QFile appFile(file);
-        appFile.open(QFile::Append); // открываем файл для дозаписи;
+        //appFile.open(QFile::Append); // открываем файл для дозаписи;
+        appFile.open(QIODevice::WriteOnly);
         QDataStream inFile(&appFile); // передаем потоку указатель на QIODevice;
         inFile.setVersion(QDataStream::Qt_5_7); //  явно указываем версию Qt, для сериализации;
-        ptrController->retDataProject().writeProjectToFile(inFile);
+        retDataProject().writeProjectToFile(inFile);
         appFile.flush(); // записываем весь буффер в файл;
         appFile.close();
+        // set file to title
+        setTitle(QFileInfo(file).fileName());
     }
 }
 /**
@@ -1367,15 +1482,18 @@ void MainWindow::onOpenSoundFile()
         {
             if( QLineEdit* edit = btn->parent()->findChild< QLineEdit* >() )
             {
-                if ( checkSoundFiles(file) )
+                if ( checkSuffixSoundFiles(file) )
+                {
                     edit->setText(file);
+                }else{
+                    QMessageBox::critical(this, QObject::tr("ERROR"), QObject::tr("Open the file of the format \"*.wav\"") );
+                }
                 return;
             }
         }
     }else{
         qDebug()<<"Class MainWindow functions onOpenSoundFile: file is Empty";
     }
-
 }
 /**
  * @brief MainWindow::onSaveSoundFile

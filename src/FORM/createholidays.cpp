@@ -11,14 +11,18 @@ using namespace UnitHolidays;
 CreateHolidays::CreateHolidays(QWidget *parent,
                                const int index,
                                const QDate date,
-                               const int maxPlan) : InterfaceForms(parent)
+                               const int max_plan,
+                               const int num_plan) : InterfaceForms(parent)
 {
     lbText = new QLabel(QString::number(index)+": ",parent);
     dataEdit = new QDateEdit(date,parent);
     dataEdit->setCalendarPopup(true);
     dataEdit->setDisplayFormat("dd.MM");
+    const int minimum_number_plan = 1;
     sbNumberPlan = new QSpinBox(parent);
-    sbNumberPlan->setMaximum(maxPlan);
+    sbNumberPlan->setMinimum(minimum_number_plan);
+    sbNumberPlan->setMaximum(max_plan);
+    sbNumberPlan->setValue(num_plan);
     //btDelete = new QPushButton(tr("REMOVE"),parent);
     horizontalSpacer = new QSpacerItem(217, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
@@ -56,17 +60,22 @@ void CreateHolidays::setDateEdit(const QDate date)
  * @brief CreateHolidays::setNumberPlan
  * @param number
  */
-void CreateHolidays::setNumberPlan(const int number)
+bool CreateHolidays::setNumberPlan(const int number)
 {
-    sbNumberPlan->setValue(number);
+    if ( sbNumberPlan->maximum()>=number )
+    {
+        sbNumberPlan->setValue(number);
+        return true;
+    }
+   return false;
 }
 /**
  * @brief CreateHolidays::setMaxNumberPlan
  * @param number
  */
-void CreateHolidays::setMaxNumberPlan(const int number)
+void CreateHolidays::setMaxNumberPlan(const int max_plan)
 {
-    sbNumberPlan->setMaximum(number);
+    sbNumberPlan->setMaximum(max_plan);
 }
 /**
  * @brief CreateHolidays::getNumberItem

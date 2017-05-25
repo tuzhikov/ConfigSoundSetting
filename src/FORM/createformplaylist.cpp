@@ -38,11 +38,11 @@ CreateFormPlayList::CreateFormPlayList(QWidget *parent,
  * @brief createFormPlayList::createPopurMenu
  * @param wd
  */
-void CreateFormPlayList::createPopurMenu(QWidget * const wd)
-{
-    // create popur menu
-    QAction *pOpen = new QAction(tr("Open sound file..."),wd);
-    wd->addAction(pOpen);
-    wd->setContextMenuPolicy(Qt::ActionsContextMenu);
-    wd->connect(pOpen,SIGNAL( triggered() ),this,SLOT( onOpenSoundFile() ) );
-}
+//void CreateFormPlayList::createPopurMenu(QWidget * const wd)
+//{
+//    // create popur menu
+//    QAction *pOpen = new QAction(tr("Open sound file..."),wd);
+//    wd->addAction(pOpen);
+//    wd->setContextMenuPolicy(Qt::ActionsContextMenu);
+//    wd->connect(pOpen,SIGNAL( triggered() ),this,SLOT( onOpenSoundFile() ) );
+//}
