@@ -37,6 +37,11 @@ MainWindow::MainWindow(QWidget *parent, Controller *pdata) :
     readSettings();
     // database to GUI
     updateDataToGui();
+//    // test time
+//    QTime myTimer;
+//    myTimer.start();
+//    int nMilliseconds = myTimer.elapsed();
+//    qDebug()<<nMilliseconds;
 }
 /**
  * @brief MainWindow::~MainWindow
@@ -153,7 +158,7 @@ void MainWindow::createStatusBar()
 {
     /*Add progress in status bar*/
     progress = new QProgressBar(this);
-    progress->setVisible(true);
+    progress->setVisible(false);
     progress->setTextVisible(true);
     //connect(usb,SIGNAL(signalProgressRange(int,int)),progress,SLOT(setRange(int,int)));
     //connect(usb,SIGNAL(signalProgressValue(int,bool)),this,SLOT(on_setValueProgress(int,bool)));
@@ -389,12 +394,10 @@ void MainWindow::clearItemPlan()
 
     foreach (QListWidget* lWd, lWgts)
     {
-        if (lWd)
+        const int lengh(lWd->count());
+        for (int i=0; i<lengh; i++)
         {
-            for (int i=0; i<lWd->count(); i++)
-            {
-                remoteItemPlan(lWd);
-            }
+            remoteItemPlan(lWd);
         }
     }
 }
@@ -884,6 +887,22 @@ QString MainWindow::retPrefixNameFile(const QString sample_name) const
     return QString();
 }
 /**
+ * @brief MainWindow::clearGuiToTracks
+ */
+void MainWindow::clearGuiToTracks()
+{
+    QListWidget const *const lWgt(lWgtPlayList);
+    for(int i=0;i<lWgt->count();i++)
+    {
+        QListWidgetItem *const item = lWgt->item(i);
+        CreateFormPlayList *const formItem = dynamic_cast<CreateFormPlayList *>( lWgt->itemWidget(item) );
+        if ( formItem )
+        {
+            formItem->getQLineEdit()->setText(QString());
+        }
+    }
+}
+/**
  * @brief MainWindow::checkNameSoundFile
  * @param sample_name
  * @param file_name
@@ -903,7 +922,7 @@ QString MainWindow::checkNameSoundFile(const QString sample_name, const QString 
 /**
  * @brief MainWindow::updateGuiToTracks
  */
-void MainWindow::updateGuiToTracks() const
+void MainWindow::updateGuiToTracks()
 {
     // clear database
     retDataProject().clearPlayList();
@@ -921,7 +940,8 @@ void MainWindow::updateGuiToTracks() const
             QString file_name_db(checkNameSoundFile(toolTip, file_name));
             if ( checkSuffixSoundFiles(file_name_db) )
             {
-                retDataProject().retPlayList()[file_name_db] = dataSoundFile(path);
+                const QByteArray data_file(dataSoundFile(path));
+                retDataProject().retPlayList()[file_name_db] = data_file;
             }
         }
     }
@@ -952,7 +972,7 @@ void MainWindow::updateTracksPathToGui(const QString path_file) const
 /**
  * @brief MainWindow::updateTracksToGui
  */
-void MainWindow::updateTracksToGui(const QString path_file) const
+void MainWindow::updateTracksToGui(const QString path_file)
 {
     const QString name_folder(QFileInfo(path_file).fileName().remove(QChar('.'), Qt::CaseInsensitive).toUpper());
     QDir dir(QFileInfo(path_file).path());
@@ -963,6 +983,8 @@ void MainWindow::updateTracksToGui(const QString path_file) const
     }
     //enter to folder
     dir.cd(name_folder);
+    // clear giu
+    clearGuiToTracks();
     // extract sound files to folder
     QMap <QString, QByteArray>::iterator it = retDataProject().retPlayList().begin();
     for (;it!= retDataProject().retPlayList().end(); ++it)
@@ -975,7 +997,9 @@ void MainWindow::updateTracksToGui(const QString path_file) const
             soundFile.open (QIODevice::WriteOnly);
             QDataStream inFile(&soundFile);
             inFile.setVersion(QDataStream::Qt_5_7);
-            inFile<<it.value();
+            const QByteArray data_file(it.value());
+            inFile.writeRawData(data_file.data(),data_file.count());
+            //inFile<<data_file; // This operation was added at the beginning of the file 4 bytes?
             soundFile.flush();
             soundFile.close();
             // update GIU
@@ -1436,7 +1460,8 @@ void MainWindow::onOpenFile(void)
         updateDataToGui();
         updateTracksToGui(file);
         // set file to title
-        setTitle(QFileInfo(file).fileName());
+        //setTitle(QFileInfo(file).fileName());
+        setTitle(file);
     }
 }
 /**

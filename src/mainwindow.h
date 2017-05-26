@@ -147,8 +147,9 @@ private:
     QString checkNameSoundFile(const QString sample_name,
                             const QString file_name) const;
     QString retPrefixNameFile(const QString sample_name)const;
-    void updateGuiToTracks() const;
-    void updateTracksToGui( const QString ) const;
+    void clearGuiToTracks();
+    void updateGuiToTracks();
+    void updateTracksToGui( const QString );
     void updateTracksPathToGui( const QString ) const;
     void updateGuiToVolume();
     void updateVolumeToGui();
