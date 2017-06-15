@@ -48,10 +48,11 @@ class SettingDialogWifi : public QDialog
         void setMaskLabelIP( void );
         void setMaskLabelPORT( void );
     signals:
+        void signalListParametr(const QStringList &);
     public slots:
         void updateListWifi( void );
         void checkSession( void );
-        void setEditParametrIP( void );
+        void updateParametrs( void );
 };
 
 

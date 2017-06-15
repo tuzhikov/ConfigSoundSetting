@@ -25,6 +25,7 @@ namespace ACCESS_DATE{
         inline uint32_t getMaxSpeaker( void ){return MAX_SPEAKER;}
         inline uint32_t getMaxSpeakerLevel( void ){return MAX_SPEAKER_LEVEL;}
         inline uint32_t getMaxDayWeek( void ){return MAX_DAY_WEEK;}
+        inline uint32_t getMaxDate( void ){ return sizeof(TYPEPROJECT); }
         // crc16
         bool checkCRC(){return true;}
         // bin
@@ -40,9 +41,6 @@ namespace ACCESS_DATE{
         }
         //default parametr
         void setDefault(TYPEPROJECT *const pPrg);
-        //void clear( void ) {
-        //    setDefault(pDataProject);
-       // }
         void clearProject();
         // Setters
         bool setNoise(const uint32_t time,

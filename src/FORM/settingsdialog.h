@@ -100,10 +100,13 @@ public:
     QString getStopBits()const {return currentSettings.stringStopBits;}
     QString getParity()const {return currentSettings.stringParity;}
     QString getFlowControl()const {return currentSettings.stringFlowControl;}
+    void updateParametrs();
+
 private:
     Ui::SettingsDialog *ui;
     Settings currentSettings;
     QIntValidator *intValidator;
+    QStringList paremetr;
 
     void fillPortsParameters();
     void fillPortsInfo();
@@ -115,6 +118,8 @@ private slots:
     void apply();
     void checkCustomBaudRatePolicy(int idx);
     void checkCustomDevicePathPolicy(int idx);
+signals:
+    void signalListParametr(const QStringList &);
 };
 
 #endif // SETTINGSDIALOG_H

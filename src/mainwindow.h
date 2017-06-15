@@ -23,7 +23,7 @@
 #include "src/FORM/settingdialogwifi.h"
 #include "src/PLAYER/musicplayer.h"
 #include "src/SETTING/settings.h"
-#include  "src/CONTROLLER/controller.h"
+#include "src/CONTROLLER/controller.h"
 
 namespace Ui {
 class MainWindow;
@@ -78,6 +78,7 @@ private:
     QList<QAction*> ListCommand;
     QList<QAction*> ListConnect;
     QList<QAction*> ListView;
+
     QProgressBar *progress;
     QLabel *wificon;
     QMap<int,QList<QSlider*> > soundValue;
@@ -90,7 +91,7 @@ private:
     SettingDialogWifi *settingsWifi;
     QLabel *statusBar;
     Controller *ptrController;
-
+    QTimer *timerTest;
     void createToolTip(void);
     void createToolBar(void);
     void createStatusBar(void);
@@ -141,6 +142,7 @@ private:
     void resultSliderValue( QList<QSlider*> listSlider, const int16_t delta );
     void showLabelEnabled( QLabel *const lb );
     void showLabelDisabled( QLabel *const lb );
+    void showLabel( const bool on, QLabel *const lb );
     void installDiagnosisPage( void );
     bool checkSuffixSoundFiles(const QString path)const;
     QByteArray dataSoundFile(const QString path) const;
@@ -169,6 +171,8 @@ private:
     void updateOtherToGui();
     void updateGuiToData();
     void updateDataToGui();
+    void defaultChooseConnect(void);
+    void updateGuiToTestListenDate();
 
     AccessData &retDataBase()const
     {
@@ -204,8 +208,20 @@ private slots:
     void onSetSliderValue( const int );
     void onSetMessageOutWin(const QByteArray&,const QColor&);
     void onSetMaxPlanWeek(const int);
+    void onSetValueProgress(const int, const bool);
+    void onCommandRun( const int );
+    void onConnect( const int );
+    void onCommandTest();
+    void onWindowOk(const QString &msg);
+    void onWindowError(const QString &msg);
+    void onTestDate (const TYPE_TEST &);
+    void onTestTime (const QDateTime &);
+    void onUpdateDataToGui();
+    void onTimerDiagnosisEnabled(bool);
+
 signals:
     void signalSendMessage(const QByteArray&,const QColor&);
+    void signaTestListen(const TYPE_TEST_TRACK &);
 
 };
 

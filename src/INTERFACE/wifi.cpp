@@ -5,7 +5,7 @@
  */
 LinkWIFI::LinkWIFI()
 {
-
+    timeDelay = 10;//ms
 }
 /**
  * @brief LinkWIFI::~LinkWIFI
@@ -19,7 +19,7 @@ LinkWIFI::~LinkWIFI()
  * @param date
  * @return
  */
-RET_ANSWER LinkWIFI::sendDate(QByteArray &date)
+RET_ANSWER LinkWIFI::sendDate(QByteArray &)
 {
     RET_ANSWER ret(RET_ANSWER::ERROR_ANSWER);
 
@@ -30,7 +30,7 @@ RET_ANSWER LinkWIFI::sendDate(QByteArray &date)
  * @param date
  * @return
  */
-RET_ANSWER LinkWIFI::readDate(QByteArray &date)
+RET_ANSWER LinkWIFI::readDate(QByteArray &)
 {
     RET_ANSWER ret(RET_ANSWER::ERROR_ANSWER);
 
@@ -46,8 +46,23 @@ RET_CONNECT LinkWIFI::connectionInformation()
 
     return ret;
 }
-
-bool LinkWIFI::closePort()
+/**
+ * @brief LinkWIFI::connections
+ * @return
+ */
+bool LinkWIFI::connections(const QStringList &)
 {
+    bool returnStatus = false;
+    return returnStatus;
+}
 
+bool LinkWIFI::close()
+{
+    return true;
+}
+
+bool LinkWIFI::open()
+{
+    bool returnStatus = false;
+    return returnStatus;
 }

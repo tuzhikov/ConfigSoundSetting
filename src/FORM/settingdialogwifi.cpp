@@ -23,7 +23,7 @@ SettingDialogWifi::SettingDialogWifi(QWidget *parent) :
     // connection
     connect(ui->pbFind, &QPushButton::clicked, this, &SettingDialogWifi::updateListWifi);
     connect(ui->pbConnect, &QPushButton::clicked, this, &SettingDialogWifi::checkSession);
-    connect(ui->pbApplyNet, &QPushButton::clicked, this, &SettingDialogWifi::setEditParametrIP);
+    connect(ui->pbApply, &QPushButton::clicked, this, &SettingDialogWifi::updateParametrs);
     // default parametr
     paremetrIP << ui->leIP->text()<<ui->lePORT->text()<<QString();
 }
@@ -187,9 +187,9 @@ void SettingDialogWifi::setIP(const QString ip)
     leip->setText(ip);
 }
 /**
- * @brief SettingDialogWifi::setEditParametrIP
+ * @brief SettingDialogWifi::updateParametr
  */
-void SettingDialogWifi::setEditParametrIP()
+void SettingDialogWifi::updateParametrs()
 {
     QLineEdit *const ip(ui->leIP);
     QLineEdit *const port(ui->lePORT);
@@ -211,4 +211,5 @@ void SettingDialogWifi::setEditParametrIP()
         }
    }
    qDebug()<< paremetrIP;
+   emit signalListParametr(paremetrIP);
 }

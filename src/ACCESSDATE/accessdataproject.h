@@ -13,7 +13,6 @@ class AccessDataProject
 {
 private:
     AccessData dataProject;
-    QVector <QByteArray> tracks;
     QMap <QString, QByteArray>listPlay;
 
 public:
@@ -21,16 +20,7 @@ public:
     ~AccessDataProject();
     void readFileToProject( QDataStream &stream );
     void writeProjectToFile( QDataStream &stream );
-    void addNewTack( QByteArray &track ) {tracks<<track;}
     void clearPlayList() {listPlay.clear();}
-    void clearTack()
-    {
-        foreach (QByteArray ba,tracks)
-        {
-            ba.clear();
-        }
-        tracks.clear();
-    }
     inline AccessData &retDataProject( void ) {return dataProject;}
     inline QMap <QString, QByteArray> &retPlayList( void ) {return listPlay;}
 };

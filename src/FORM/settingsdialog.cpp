@@ -127,7 +127,7 @@ void SettingsDialog::setBaudRate(const QString value)
     currentSettings.stringBaudRate = value;
     baudRate->setCurrentText(value);
     currentSettings.baudRate = (baudRate->currentIndex() == 4)?baudRate->currentText().toInt():
-                                                               static_cast<QSerialPort::BaudRate>(baudRate->itemData(baudRate->currentIndex()).toInt());
+                                                                   static_cast<QSerialPort::BaudRate>(baudRate->itemData(baudRate->currentIndex()).toInt());
 }
 /**
  * @brief SettingsDialog::setDataBits
@@ -177,6 +177,14 @@ void SettingsDialog::setFlowControl(const QString value)
     flowControl->setCurrentText(value);
     currentSettings.flowControl = static_cast<QSerialPort::FlowControl>(flowControl->itemData(flowControl->currentIndex()).toInt());
 }
+/**
+ * @brief SettingsDialog::updateParametrs
+ */
+void SettingsDialog::updateParametrs()
+{
+    updateSettings();
+    emit signalListParametr(paremetr);
+}
 
 /**
  * @brief SettingsDialog::showPortInfo
@@ -202,6 +210,7 @@ void SettingsDialog::apply()
 {
     updateSettings();
     hide();
+    emit signalListParametr(paremetr);
 }
 /**
  * @brief SettingsDialog::checkCustomBaudRatePolicy
@@ -301,28 +310,33 @@ void SettingsDialog::updateSettings()
         currentSettings.baudRate = ui->baudRateBox->currentText().toInt();
     } else {
         currentSettings.baudRate = static_cast<QSerialPort::BaudRate>(
-                    ui->baudRateBox->itemData(ui->baudRateBox->currentIndex()).toInt());
+                        ui->baudRateBox->itemData(ui->baudRateBox->currentIndex()).toInt());
     }
     currentSettings.stringBaudRate = QString::number(currentSettings.baudRate);
 
     currentSettings.dataBits = static_cast<QSerialPort::DataBits>(
-                ui->dataBitsBox->itemData(ui->dataBitsBox->currentIndex()).toInt());
+                    ui->dataBitsBox->itemData(ui->dataBitsBox->currentIndex()).toInt());
     currentSettings.stringDataBits = ui->dataBitsBox->currentText();
 
     currentSettings.parity = static_cast<QSerialPort::Parity>(
-                ui->parityBox->itemData(ui->parityBox->currentIndex()).toInt());
+                    ui->parityBox->itemData(ui->parityBox->currentIndex()).toInt());
     currentSettings.stringParity = ui->parityBox->currentText();
 
     currentSettings.stopBits = static_cast<QSerialPort::StopBits>(
-                ui->stopBitsBox->itemData(ui->stopBitsBox->currentIndex()).toInt());
+                    ui->stopBitsBox->itemData(ui->stopBitsBox->currentIndex()).toInt());
     currentSettings.stringStopBits = ui->stopBitsBox->currentText();
 
     currentSettings.flowControl = static_cast<QSerialPort::FlowControl>(
-                ui->flowControlBox->itemData(ui->flowControlBox->currentIndex()).toInt());
+                    ui->flowControlBox->itemData(ui->flowControlBox->currentIndex()).toInt());
     currentSettings.stringFlowControl = ui->flowControlBox->currentText();
 
-    qDebug()<<currentSettings.name<<currentSettings.stringBaudRate<<currentSettings.stringDataBits
-           <<currentSettings.stringParity<<currentSettings.stringFlowControl;
+    paremetr.clear();
+    paremetr<<currentSettings.name
+            <<QString::number(currentSettings.baudRate)
+            <<QString::number(currentSettings.dataBits)
+            <<QString::number(currentSettings.stopBits)
+            <<QString::number(currentSettings.parity)
+            <<QString::number(currentSettings.flowControl);
 }
 /**
  * @brief SettingsDialog::updateWidget

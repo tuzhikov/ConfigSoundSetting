@@ -37,6 +37,8 @@ MainWindow::MainWindow(QWidget *parent, Controller *pdata) :
     readSettings();
     // database to GUI
     updateDataToGui();
+    // install structure datatime
+    ptrController->setDateTime(ui->dateTimeEditConfig->dateTime());
 //    // test time
 //    QTime myTimer;
 //    myTimer.start();
@@ -77,12 +79,15 @@ void MainWindow::readSettings()
     // read
     const QByteArray gemData = Settings::get(Settings::GEOMETRY).toByteArray();
     restoreGeometry(gemData);
+    // Ethrenet
     const QString ip = Settings::get(Settings::IP,Settings::NETWORK).toString();
     if (!ip.isEmpty())
         settingsWifi->setIP(ip);
     const QString port = Settings::get(Settings::PORT,Settings::NETWORK).toString();
     if (!ip.isEmpty())
         settingsWifi->setPORT(port);
+    settingsWifi->updateParametrs();//
+    // COM PORT
     const QString comname = Settings::get(Settings::COMNAME,Settings::COMPORT).toString();
     if (!comname.isEmpty())
         settings->setComName(comname);
@@ -101,6 +106,7 @@ void MainWindow::readSettings()
     const QString flowcnt = Settings::get(Settings::FLOWCONTROL,Settings::COMPORT).toString();
     if (!flowcnt.isEmpty())
         settings->setFlowControl(flowcnt);
+    settings->updateParametrs();
 }
 /**
  * @brief MainWindow::closeEvent
@@ -131,7 +137,7 @@ void MainWindow::createToolTip()
 void MainWindow::createToolBar()
 {
     // add ListCommand
-    ListCommand<<ui->actionWrite<<ui->actionRead<<ui->actionDevice;
+    ListCommand<<ui->actionWrite<<ui->actionRead;
     ui->mainToolBar->addActions(ListCommand);
     ui->actionDevice->setVisible(false); //
     ui->mainToolBar->addSeparator();
@@ -141,9 +147,10 @@ void MainWindow::createToolBar()
     ui->mainToolBar->addSeparator();
     // add ListConnect
     ListConnect<<ui->actionConnect_USB<<ui->actionConnect_WIFI;
-    //ui->actionConnect_WIFI->setDisabled(true);
+    ui->actionConnect_USB->setChecked(true);// choose COM PORT
     ui->mainToolBar->addActions(ListConnect);
     ui->mainToolBar->addSeparator();
+    defaultChooseConnect();
 //    wificon = new QLabel(this);
 //       //wificon->setWindowIcon(QPixmap(":/ico/win48x48.ico"));
 //       //QString str="<img src=\":/ico/win48x48.ico\"> Открытые ссылки";
@@ -160,8 +167,8 @@ void MainWindow::createStatusBar()
     progress = new QProgressBar(this);
     progress->setVisible(false);
     progress->setTextVisible(true);
-    //connect(usb,SIGNAL(signalProgressRange(int,int)),progress,SLOT(setRange(int,int)));
-    //connect(usb,SIGNAL(signalProgressValue(int,bool)),this,SLOT(on_setValueProgress(int,bool)));
+    connect(ptrController,SIGNAL(signalProgressRange(int,int)),progress,SLOT(setRange(int,int)),Qt::DirectConnection);
+    connect(ptrController,SIGNAL(signalProgressValue(int,bool)),this,SLOT(onSetValueProgress(int,bool)),Qt::DirectConnection);
     ui->statusBar->addPermanentWidget(progress,0);
     /*Set message in status bar*/
     QLabel *p = new QLabel(this);
@@ -227,8 +234,77 @@ void MainWindow::createConnectionGUI()
     connect(ui->actionConfig_USB, &QAction::triggered, settings, &MainWindow::show);
     // win setting wifi
     connect(ui->actionConfig_WIFI, &QAction::triggered, settingsWifi, &MainWindow::show);
-    // write read
-    //connect(ui->actionRead, &QAction::triggered, this, &MainWindow::ontest);
+    // command
+    QList<QPushButton*> listButtonCommand;
+    listButtonCommand<<ui->pbWriteProject<<ui->pbReadProject<<ui->pbSetTime<<ui->pbGetTime<<ui->pbPlayTest;
+    QSignalMapper *smCommand = new QSignalMapper(this);
+    connect(smCommand,SIGNAL(mapped(int)),this,SLOT(onCommandRun(int)));
+    for (int i = 0; i <ListCommand.size()+listButtonCommand.size(); i++)
+    {
+        if (i <ListCommand.size())
+        {
+            smCommand->setMapping(ListCommand.at(i), i);
+            connect(ListCommand.at(i), SIGNAL(triggered()), smCommand,SLOT(map()));
+        }else{
+            QPushButton *const button(listButtonCommand.at(i - ListCommand.size()));
+            smCommand->setMapping(button, i);
+            connect(button, SIGNAL(clicked(bool)), smCommand,SLOT(map()));
+        }
+    }
+    // interface
+    QSignalMapper *smConnect = new QSignalMapper(this);
+    connect(smConnect,SIGNAL(mapped(int)),this,SLOT(onConnect(int)));
+    for (int i = 0; i<ListConnect.size(); i++)
+    {
+        smConnect->setMapping(ListConnect.at(i), i);
+        connect(ListConnect.at(i), SIGNAL(triggered()), smConnect,SLOT(map()));
+    }
+    // command test
+    timerTest = new QTimer(this);
+    connect(timerTest,&QTimer::timeout,this,&MainWindow::onCommandTest);
+    connect(ui->gbDiagnosis,&QGroupBox::toggled,this,&MainWindow::onTimerDiagnosisEnabled);
+    connect(ptrController,&Controller::signalTestDiagnosisEnabled,this,&MainWindow::onTimerDiagnosisEnabled);
+    // update new
+    connect(ptrController,&Controller::signalStop,this,&MainWindow::onUpdateDataToGui);
+    // message
+    connect(ptrController,&Controller::signalMessageOk,this,&MainWindow::onWindowOk);
+    connect(ptrController,&Controller::signalMessageError,this,&MainWindow::onWindowError);
+    // protocol
+    connect(ptrController,&Controller::signalSendMessage,this,&MainWindow::onSetMessageOutWin);
+    //set parametrs
+    connect(settingsWifi,&SettingDialogWifi::signalListParametr,ptrController,&Controller::setParametrWIFI);
+    connect(settings,&SettingsDialog::signalListParametr,ptrController,&Controller::setParametrCOMPORT);
+    // diagnosis TIME
+    connect(ptrController,&Controller::signalTime,this,&MainWindow::onTestTime);
+    connect(ui->dateTimeEditConfig,&QDateTimeEdit::dateTimeChanged,ptrController,&Controller::setDateTime);
+    // diagnosis
+    connect(ptrController,&Controller::signalTest,this,&MainWindow::onTestDate);
+    // test listen
+    connect(this,&MainWindow::signaTestListen,ptrController,&Controller::setListenTest);
+    // test gui listen
+    /*
+    QList<QToolButton*> listToolButtonListen;
+    listToolButtonListen<<ui->tbZSR<<ui->tbZSO<<ui->tbZSP<<ui->tbZSZ<<ui->tbZSVRR<<ui->tbZSVRZ;
+    QList<QSpinBox*> listSpinBoxListen;
+    listSpinBoxListen<<ui->sbTestGeneral<<ui->sbTestSpeaker1<<ui->sbTestSpeaker2<<ui->sbTestPlan<<ui->sbTestNoise;
+
+    QSignalMapper *smListenCommand = new QSignalMapper(this);
+    connect(smListenCommand,SIGNAL(mapped(int)),this,SLOT(onCommandRun(int)));
+    for (int i = 0; i <listToolButtonListen.size()+listSpinBoxListen.size(); i++)
+    {
+        if (i <listToolButtonListen.size())
+        {
+            smListenCommand->setMapping(ListCommand.at(i), i);
+            connect(ListCommand.at(i), SIGNAL(triggered()), smListenCommand,SLOT(map()));
+        }else{
+            QPushButton *const button(listButtonCommand.at(i - ListCommand.size()));
+            smListenCommand->setMapping(button, i);
+            connect(button, SIGNAL(clicked(bool)), smListenCommand,SLOT(map()));
+        }
+    }
+    */
+
+
 }
 /**
  * @brief MainWindow::createGroupMenu
@@ -586,7 +662,7 @@ void MainWindow::createFormPlayList(QWidget * const page)
     // create allowed
     QStringList allowedlist;
         allowedlist<<tr("ZSR:")<<tr("ZSVRR>60:")<<tr("ZSVRR<60:")
-                  <<tr("ZSVRR>50:")<<tr("ZSVRR>40:")<<tr("ZSVRR>30:")<<tr("ZSVRR>20:")<<tr("ZSVRR>10:");
+                  <<tr("ZSVRR<50:")<<tr("ZSVRR<40:")<<tr("ZSVRR<30:")<<tr("ZSVRR<20:")<<tr("ZSVRR<10:");
     QStringList allowedtip;
         allowedtip<<tr("The file name must begin with <0001_>")<<tr("The file name must begin with <0090_>")
                     <<tr("The file name must begin with <0060_>")<<tr("The file name must begin with <0050_>")
@@ -597,7 +673,7 @@ void MainWindow::createFormPlayList(QWidget * const page)
     // create prohibitive
     QStringList prohibitivelist;
         prohibitivelist<<tr("ZSZ:")<<tr("ZSVRZ>60:")<<tr("ZSVRZ<60:")
-                          <<tr("ZSVRZ>50:")<<tr("ZSVRZ>40:")<<tr("ZSVRZ>30:")<<tr("ZSVRZ>20:")<<tr("ZSVRZ>10:");
+                          <<tr("ZSVRZ<50:")<<tr("ZSVRZ<40:")<<tr("ZSVRZ<30:")<<tr("ZSVRZ<20:")<<tr("ZSVRZ<10:");
     QStringList prohibitivetip;
         prohibitivetip<<tr("The file name must begin with <0002_>")<<tr("The file name must begin with <0900_>")
                         <<tr("The file name must begin with <0600_>")<<tr("The file name must begin with <0500_>")
@@ -703,6 +779,19 @@ void MainWindow::onSwitchPanelMode(int numberPanel)
     if(numberPanel<pnEND)
     {
         ui->stackedWidget->setCurrentIndex(numberPanel);
+    }
+    // enabled timer test
+    if (numberPanel == pnDIAGNOSIS)
+    {
+        onTimerDiagnosisEnabled(true);
+        ui->actionRead->setEnabled(false);
+        ui->actionWrite->setEnabled(false);
+    }
+    else
+    {
+        onTimerDiagnosisEnabled(false);
+        ui->actionRead->setEnabled(true);
+        ui->actionWrite->setEnabled(true);
     }
 }
 /**
@@ -824,6 +913,18 @@ void MainWindow::showLabelDisabled(QLabel * const lb)
     lb->setStyleSheet("background: red;");
 }
 /**
+ * @brief MainWindow::showLabel
+ * @param on
+ * @param lb
+ */
+void MainWindow::showLabel(const bool on, QLabel * const lb)
+{
+    if (on)
+        showLabelEnabled(lb);
+    else
+        showLabelDisabled(lb);
+}
+/**
  * @brief MainWindow::installDiagnosisPage
  */
 void MainWindow::installDiagnosisPage()
@@ -834,6 +935,8 @@ void MainWindow::installDiagnosisPage()
     showLabelDisabled(ui->lbGreenSignal);
     showLabelDisabled(ui->lbButtonOn);
     showLabelDisabled(ui->lbMotionSens);
+    showLabelDisabled(ui->lbWait);
+    //showLabel(true,ui->lbMotionSens);
 }
 /**
  * @brief MainWindow::checkSuffixSoundFiles
@@ -1375,6 +1478,45 @@ void MainWindow::updateDataToGui()
     updateOtherToGui();
 }
 /**
+ * @brief MainWindow::defaultChooseConnect
+ */
+void MainWindow::defaultChooseConnect()
+{
+    for (int i=0; i<ListConnect.count(); i++)
+    {
+        if (ListConnect.at(i)->isChecked() )
+        {
+            onConnect(i);
+        }
+    }
+}
+/**
+ * @brief MainWindow::updateTestListenDate
+ */
+void MainWindow::updateGuiToTestListenDate()
+{
+    uint8_t number_music = 0;
+    QList<QToolButton*> listToolButtonListen;
+    listToolButtonListen<<ui->tbZSR<<ui->tbZSO<<ui->tbZSP<<ui->tbZSZ<<ui->tbZSVRR<<ui->tbZSVRZ;
+    foreach( QToolButton*bt,listToolButtonListen )
+    {
+        if (bt->isChecked())
+        {
+            break;
+        }
+        number_music++;
+    }
+    const TYPE_TEST_TRACK test = {
+        .value_general = static_cast <uint16_t>(ui->sbTestGeneral->value()),
+        .value_sk1 = static_cast <uint16_t>(ui->sbTestSpeaker1->value()),
+        .value_sk2 = static_cast <uint16_t>(ui->sbTestSpeaker2->value()),
+        .value_plan = static_cast <uint16_t>(ui->sbTestPlan->value()),
+        .noise = static_cast <uint16_t>(ui->sbTestNoise->value()),
+        .number_music = number_music
+    };
+    emit signaTestListen(test);
+}
+/**
  * @brief MainWindow::onSetSliderValue
  * @param value
  */
@@ -1439,6 +1581,14 @@ void MainWindow::onSetMaxPlanWeek(const int maxPlan)
     ui->sbFriday->setMaximum(maxPlan);
     ui->sbSaturday->setMaximum(maxPlan);
     ui->sbSunday->setMaximum(maxPlan);
+}
+/**
+ * @brief MainWindow::onSetValueProgress
+ */
+void MainWindow::onSetValueProgress(const int value, const bool visible)
+{
+    progress->setVisible(visible);
+    progress->setValue(value);
 }
 /**
  * @brief MainWindow::onOpenFile
@@ -1551,6 +1701,126 @@ void MainWindow::onItemButtonPlay()
             return;
         }
     }
+}
+/**
+ * @brief MainWindow::onCommandRun
+ * @param indexCommand
+ */
+void MainWindow::onCommandRun(const int indexCommand)
+{
+    ui->mainToolBar->setEnabled(false);// lock button
+    ui->gbDiagnosis->setChecked(false);
+    //update
+    updateGuiToData();
+    updateGuiToTestListenDate();
+    ptrController->commandRun(indexCommand);
+    qDebug("number command %d",indexCommand);
+}
+/**
+ * @brief MainWindow::onConnect
+ */
+void MainWindow::onConnect(const int number)
+{
+    ptrController->checkInterface(number);
+    qDebug("number connect %d",number);
+}
+/**
+ * @brief MainWindow::onCommandTest
+ */
+void MainWindow::onCommandTest()
+{
+    ui->mainToolBar->setEnabled(false);// lock button
+    ptrController->commandRun(Controller::cmTest);
+    qDebug("command test %d",Controller::cmTest);
+}
+/**
+ * @brief MainWindow::onWindowError
+ * @param msg
+ */
+void MainWindow::onWindowError(const QString &msg)
+{
+    QMessageBox::critical(this,tr("Device Protocol Error!"),msg);
+}
+/**
+ * @brief MainWindow::onTestDate
+ */
+void MainWindow::onTestDate(const TYPE_TEST &cmd)
+{
+    // flag
+    QList <QLabel*> list_label;
+    list_label<<ui->lbRedSignal<<ui->lbGreenSignal<<ui->lbWait
+             <<ui->lbOnGPS<<ui->lbButtonOn<<ui->lbMotionSens;
+    for (int i=0;i<list_label.count();i++)
+    {
+        QLabel *const lb(list_label.at(i));
+        const bool result = (cmd.flagTest&(1<<i));
+        showLabel(result,lb);
+    }
+    //time
+    const QString strtime(
+                QDateTime::fromTime_t(cmd.time,QTimeZone::utc()).toString("dd.MM.yyyy hh:mm"));
+    ui->lbTestTime->setText(strtime);
+    //plan
+    ui->lbPlanNumber->setText(QString::number(cmd.plan_number));
+    ui->lbPlanLine->setText(QString::number(cmd.plan_item));
+    ui->lbVolPlan->setText(QString::number(cmd.plan_value));
+    ui->lbSpVolume1->setText(QString::number(cmd.value_speaker1));
+    ui->lbSpVolume2->setText(QString::number(cmd.value_speaker2));
+    ui->lbNoiseLevel->setText(QString::number(cmd.noise_level));
+    ui->lbSensNoise->setText(QString::number(cmd.noise_sensor_volume));
+}
+/**
+ * @brief MainWindow::onTestTime
+ */
+void MainWindow::onTestTime(const QDateTime &dt)
+{
+    ui->dateTimeEditConfig->setDateTime(dt);
+    ui->chbDayLight->setChecked(dt.isDaylightTime());
+
+    const int indexUTC0 = 12;
+    const int index = indexUTC0+(dt.offsetFromUtc()/3600);
+    QComboBox *cbm(ui->cbGMT);
+    if ((index>=0)||(index<cbm->count()))
+    {
+        cbm->setCurrentIndex(index);
+    }
+    else
+    {
+        cbm->setCurrentIndex(indexUTC0);
+    }
+}
+/**
+ * @brief MainWindow::onUpdateDataToGui
+ */
+void MainWindow::onUpdateDataToGui()
+{
+    updateDataToGui(); // update date
+    ui->mainToolBar->setEnabled(true); // unlock button
+}
+/**
+ * @brief MainWindow::onTimerDiagnosisEnabled
+ * @param enabled
+ */
+void MainWindow::onTimerDiagnosisEnabled(bool enabled)
+{
+    if ( enabled )
+    {
+        timerTest->start(1000);
+        ui->gbDiagnosis->setChecked(true);
+    }
+    else
+    {
+        timerTest->stop();
+        ui->gbDiagnosis->setChecked(false);
+    }
+}
+/**
+ * @brief MainWindow::onWindowOk
+ * @param msg
+ */
+void MainWindow::onWindowOk(const QString &msg)
+{
+    QMessageBox::information(this,tr("Device response!"),msg);
 }
 /**
  * @brief MainWindow::eventFilter

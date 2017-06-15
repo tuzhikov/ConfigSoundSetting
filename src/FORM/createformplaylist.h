@@ -24,19 +24,19 @@ namespace UnitFormPlayList{
                                         const QString path = "");
             void setNumberItem( const int ){}
             int getNumberItem() const {return 0;}
-            QToolButton *getQToolButton(void) const {return but!=NULL?but:NULL;}
+            QToolButton *getQToolButton(void) const {return butPlay!=NULL?butPlay:NULL;}
             QToolButton *getQToolButtonOpen(void) const {return butOpen!=NULL?butOpen:NULL;}
             QLineEdit *getQLineEdit(void) const {return edit!=NULL?edit:NULL;}
             QString getPath()const {return edit->text();}
         private:
             QLabel *txt;
             QLineEdit *edit;
-            QToolButton *but;
+            QToolButton *butPlay;
             QToolButton *butOpen;
             QSpacerItem *horizontalSpacer;
             QString PathTrack;
 
-            //void createPopurMenu(QWidget * const wd);
+            void createPopurMenu(QWidget * const wd);
     };
 }
 #endif // CREATEFORMPLAYLIST_H

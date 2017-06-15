@@ -20,7 +20,6 @@ AccessDataProject::~AccessDataProject()
 void AccessDataProject::readFileToProject(QDataStream &stream)
 {
     AccessData tmpProject;
-    //QVector <QByteArray> tmpTracks;
     QMap <QString, QByteArray>tmpPlayList;
     stream>>tmpProject>>tmpPlayList;
 

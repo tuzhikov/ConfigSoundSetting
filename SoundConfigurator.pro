@@ -56,7 +56,8 @@ HEADERS  += src/mainwindow.h \
     src/ACCESSDATE/accessdataproject.h \
     src/ACCESSDATE/datastructure.h \
     src/CONTROLLER/cmd_device.h \
-    src/CONTROLLER/controller.h
+    src/CONTROLLER/controller.h \
+    src/CONTROLLER/crc.h
 
 FORMS    += mainwindow.ui \
     settingsdialog.ui \
