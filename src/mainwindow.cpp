@@ -25,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent, Controller *pdata) :
     createToolTip();
     createConnectionGUI();
     createGroupMenu();
+    createGroupButton();
     createGroupSlider();
     createPlans(ui->planWidget);
     createHolidays(ui->wHoliday);
@@ -39,7 +40,52 @@ MainWindow::MainWindow(QWidget *parent, Controller *pdata) :
     updateDataToGui();
     // install structure datatime
     ptrController->setDateTime(ui->dateTimeEditConfig->dateTime());
-//    // test time
+    // visibled
+    ui->lbAllTime->setVisible(false);
+    ui->chbDayLight->setVisible(false);
+    //test
+//    QDateTime test(ui->dateTimeEditConfig->dateTime());
+//    qDebug()<<test<<test.currentDateTimeUtc().toTime_t()<<test.currentDateTimeUtc().toMSecsSinceEpoch();
+//    QDateTime test2;
+//    test2.setTime_t(test.currentDateTimeUtc().toTime_t());
+//    qDebug()<<test2;
+//    QDateTime test3;
+//    test3.setTime_t(test.currentDateTimeUtc().toMSecsSinceEpoch()/1000);
+//    qDebug()<<test3;
+//    qDebug()<<test3.toTimeSpec(Qt::UTC);
+
+    ///////////////
+    /*
+    time_t rawtime;
+    struct tm * ptm;
+    //ptm = localtime( &rawtime );
+    QDateTime test(QDateTime::currentDateTime());
+    ptm->tm_hour = test.time().hour();
+    ptm->tm_min = test.time().minute();
+    ptm->tm_sec = test.time().second();
+    ptm->tm_year = test.date().year()-1900;
+    ptm->tm_mon = test.date().month();
+    ptm->tm_mday = test.date().day();
+    ptm->tm_yday = test.date().dayOfYear();
+    ptm->tm_wday = test.date().dayOfWeek();
+
+    rawtime = mktime( ptm );
+    test.setTime_t(rawtime);qDebug()<<test;
+
+    qDebug()<<rawtime;
+    qDebug()<<ptm->tm_year<<ptm->tm_mon<<ptm->tm_mday<<ptm->tm_wday<<ptm->tm_yday;
+    qDebug()<<ptm->tm_hour<<ptm->tm_min<<ptm->tm_sec<<ptm->tm_isdst;
+    time_t raw = mktime( ptm );
+    struct tm * ptm1;
+    ptm1 = gmtime( &raw );
+    qDebug()<<raw;
+    qDebug()<<ptm1->tm_year<<ptm1->tm_mon<<ptm1->tm_mday<<ptm1->tm_wday<<ptm1->tm_yday;
+    qDebug()<<ptm1->tm_hour<<ptm1->tm_min<<ptm1->tm_sec<<ptm1->tm_isdst;
+
+    QDateTime test4;test4.setTime_t(raw);
+    qDebug()<<test4;
+    */
+    //    // test time
 //    QTime myTimer;
 //    myTimer.start();
 //    int nMilliseconds = myTimer.elapsed();
@@ -284,7 +330,7 @@ void MainWindow::createConnectionGUI()
     // test gui listen
     /*
     QList<QToolButton*> listToolButtonListen;
-    listToolButtonListen<<ui->tbZSR<<ui->tbZSO<<ui->tbZSP<<ui->tbZSZ<<ui->tbZSVRR<<ui->tbZSVRZ;
+    listToolButtonListen<<ui->tbZSR<<ui->tbZSO<<ui->tbZSP<<ui->tbZSZ<<ui->tbZSVRR<<ui->tbZSVRZ<<ui->tbTVP;
     QList<QSpinBox*> listSpinBoxListen;
     listSpinBoxListen<<ui->sbTestGeneral<<ui->sbTestSpeaker1<<ui->sbTestSpeaker2<<ui->sbTestPlan<<ui->sbTestNoise;
 
@@ -321,20 +367,34 @@ void MainWindow::createGroupMenu()
 
 }
 /**
+ * @brief MainWindow::createGroupButton
+ */
+void MainWindow::createGroupButton()
+{
+    grToolButton = new QButtonGroup(this);
+    grToolButton->addButton(ui->tbZSR);
+    grToolButton->addButton(ui->tbZSO);
+    grToolButton->addButton(ui->tbZSP);
+    grToolButton->addButton(ui->tbZSZ);
+    grToolButton->addButton(ui->tbZSVRR);
+    grToolButton->addButton(ui->tbZSVRZ);
+    grToolButton->addButton(ui->tbTVP);
+}
+/**
  * @brief MainWindow::createGroupSlider
  */
 void MainWindow::createGroupSlider()
 {
     QList<QSlider*> slOne;
-    slOne<<ui->hs_general_spone<<ui->hs_one_zso<<ui->hs_one_zsp<<ui->hs_one_zsr<<ui->hs_one_zsvrr<<ui->hs_one_zsz<<ui->hs_one_zsvrz;
+    slOne<<ui->hs_general_spone<<ui->hs_one_zso<<ui->hs_one_zsp<<ui->hs_one_zsr<<ui->hs_one_zsvrr<<ui->hs_one_zsz<<ui->hs_one_zsvrz<<ui->hs_one_tvp;
     soundValue.insert(0,slOne);
     QList<QLabel*> lbOne;
-    lbOne<<ui->lb_general_spone<<ui->lb_one_zso<<ui->lb_one_zsp<<ui->lb_one_zsr<<ui->lb_one_zsvrr<<ui->lb_one_zsz<<ui->lb_one_zsvrz;
+    lbOne<<ui->lb_general_spone<<ui->lb_one_zso<<ui->lb_one_zsp<<ui->lb_one_zsr<<ui->lb_one_zsvrr<<ui->lb_one_zsz<<ui->lb_one_zsvrz<<ui->lb_one_tvp;
     QList<QSlider*> slTwo;
-    slTwo<<ui->hs_general_sptwo<<ui->hs_two_zso<<ui->hs_two_zsp<<ui->hs_two_zsr<<ui->hs_two_zsvrr<<ui->hs_two_zsz<<ui->hs_two_zsvrz;
+    slTwo<<ui->hs_general_sptwo<<ui->hs_two_zso<<ui->hs_two_zsp<<ui->hs_two_zsr<<ui->hs_two_zsvrr<<ui->hs_two_zsz<<ui->hs_two_zsvrz<<ui->hs_two_tvp;
     soundValue.insert(1,slTwo);
     QList<QLabel*> lbTwo;
-    lbTwo<<ui->lb_general_sptwo<<ui->lb_two_zso<<ui->lb_two_zsp<<ui->lb_two_zsr<<ui->lb_two_zsvrr<<ui->lb_two_zsz<<ui->lb_two_zsvrz;
+    lbTwo<<ui->lb_general_sptwo<<ui->lb_two_zso<<ui->lb_two_zsp<<ui->lb_two_zsr<<ui->lb_two_zsvrr<<ui->lb_two_zsz<<ui->lb_two_zsvrz<<ui->lb_two_tvp;
 
     if((slOne.size()==lbOne.size())&&(slTwo.size()==lbTwo.size()))
     {
@@ -946,10 +1006,10 @@ bool MainWindow::checkSuffixSoundFiles(const QString path) const
 {
     QFileInfo info(path);
     const QString typeWav("WAV");
-    const QString typeMp3("MP3");
+    //const QString typeMp3("MP3");
     const QString suffix(info.suffix().toUpper());
 
-    if ( (suffix != typeWav) && (suffix != typeMp3) )
+    if ( (suffix != typeWav) )// && (suffix != typeMp3) )
     {
         return false;
     }
@@ -1497,7 +1557,7 @@ void MainWindow::updateGuiToTestListenDate()
 {
     uint8_t number_music = 0;
     QList<QToolButton*> listToolButtonListen;
-    listToolButtonListen<<ui->tbZSR<<ui->tbZSO<<ui->tbZSP<<ui->tbZSZ<<ui->tbZSVRR<<ui->tbZSVRZ;
+    listToolButtonListen<<ui->tbZSR<<ui->tbZSO<<ui->tbZSP<<ui->tbZSZ<<ui->tbZSVRR<<ui->tbZSVRZ<<ui->tbTVP;
     foreach( QToolButton*bt,listToolButtonListen )
     {
         if (bt->isChecked())
@@ -1558,16 +1618,16 @@ void MainWindow::onSetMessageOutWin(const QByteArray &st, const QColor &color)
 //    QByteArray str(st.toHex().toUpper().trimmed());
 //    str = "Read:" + st.toHex().toUpper().trimmed();
 //    str = "Send:" + st.toHex().toUpper().trimmed();
+    if (st.isEmpty())
+        return;
+    QByteArray str(st.toHex().toUpper().trimmed());
     QTextEdit * const winTest = mainWindowFormMap[ui->actionWin];
     if (winTest)
     {
         winTest->setTextColor(color);
-        QByteArray str(st.toHex().toUpper().trimmed());
         winTest->append(str);
-        qDebug()<<str;
-    }else{
-        qDebug() << "metod:onSetMessageOutWin - Error object winTest";
     }
+    qDebug()<<str;
 }
 /**
  * @brief MainWindow::onSetMaxPlan
@@ -1814,6 +1874,14 @@ void MainWindow::onTimerDiagnosisEnabled(bool enabled)
         ui->gbDiagnosis->setChecked(false);
     }
 }
+/**
+ * @brief MainWindow::onUpdateListenGuiToDate
+ */
+//void MainWindow::onUpdateListenGuiToDate()
+//{
+//    updateGuiToTestListenDate();
+//    qDebug()<<"MainWindow::onUpdateListenGuiToDate()";
+//}
 /**
  * @brief MainWindow::onWindowOk
  * @param msg

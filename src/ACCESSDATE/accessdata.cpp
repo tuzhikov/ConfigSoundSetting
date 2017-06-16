@@ -315,11 +315,12 @@ bool AccessData::setSoundValue (const uint8_t numspeaker,
                                 const uint8_t separate[],
                                 const uint8_t size )
 {
-    if ( (numspeaker<getMaxSpeaker())&&(size<getMaxSpeakerLevel()) )
+    if ( (numspeaker<getMaxSpeaker())&&(size<=getMaxSpeakerLevel()) )
     {
         pDataProject->sound_value.value_sound[numspeaker].global = global   ;
         uint8_t *const pPrm = pDataProject->sound_value.value_sound[numspeaker].separate;
-        memcpy(pPrm,separate,size);
+        const size_t lengh = sizeof(pDataProject->sound_value.value_sound[numspeaker].separate);
+        memcpy(pPrm,separate,lengh);
         return true;
     }
     return false;
@@ -587,7 +588,7 @@ bool AccessData::getSoundValue (const uint8_t numspeaker,
                                 uint8_t *const pMass,
                                 const uint8_t size)
 {
-    if ((numspeaker<getMaxSpeaker())&&(size<getMaxSpeakerLevel()))
+    if ((numspeaker<getMaxSpeaker())&&(size<=getMaxSpeakerLevel()))
     {
         uint8_t *const pStr = pDataProject->sound_value.value_sound[numspeaker].separate;
         memcpy(pMass,pStr,size);

@@ -93,8 +93,16 @@ void Controller::commandRead()
     cmd.append(CMD_PRJ);     // type cmd
     QQueue<QByteArray> list;
     list.enqueue( cmd );
-    
+    /*
+    QByteArray cmd_wav;
+    cmd_wav.append((uint8_t)3);  // lengh low
+    cmd_wav.append((char)0);     // lengh hi
+    cmd_wav.append(TYPE_UZTVOP); // type
+    cmd_wav.append(CMD_TR_READ); // cmd
+    cmd_wav.append(CMD_WAV);     // type cmd
+    list.enqueue( cmd_wav );
     collectTransportLevel(list);
+    */
     sendMessage( list );
     qDebug()<<"command Read";
 }
@@ -154,6 +162,13 @@ void Controller::commandSetTime()
     collectTransportLevel(cmd);
     sendMessage(cmd);
     qDebug()<<"command Set Time " <<timeDevice;
+    //--------------------------------------
+//     time_t rawtime = time.time;
+//     struct tm * ptm1;
+//     ptm1 = gmtime( &rawtime );
+//     qDebug()<<rawtime;
+//     qDebug()<<ptm1->tm_year<<ptm1->tm_mon<<ptm1->tm_mday<<ptm1->tm_wday<<ptm1->tm_yday;
+//     qDebug()<<ptm1->tm_hour<<ptm1->tm_min<<ptm1->tm_sec<<ptm1->tm_isdst;
 }
 /**
  * @brief Controller::commandGetTime
@@ -284,6 +299,12 @@ RET_ANSWER Controller::commandReadTime(const char *pDate, const int lengh)
         memcpy(&time,pDate,lengh);
         QDateTime date_time;
         date_time.setTime_t(time.time);
+        /*
+        const int h = date_time.time().hour()+time.gmt;
+        const int m = date_time.time().minute();
+        const int s = date_time.time().second();
+        date_time.time().setHMS(h,m,s);
+        */
         emit signalTime(date_time);
         return SUCCESSFULLY;
     }
@@ -311,7 +332,8 @@ RET_ANSWER Controller::commandReadTest(const char *pDate, const int lengh)
         emit signalTest(test);
          return SUCCESSFULLY;
     }
-    setMessageError(tr("<CENTER><b>Data is incorrect!</CENTER></b>"));
+    setMessageError(tr("<CENTER><b>Data Controller::commandReadTest is incorrect!</CENTER></b>"));
+    emit signalTestDiagnosisEnabled(false);
     return ERROR_ANSWER;
 }
 /**
@@ -427,7 +449,7 @@ RET_ANSWER Controller::parserReceivedPacket(const QByteArray &cmd)
     static QByteArray readBuffer;
     static TYPE_STEP step = STEP_ONE;
     static int counter = 0;
-    const int max_repeat = 10;
+    const int max_repeat = (500/currentInterface->retTimeDelay());
     RET_ANSWER result = ERROR_ANSWER;
     const QByteArray HEAD(header.pHeader2,header.lengn2);
 
@@ -562,7 +584,12 @@ void Controller::on_Machine()
 
         case stRead:
         {
-            QByteArray resBuff;
+//        const uint8_t Buff[] ={0xAA,0xAA,0xAA,0xAA,0xAA,0x55,0xC3,0x5A,0x1B,0x00,0x10,
+//                       0x02,0x00,0x00,0x2D,0x5E,0x42,0x59,0x00,0x00,0x00,0x00,
+//                       0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x01,0x00,0x00,0x1E,0x1E,
+//                            0x00,0x00,0x40,0xAC
+//                           };
+            QByteArray resBuff; //resBuff.append((char*)&Buff,sizeof(Buff));
             currentInterface->readDate(resBuff);
             emit signalSendMessage(resBuff,Qt::darkYellow);
             const RET_ANSWER answer = parserReceivedPacket(resBuff);
@@ -621,6 +648,15 @@ void Controller::on_Machine()
 //QByteArray cmd_res(index<list.size()?list.at(index++):QByteArray());
 //QByteArray resBuff;
 //resBuff.append(cmd_res);
+//              QByteArray cmd;
+//              cmd.append((uint8_t)4);
+//              cmd.append((char)0);
+//              cmd.append(TYPE_UZTVOP);    // type
+//              cmd.append(CMD_TR_WRITE);    // cmd
+//              cmd.append((char)0);       // type cmd test
+//              cmd.append(CMD_TIME);// type cmd test
+//              collectTransportLevel(cmd);
+
 //// test --------------------------------------------------------
 /**
  * @brief Controller::checkInterface

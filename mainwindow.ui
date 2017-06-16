@@ -451,6 +451,39 @@
                      </property>
                     </widget>
                    </item>
+                   <item row="7" column="0">
+                    <widget class="QLabel" name="label_60">
+                     <property name="text">
+                      <string>TVP:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="7" column="1">
+                    <widget class="QSlider" name="hs_one_tvp">
+                     <property name="minimumSize">
+                      <size>
+                       <width>0</width>
+                       <height>30</height>
+                      </size>
+                     </property>
+                     <property name="maximum">
+                      <number>100</number>
+                     </property>
+                     <property name="value">
+                      <number>50</number>
+                     </property>
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="7" column="2">
+                    <widget class="QLabel" name="lb_one_tvp">
+                     <property name="text">
+                      <string>100</string>
+                     </property>
+                    </widget>
+                   </item>
                   </layout>
                  </item>
                  <item>
@@ -733,6 +766,39 @@
                    </item>
                    <item row="6" column="2">
                     <widget class="QLabel" name="lb_two_zsvrz">
+                     <property name="text">
+                      <string>100</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="7" column="0">
+                    <widget class="QLabel" name="label_61">
+                     <property name="text">
+                      <string>TVP:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="7" column="1">
+                    <widget class="QSlider" name="hs_two_tvp">
+                     <property name="minimumSize">
+                      <size>
+                       <width>0</width>
+                       <height>30</height>
+                      </size>
+                     </property>
+                     <property name="maximum">
+                      <number>100</number>
+                     </property>
+                     <property name="value">
+                      <number>50</number>
+                     </property>
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="7" column="2">
+                    <widget class="QLabel" name="lb_two_tvp">
                      <property name="text">
                       <string>100</string>
                      </property>
@@ -2037,7 +2103,7 @@
                       </size>
                      </property>
                      <property name="text">
-                      <string>Delay ZSO and ZSP  (c.):</string>
+                      <string>Delay ZSO and ZSP  (mc.):</string>
                      </property>
                     </widget>
                    </item>
@@ -2050,9 +2116,12 @@
                       </size>
                      </property>
                      <property name="minimum">
-                      <number>0</number>
+                      <number>200</number>
                      </property>
                      <property name="maximum">
+                      <number>10000</number>
+                     </property>
+                     <property name="singleStep">
                       <number>10</number>
                      </property>
                     </widget>
@@ -2713,6 +2782,15 @@
            </item>
            <item>
             <widget class="Line" name="line_3">
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <property name="lineWidth">
+              <number>3</number>
+             </property>
+             <property name="midLineWidth">
+              <number>3</number>
+             </property>
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
@@ -2727,6 +2805,13 @@
                <day>1</day>
               </date>
              </property>
+             <property name="time">
+              <time>
+               <hour>10</hour>
+               <minute>10</minute>
+               <second>10</second>
+              </time>
+             </property>
             </widget>
            </item>
            <item>
@@ -2739,7 +2824,7 @@
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_12">
              <item>
-              <widget class="QLabel" name="label_36">
+              <widget class="QLabel" name="lbAllTime">
                <property name="enabled">
                 <bool>true</bool>
                </property>
@@ -2912,6 +2997,15 @@
            </item>
            <item>
             <widget class="Line" name="line_4">
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <property name="lineWidth">
+              <number>3</number>
+             </property>
+             <property name="midLineWidth">
+              <number>3</number>
+             </property>
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
@@ -3044,6 +3138,22 @@
                <attribute name="buttonGroup">
                 <string notr="true">buttonGroup</string>
                </attribute>
+              </widget>
+             </item>
+             <item row="0" column="3">
+              <widget class="QToolButton" name="tbTVP">
+               <property name="text">
+                <string>TVP</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+               <property name="checked">
+                <bool>false</bool>
+               </property>
+               <property name="autoRepeat">
+                <bool>true</bool>
+               </property>
               </widget>
              </item>
             </layout>

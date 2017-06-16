@@ -13,7 +13,7 @@ ComPort::ComPort()
     setting.parity = QSerialPort::NoParity;
     setting.stopBits = QSerialPort::OneStop;
     setting.flowControl = QSerialPort::NoFlowControl;
-    timeDelay = 50;// ms
+    timeDelay = 10;// ms
 }
 /**
  * @brief ComPort::~ComPort

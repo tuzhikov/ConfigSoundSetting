@@ -92,12 +92,14 @@ private:
     QLabel *statusBar;
     Controller *ptrController;
     QTimer *timerTest;
+    QButtonGroup *grToolButton;
     void createToolTip(void);
     void createToolBar(void);
     void createStatusBar(void);
     void createStyle(void);
     void createConnectionGUI(void);
     void createGroupMenu(void);
+    void createGroupButton(void);
     void createGroupSlider(void);
     void createSoundMenu(void);
     void createPlans( QWidget * const page );
@@ -218,6 +220,7 @@ private slots:
     void onTestTime (const QDateTime &);
     void onUpdateDataToGui();
     void onTimerDiagnosisEnabled(bool);
+    //void onUpdateListenGuiToDate();
 
 signals:
     void signalSendMessage(const QByteArray&,const QColor&);

@@ -7,7 +7,7 @@
 #define COD_CLEAR_WAV 32
 
 enum TYPE_TRACK{
-    btZSR, btZSO,btZSP, btZSZ,btZSVRR, btZSVRZ};
+    btZSR, btZSO,btZSP, btZSZ,btZSVRR, btZSVRZ, btTVP};
 
 enum TYPE_NUMBER_COMMAND_TRANSPORT{
     CMD_TR_WRITE = 0x01,
@@ -73,6 +73,7 @@ const HEADER header = {
     .lengn1 = sizeof(HeaderProtocol1),
     .lengn2 = sizeof(HeaderProtocol2)
 };
+
 #pragma pack(push,1)
 // data error
 struct DATAERROR {
@@ -112,7 +113,6 @@ struct TYPE_WAV_PREFIX {
     uint16_t packet_number;
     uint8_t number_group;
 };
-
 #pragma pack(pop)
 
 #endif // CMD_DEVICE_H
