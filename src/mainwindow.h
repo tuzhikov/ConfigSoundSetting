@@ -217,10 +217,12 @@ private slots:
     void onWindowOk(const QString &msg);
     void onWindowError(const QString &msg);
     void onTestDate (const TYPE_TEST &);
-    void onTestTime (const QDateTime &);
+    void onTestTime (const TYPETIME &);
     void onUpdateDataToGui();
-    void onTimerDiagnosisEnabled(bool);
-    //void onUpdateListenGuiToDate();
+    void onTimerDiagnosis(bool);
+    void onTimerDiagnosisDisabled();
+    void onTimerDiagnosisEnabled();
+    void onUpdateListenGuiToDate();
 
 signals:
     void signalSendMessage(const QByteArray&,const QColor&);

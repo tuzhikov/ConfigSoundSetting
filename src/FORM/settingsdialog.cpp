@@ -90,6 +90,18 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     fillPortsInfo();
 
     updateSettings();
+    //visible
+    //ui->parametersBox->setVisible(false);
+    //disabled
+    ui->dataBitsLabel->setEnabled(false);
+    ui->dataBitsBox->setEnabled(false);
+    ui->parityLabel->setEnabled(false);
+    ui->parityBox->setEnabled(false);
+    ui->stopBitsLabel->setEnabled(false);
+    ui->stopBitsBox->setEnabled(false);
+    ui->flowControlLabel->setEnabled(false);
+    ui->flowControlBox->setEnabled(false);
+
 
 }
 /**

@@ -40,6 +40,7 @@ MainWindow::MainWindow(QWidget *parent, Controller *pdata) :
     updateDataToGui();
     // install structure datatime
     ptrController->setDateTime(ui->dateTimeEditConfig->dateTime());
+    ptrController->setDateTimeZone(ui->cbGMT->currentIndex());
     // visibled
     ui->lbAllTime->setVisible(false);
     ui->chbDayLight->setVisible(false);
@@ -85,6 +86,10 @@ MainWindow::MainWindow(QWidget *parent, Controller *pdata) :
     QDateTime test4;test4.setTime_t(raw);
     qDebug()<<test4;
     */
+//    uint64_t time(0x59439ADC);
+//    const QString strtime(
+//                QDateTime::fromTime_t(time,QTimeZone::systemTimeZone()).toString("dd.MM.yyyy hh:mm"));
+//    qDebug()<<strtime;
     //    // test time
 //    QTime myTimer;
 //    myTimer.start();
@@ -173,8 +178,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
  */
 void MainWindow::createToolTip()
 {
-    ui->actionWrite->setToolTip(tr("Write data"));
-    ui->actionRead->setToolTip(tr("Read data"));
+    ui->actionWrite->setToolTip(tr("Write all to the UZTVOP"));
+    ui->actionRead->setToolTip(tr("Read all from the UZTVOP"));
+    ui->actionWrite_Setting->setToolTip(tr("Write settings to the UZTVOP"));
+    ui->actionRead_Setting->setToolTip(tr("Read settings from the UZTVOP"));
     ui->actionDevice->setToolTip(tr("Get the type of device."));
 }
 /**
@@ -183,7 +190,7 @@ void MainWindow::createToolTip()
 void MainWindow::createToolBar()
 {
     // add ListCommand
-    ListCommand<<ui->actionWrite<<ui->actionRead;
+    ListCommand<<ui->actionWrite<<ui->actionRead<<ui->actionWrite_Setting<<ui->actionRead_Setting;
     ui->mainToolBar->addActions(ListCommand);
     ui->actionDevice->setVisible(false); //
     ui->mainToolBar->addSeparator();
@@ -268,9 +275,9 @@ void MainWindow::createConnectionGUI()
     // connect plan
     connect(ui->pbAddItemPlan,SIGNAL(clicked(bool)),this,SLOT(onAddItemPlan()));
     connect(ui->pbRemoteItemPlan,SIGNAL(clicked(bool)),this,SLOT(onRemoteItemPlan()));
-    // connect slider value
-    connect(ui->hs_general_spone,SIGNAL(valueChanged(int)),this,SLOT(onSetSliderValue(int)));
-    connect(ui->hs_general_sptwo,SIGNAL(valueChanged(int)),this,SLOT(onSetSliderValue(int)));
+    // connect slider value, Uncheck the sliders!!!
+    //connect(ui->hs_general_spone,SIGNAL(valueChanged(int)),this,SLOT(onSetSliderValue(int)));
+    //connect(ui->hs_general_sptwo,SIGNAL(valueChanged(int)),this,SLOT(onSetSliderValue(int)));
     // connect save \ open files
     connect(ui->actionSave_project,SIGNAL(triggered(bool)),this,SLOT(onSaveFiles()));
     connect(ui->actionOpen_project,SIGNAL(triggered(bool)),this,SLOT(onOpenFile()));
@@ -282,7 +289,7 @@ void MainWindow::createConnectionGUI()
     connect(ui->actionConfig_WIFI, &QAction::triggered, settingsWifi, &MainWindow::show);
     // command
     QList<QPushButton*> listButtonCommand;
-    listButtonCommand<<ui->pbWriteProject<<ui->pbReadProject<<ui->pbSetTime<<ui->pbGetTime<<ui->pbPlayTest;
+    listButtonCommand<<ui->pbSetTime<<ui->pbGetTime<<ui->pbPlayTest;
     QSignalMapper *smCommand = new QSignalMapper(this);
     connect(smCommand,SIGNAL(mapped(int)),this,SLOT(onCommandRun(int)));
     for (int i = 0; i <ListCommand.size()+listButtonCommand.size(); i++)
@@ -308,8 +315,8 @@ void MainWindow::createConnectionGUI()
     // command test
     timerTest = new QTimer(this);
     connect(timerTest,&QTimer::timeout,this,&MainWindow::onCommandTest);
-    connect(ui->gbDiagnosis,&QGroupBox::toggled,this,&MainWindow::onTimerDiagnosisEnabled);
-    connect(ptrController,&Controller::signalTestDiagnosisEnabled,this,&MainWindow::onTimerDiagnosisEnabled);
+    connect(ui->gbDiagnosis,&QGroupBox::toggled,this,&MainWindow::onTimerDiagnosis);
+    connect(ptrController,&Controller::signalStop,this,&MainWindow::onTimerDiagnosisDisabled);
     // update new
     connect(ptrController,&Controller::signalStop,this,&MainWindow::onUpdateDataToGui);
     // message
@@ -321,36 +328,32 @@ void MainWindow::createConnectionGUI()
     connect(settingsWifi,&SettingDialogWifi::signalListParametr,ptrController,&Controller::setParametrWIFI);
     connect(settings,&SettingsDialog::signalListParametr,ptrController,&Controller::setParametrCOMPORT);
     // diagnosis TIME
+        // Structure to GUI
     connect(ptrController,&Controller::signalTime,this,&MainWindow::onTestTime);
+        // GUI to Sructure
     connect(ui->dateTimeEditConfig,&QDateTimeEdit::dateTimeChanged,ptrController,&Controller::setDateTime);
+    connect(ui->cbGMT,SIGNAL(currentIndexChanged(int)),ptrController,SLOT(setDateTimeZone(int)));
     // diagnosis
     connect(ptrController,&Controller::signalTest,this,&MainWindow::onTestDate);
     // test listen
     connect(this,&MainWindow::signaTestListen,ptrController,&Controller::setListenTest);
     // test gui listen
-    /*
     QList<QToolButton*> listToolButtonListen;
     listToolButtonListen<<ui->tbZSR<<ui->tbZSO<<ui->tbZSP<<ui->tbZSZ<<ui->tbZSVRR<<ui->tbZSVRZ<<ui->tbTVP;
-    QList<QSpinBox*> listSpinBoxListen;
-    listSpinBoxListen<<ui->sbTestGeneral<<ui->sbTestSpeaker1<<ui->sbTestSpeaker2<<ui->sbTestPlan<<ui->sbTestNoise;
-
-    QSignalMapper *smListenCommand = new QSignalMapper(this);
-    connect(smListenCommand,SIGNAL(mapped(int)),this,SLOT(onCommandRun(int)));
-    for (int i = 0; i <listToolButtonListen.size()+listSpinBoxListen.size(); i++)
+    foreach( QToolButton*bt,listToolButtonListen )
     {
-        if (i <listToolButtonListen.size())
-        {
-            smListenCommand->setMapping(ListCommand.at(i), i);
-            connect(ListCommand.at(i), SIGNAL(triggered()), smListenCommand,SLOT(map()));
-        }else{
-            QPushButton *const button(listButtonCommand.at(i - ListCommand.size()));
-            smListenCommand->setMapping(button, i);
-            connect(button, SIGNAL(clicked(bool)), smListenCommand,SLOT(map()));
-        }
+        //connect(bt,SIGNAL(clicked(bool)),this,SLOT(onUpdateListenGuiToDate()));
+        connect(bt, &QPushButton::clicked, [this, bt](){
+               this->updateGuiToTestListenDate();
+           });
     }
-    */
-
-
+    QList<QSpinBox*> listSpinBoxListen;
+    listSpinBoxListen<<ui->sbTestSoundSP1<<ui->sbTestSpeaker1<<ui->sbTestPlan1
+        <<ui->sbTestSoundSP2<<ui->sbTestSpeaker2<<ui->sbTestPlan2<<ui->sbTestNoise;
+    foreach( QSpinBox*sb,listSpinBoxListen )
+    {
+        connect(sb,SIGNAL(valueChanged(int)),this,SLOT(onUpdateListenGuiToDate()));
+    }
 }
 /**
  * @brief MainWindow::createGroupMenu
@@ -840,19 +843,19 @@ void MainWindow::onSwitchPanelMode(int numberPanel)
     {
         ui->stackedWidget->setCurrentIndex(numberPanel);
     }
-    // enabled timer test
-    if (numberPanel == pnDIAGNOSIS)
-    {
-        onTimerDiagnosisEnabled(true);
-        ui->actionRead->setEnabled(false);
-        ui->actionWrite->setEnabled(false);
-    }
-    else
-    {
-        onTimerDiagnosisEnabled(false);
-        ui->actionRead->setEnabled(true);
-        ui->actionWrite->setEnabled(true);
-    }
+//    // enabled timer test
+//    if (numberPanel == pnDIAGNOSIS)
+//    {
+//        onTimerDiagnosisEnabled(true);
+//        ui->actionRead->setEnabled(false);
+//        ui->actionWrite->setEnabled(false);
+//    }
+//    else
+//    {
+//        onTimerDiagnosisEnabled(false);
+//        ui->actionRead->setEnabled(true);
+//        ui->actionWrite->setEnabled(true);
+//    }
 }
 /**
  * @brief MainWindow::onAddPlan
@@ -1566,15 +1569,20 @@ void MainWindow::updateGuiToTestListenDate()
         }
         number_music++;
     }
-    const TYPE_TEST_TRACK test = {
-        .value_general = static_cast <uint16_t>(ui->sbTestGeneral->value()),
-        .value_sk1 = static_cast <uint16_t>(ui->sbTestSpeaker1->value()),
-        .value_sk2 = static_cast <uint16_t>(ui->sbTestSpeaker2->value()),
-        .value_plan = static_cast <uint16_t>(ui->sbTestPlan->value()),
-        .noise = static_cast <uint16_t>(ui->sbTestNoise->value()),
-        .number_music = number_music
-    };
+    TYPE_TEST_TRACK test = {};
+    test.value[SPEAKER_ONE].sound_sp = static_cast <uint8_t>(ui->sbTestSoundSP1->value());
+    test.value[SPEAKER_ONE].value_sk = static_cast <uint8_t>(ui->sbTestSpeaker1->value());
+    test.value[SPEAKER_ONE].ct_plan = static_cast <uint8_t>(ui->sbTestPlan1->value());
+
+    test.value[SPEAKER_TWO].sound_sp = static_cast <uint8_t>(ui->sbTestSoundSP2->value());
+    test.value[SPEAKER_TWO].value_sk = static_cast <uint8_t>(ui->sbTestSpeaker2->value());
+    test.value[SPEAKER_TWO].ct_plan = static_cast <uint8_t>(ui->sbTestPlan2->value());
+
+    test.noise = static_cast <uint16_t>(ui->sbTestNoise->value());
+    test.number_music = number_music;
+
     emit signaTestListen(test);
+    qDebug()<<"Listen number:"<<number_music<<"SP1: "<<test.value[SPEAKER_ONE].sound_sp;
 }
 /**
  * @brief MainWindow::onSetSliderValue
@@ -1769,10 +1777,10 @@ void MainWindow::onItemButtonPlay()
 void MainWindow::onCommandRun(const int indexCommand)
 {
     ui->mainToolBar->setEnabled(false);// lock button
-    ui->gbDiagnosis->setChecked(false);
+    ui->gbDiagnosis->setChecked(false);// clear check diagnosis
     //update
     updateGuiToData();
-    updateGuiToTestListenDate();
+    // run command
     ptrController->commandRun(indexCommand);
     qDebug("number command %d",indexCommand);
 }
@@ -1818,7 +1826,7 @@ void MainWindow::onTestDate(const TYPE_TEST &cmd)
     }
     //time
     const QString strtime(
-                QDateTime::fromTime_t(cmd.time,QTimeZone::utc()).toString("dd.MM.yyyy hh:mm"));
+                QDateTime::fromTime_t(cmd.time,QTimeZone::systemTimeZone()).toString("dd.MM.yyyy hh:mm"));
     ui->lbTestTime->setText(strtime);
     //plan
     ui->lbPlanNumber->setText(QString::number(cmd.plan_number));
@@ -1832,13 +1840,16 @@ void MainWindow::onTestDate(const TYPE_TEST &cmd)
 /**
  * @brief MainWindow::onTestTime
  */
-void MainWindow::onTestTime(const QDateTime &dt)
+void MainWindow::onTestTime(const TYPETIME &time)
 {
-    ui->dateTimeEditConfig->setDateTime(dt);
-    ui->chbDayLight->setChecked(dt.isDaylightTime());
+    QDateTime date_time;
+    date_time.setTimeZone(QTimeZone::utc());
+    date_time.setTime_t(time.time);
+    ui->dateTimeEditConfig->setDateTime(date_time);
+    ui->chbDayLight->setChecked(date_time.isDaylightTime());
 
     const int indexUTC0 = 12;
-    const int index = indexUTC0+(dt.offsetFromUtc()/3600);
+    const int index = indexUTC0+time.gmt;
     QComboBox *cbm(ui->cbGMT);
     if ((index>=0)||(index<cbm->count()))
     {
@@ -1848,6 +1859,9 @@ void MainWindow::onTestTime(const QDateTime &dt)
     {
         cbm->setCurrentIndex(indexUTC0);
     }
+    struct tm * ptm;
+    ptm = gmtime( (time_t*)&time.time );
+    qDebug()<<"command Set Time: " <<time.time<<"GTM: "<<time.gmt<<"TIME hour: "<<ptm->tm_hour;
 }
 /**
  * @brief MainWindow::onUpdateDataToGui
@@ -1861,27 +1875,40 @@ void MainWindow::onUpdateDataToGui()
  * @brief MainWindow::onTimerDiagnosisEnabled
  * @param enabled
  */
-void MainWindow::onTimerDiagnosisEnabled(bool enabled)
+void MainWindow::onTimerDiagnosis(bool enabled)
 {
     if ( enabled )
     {
-        timerTest->start(1000);
-        ui->gbDiagnosis->setChecked(true);
+        onTimerDiagnosisEnabled();
     }
     else
     {
-        timerTest->stop();
-        ui->gbDiagnosis->setChecked(false);
+        onTimerDiagnosisDisabled();
     }
+}
+/**
+ * @brief MainWindow::onTimerDiagnosisDisabled
+ */
+void MainWindow::onTimerDiagnosisDisabled()
+{
+    timerTest->stop();
+    ui->gbDiagnosis->setChecked(false);
+}
+/**
+ * @brief MainWindow::onTimerDiagnosisEnabled
+ */
+void MainWindow::onTimerDiagnosisEnabled()
+{
+    timerTest->start(1000);
+    ui->gbDiagnosis->setChecked(true);
 }
 /**
  * @brief MainWindow::onUpdateListenGuiToDate
  */
-//void MainWindow::onUpdateListenGuiToDate()
-//{
-//    updateGuiToTestListenDate();
-//    qDebug()<<"MainWindow::onUpdateListenGuiToDate()";
-//}
+void MainWindow::onUpdateListenGuiToDate()
+{
+    updateGuiToTestListenDate();
+}
 /**
  * @brief MainWindow::onWindowOk
  * @param msg

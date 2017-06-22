@@ -26,7 +26,7 @@ void AccessData::setDefault(TYPEPROJECT *const pPrg)
     // volume
     for (int i=0;i<MAX_SPEAKER; i++)
     {
-        pPrg->sound_value.value_sound[i].global = 50;
+        pPrg->sound_value.value_sound[i].global = 100;
         for (int j=0; j<MAX_SPEAKER_LEVEL; j++)
         {
             pPrg->sound_value.value_sound[i].separate[j] = 50;

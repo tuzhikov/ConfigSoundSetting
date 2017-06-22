@@ -7,6 +7,7 @@
 #include <QByteArray>
 #include <QDateTime>
 #include <QColor>
+#include <QTimeZone>
 #include "cmd_device.h"
 #include "src/ACCESSDATE/accessdataproject.h"
 #include "src/INTERFACE/LinkInterface.h"
@@ -35,7 +36,7 @@ private:
     QVector <LinkInreface* > interface;
     LinkInreface* currentInterface = 0;
     int currentValueProgress = 0;
-    QDateTime timeDevice;
+    TYPETIME timeDevice;
     TYPE_TEST_TRACK listen;
     QByteArray sendCmd;
     int countSend = 0;
@@ -95,6 +96,7 @@ public slots:
     void setParametrWIFI(const QStringList &);
     void setParametrCOMPORT(const QStringList &);
     void setDateTime(const QDateTime &);
+    void setDateTimeZone(const int);
     void setListenTest(const TYPE_TEST_TRACK &);
 signals:
     void signalStart();
@@ -108,9 +110,8 @@ signals:
     void signalProgressRange(const int,const int);
     void signalProgressValue(const int,const bool);
     void signalTypeDevice(const int);
-    void signalTime(const QDateTime &);
+    void signalTime(const TYPETIME &);
     void signalTest(const TYPE_TEST &);
-    void signalTestDiagnosisEnabled(bool);
 };
 
 #endif // CONTROLLER_H

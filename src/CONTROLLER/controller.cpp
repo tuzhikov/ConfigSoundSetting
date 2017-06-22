@@ -1,3 +1,4 @@
+#include <time.h>
 #include "controller.h"
 #include "crc.h"
 /**
@@ -146,29 +147,19 @@ void Controller::commandReadSetting()
  */
 void Controller::commandSetTime()
 {
-
     QByteArray cmd;
-    const TYPETIME time{
-        .time = timeDevice.toTime_t(),
-        .gmt  = static_cast<uint8_t>(timeDevice.offsetFromUtc()/3600)
-    };
-    cmd.append(sizeof(time)+(uint8_t)3);// lengh time +crc +cmd
+    cmd.append(sizeof(timeDevice)+(uint8_t)3);// lengh time +crc +cmd
     cmd.append((char)0);
     cmd.append(TYPE_UZTVOP);    // type
     cmd.append(CMD_TR_WRITE);   // cmd
     cmd.append(CMD_TIME);       // type cmd
-    cmd.append((const char*)&time,sizeof(time)); //data
+    cmd.append((const char*)&timeDevice,sizeof(timeDevice)); //data
 
     collectTransportLevel(cmd);
     sendMessage(cmd);
-    qDebug()<<"command Set Time " <<timeDevice;
-    //--------------------------------------
-//     time_t rawtime = time.time;
-//     struct tm * ptm1;
-//     ptm1 = gmtime( &rawtime );
-//     qDebug()<<rawtime;
-//     qDebug()<<ptm1->tm_year<<ptm1->tm_mon<<ptm1->tm_mday<<ptm1->tm_wday<<ptm1->tm_yday;
-//     qDebug()<<ptm1->tm_hour<<ptm1->tm_min<<ptm1->tm_sec<<ptm1->tm_isdst;
+    struct tm * ptm;
+    ptm = gmtime( (time_t*)&timeDevice.time );
+    qDebug()<<"command Set Time: " <<timeDevice.time<<"GTM: "<<timeDevice.gmt<<"TIME hour: "<<ptm->tm_hour;
 }
 /**
  * @brief Controller::commandGetTime
@@ -220,13 +211,13 @@ void Controller::commandGetTime()
 void Controller::commandListen()
 {
     QByteArray cmd;
-    cmd.append(sizeof(listen)+(uint8_t)4);
+    cmd.append(sizeof(TYPE_TEST_TRACK)+(uint8_t)4);
     cmd.append((char)0);
     cmd.append(TYPE_UZTVOP);      // type
     cmd.append(CMD_TR_WRITE);     // cmd
     cmd.append(CMD_TEST);         // type cmd test first
     cmd.append(CMD_TEST_LISTEN);  // type cmd test second
-    cmd.append((const char*)&listen,sizeof(listen)); //data
+    cmd.append((const char*)&listen,sizeof(TYPE_TEST_TRACK)); //data
 
     collectTransportLevel(cmd);
     sendMessage(cmd);
@@ -297,15 +288,7 @@ RET_ANSWER Controller::commandReadTime(const char *pDate, const int lengh)
     if ( sizeof(time) == lengh)
     {
         memcpy(&time,pDate,lengh);
-        QDateTime date_time;
-        date_time.setTime_t(time.time);
-        /*
-        const int h = date_time.time().hour()+time.gmt;
-        const int m = date_time.time().minute();
-        const int s = date_time.time().second();
-        date_time.time().setHMS(h,m,s);
-        */
-        emit signalTime(date_time);
+        emit signalTime(time);
         return SUCCESSFULLY;
     }
     setMessageError(tr("<CENTER><b>Data Time is incorrect!</CENTER></b>"));
@@ -333,7 +316,7 @@ RET_ANSWER Controller::commandReadTest(const char *pDate, const int lengh)
          return SUCCESSFULLY;
     }
     setMessageError(tr("<CENTER><b>Data Controller::commandReadTest is incorrect!</CENTER></b>"));
-    emit signalTestDiagnosisEnabled(false);
+    emit signalStop();
     return ERROR_ANSWER;
 }
 /**
@@ -565,7 +548,6 @@ void Controller::on_Machine()
             }
             else
             {
-                emit signalTestDiagnosisEnabled(false);
                 templistCMD.clear();
                 stat = stCounter;
             }
@@ -589,6 +571,8 @@ void Controller::on_Machine()
 //                       0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x01,0x00,0x00,0x1E,0x1E,
 //                            0x00,0x00,0x40,0xAC
 //                           };
+//                const uint8_t Buff[] ={0xAA,0xAA,0xAA,0xAA,0xAA,0x55,0xC3,0x5A,0x05,0x00,0x10,
+//                               0x01,0x00,0x03,0x00,0x37,0x2F};
             QByteArray resBuff; //resBuff.append((char*)&Buff,sizeof(Buff));
             currentInterface->readDate(resBuff);
             emit signalSendMessage(resBuff,Qt::darkYellow);
@@ -734,8 +718,19 @@ void Controller::setParametrCOMPORT(const QStringList &list)
  */
 void Controller::setDateTime(const QDateTime &datatime)
 {
-    timeDevice = datatime;
-    qDebug()<<timeDevice;
+    QDateTime dt(datatime);
+    dt.setTimeZone(QTimeZone::utc());
+    timeDevice.time = dt.toTime_t();
+    qDebug()<<dt;
+}
+/**
+ * @brief Controller::setDateTimeZone
+ * @param num_zone
+ */
+void Controller::setDateTimeZone(const int num_zone)
+{
+    const int indexUTC0 = 12;
+    timeDevice.gmt = num_zone - indexUTC0;
 }
 /**
  * @brief Controller::setListenTest

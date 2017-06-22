@@ -3,11 +3,13 @@
 
 #include <stdint.h>
 #include <time.h>
-
+#include "src/ACCESSDATE/datastructure.h"
 #define COD_CLEAR_WAV 32
 
 enum TYPE_TRACK{
     btZSR, btZSO,btZSP, btZSZ,btZSVRR, btZSVRZ, btTVP};
+enum NUMBER_SPEAKER{
+    SPEAKER_ONE,SPEAKER_TWO};
 
 enum TYPE_NUMBER_COMMAND_TRANSPORT{
     CMD_TR_WRITE = 0x01,
@@ -80,19 +82,21 @@ struct DATAERROR {
     uint32_t error;
     uint16_t ver; // версия прошивки.
 };
+struct TYPE_TEST_ONE_TRACK {
+    uint8_t sound_sp;     //
+    uint8_t value_sk;     // уровень громкости на динамике 1
+    uint8_t ct_plan;      //
+};
 // structure data test track
 struct TYPE_TEST_TRACK {
-    uint16_t value_general; // общий коэфф. громкости
-    uint16_t value_sk1;     // уровень громкости на динамике 1
-    uint16_t value_sk2;     // уровень громкости на динамике 2
-    uint16_t value_plan;    // уровень громкости по плану
-    uint16_t noise;         // коэффициент датчика шума.
+    TYPE_TEST_ONE_TRACK value[MAX_SPEAKER];
+    uint8_t noise;          // коэффициент датчика шума.
     uint8_t number_music;   // номер мелодии ЗСП, ЗСР, ЗСВРР, ЗСО, ЗСЗ, ЗСВРЗ
 };
 // structure time RTC
 struct TYPETIME{
     uint64_t time;  // представление времени с сек.
-    uint8_t gmt;    // часовой пояс
+    int8_t gmt;    // часовой пояс
 };
 // structure test
 struct TYPE_TEST {
