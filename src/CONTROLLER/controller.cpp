@@ -1,6 +1,7 @@
 #include <time.h>
 #include "controller.h"
 #include "crc.h"
+
 /**
  * @brief Controller::commandWrite
  */
@@ -26,20 +27,17 @@ void Controller::commandWrite()
     {
         QByteArray name;name.append(it.key());
         QByteArray data(it.value());
-        const quint16 max_lengh_data(1024*2);
-        const quint16 max_lengh_name(64);
-        const quint16 max_lengh_hander(44);
-        const quint16 max_pask = (data.size()/max_lengh_data) +1;
+        const quint16 max_pask = (data.size()/max_lengh_data_wav) +1;
         //first wav
         QByteArray cmd;
-        const quint16 lengh = max_lengh_name+max_lengh_hander+2+1+3;
+        const quint16 lengh = max_lengh_name_file+max_lengh_hander_wav+2+1+3;
         cmd.append((char*)&lengh,sizeof(quint16));
         cmd.append(TYPE_UZTVOP);    // type
         cmd.append(CMD_TR_WRITE);   // cmd
         cmd.append(CMD_WAV);        // type cmd
-        cmd.append(name.data(),max_lengh_name); // name
-        cmd.append(data.data(),max_lengh_hander); //
-        data.remove(0, max_lengh_hander);
+        cmd.append(name.data(),max_lengh_name_file); // name
+        cmd.append(data.data(),max_lengh_hander_wav); //
+        data.remove(0, max_lengh_hander_wav);
         cmd.append((char*)&max_pask, 2);
         count_sound--;
         if ( first_package )
@@ -56,23 +54,23 @@ void Controller::commandWrite()
         for (int i = max_pask;--i>=0;)
         {
             QByteArray cmd;
-            const quint16 len = max_lengh_data+3; // CRC16 + CMD_WAV
+            const quint16 len = max_lengh_data_wav+3; // CRC16 + CMD_WAV
             cmd.append((char*)&len,sizeof(quint16));
             cmd.append(TYPE_UZTVOP);    // type
             cmd.append(CMD_TR_WRITE);   // cmd
             cmd.append(CMD_WAV);        // type cmd
             const int lengh(data.size());
             const char *const pBegin(data.data());
-            if ( lengh<max_lengh_data )
+            if ( lengh<max_lengh_data_wav )
             {
                 cmd.append(pBegin,lengh);
-                const int lengh_null(max_lengh_data-lengh);
+                const int lengh_null(max_lengh_data_wav-lengh);
                 cmd.append(lengh_null, (char)0);
             }
             else
             {
-                cmd.append(pBegin, max_lengh_data);
-                data.remove(0, max_lengh_data);
+                cmd.append(pBegin, max_lengh_data_wav);
+                data.remove(0, max_lengh_data_wav);
             }
             list.enqueue(cmd);
         }
@@ -82,30 +80,28 @@ void Controller::commandWrite()
     qDebug()<<"command Write";
 }
 /**
- * @brief Controller::commandRead
+ * @brief Controller::commandRead wav
  */
 void Controller::commandRead()
 {
-    QByteArray cmd;
-    cmd.append((uint8_t)3);  // lengh low
-    cmd.append((char)0);     // lengh hi
-    cmd.append(TYPE_UZTVOP); // type
-    cmd.append(CMD_TR_READ); // cmd
-    cmd.append(CMD_PRJ);     // type cmd
-    QQueue<QByteArray> list;
-    list.enqueue( cmd );
+
     /*
-    QByteArray cmd_wav;
-    cmd_wav.append((uint8_t)3);  // lengh low
-    cmd_wav.append((char)0);     // lengh hi
-    cmd_wav.append(TYPE_UZTVOP); // type
-    cmd_wav.append(CMD_TR_READ); // cmd
-    cmd_wav.append(CMD_WAV);     // type cmd
-    list.enqueue( cmd_wav );
-    collectTransportLevel(list);
+    const QByteArray codefile(inNameFile.value());
+    if ( !codefile.isEmpty() )
+    {
+        QByteArray cmd_wav;
+        cmd_wav.append(codefile.size()+(uint8_t)3);  // lengh low
+        cmd_wav.append((char)0);     // lengh hi
+        cmd_wav.append(TYPE_UZTVOP); // type
+        cmd_wav.append(CMD_TR_READ); // cmd
+        cmd_wav.append(CMD_WAV);     // type cmd
+        cmd_wav.append(codefile); // code file 4 byte
+
+        collectTransportLevel( cmd_wav );
+        sendMessage( cmd_wav );
+        qDebug()<<"command Read wav file ";
+    }
     */
-    sendMessage( list );
-    qDebug()<<"command Read";
 }
 /**
  * @brief Controller::commandWriteSetting
@@ -176,34 +172,6 @@ void Controller::commandGetTime()
     collectTransportLevel(cmd);
     sendMessage(cmd);
     qDebug()<<"command Get Time";
-//    // test --------------------------------------------------------
-//    QByteArray cmd;
-//    QDateTime timeDevice(QDateTime::currentDateTime());
-//    const TYPETIME time{
-//        .time = timeDevice.toTime_t(),
-//        .gmt  = static_cast<uint8_t>(timeDevice.offsetFromUtc()/3600)
-//    };
-//    cmd.append(sizeof(time)+(uint8_t)4);// lengh time +crc +cmd
-//    cmd.append((char)0);
-//    cmd.append(TYPE_UZTVOP);    // type
-//    cmd.append(CMD_TR_READ);    // cmd
-//    cmd.append((char)0);        // answer
-//    cmd.append(CMD_TIME);       // type cmd
-//    cmd.append((const char*)&time,sizeof(time));
-//    collectTransportLevel(cmd);
-//    QByteArray cmd1(cmd.data(),10);cmd.remove(0,10);
-//    QByteArray cmd2(cmd);cmd.clear();
-//    // repeat
-//    parserReceivedPacket(cmd);
-//    parserReceivedPacket(cmd1);
-//    parserReceivedPacket(cmd2);
-//    parserReceivedPacket(cmd);
-//    //
-//    parserReceivedPacket(cmd);
-//    parserReceivedPacket(cmd1);
-//    parserReceivedPacket(cmd2);
-//    parserReceivedPacket(cmd);
-////    // test --------------------------------------------------------
 }
 /**
  * @brief Controller::commandListen
@@ -264,12 +232,44 @@ RET_ANSWER Controller::commandReadProject(const char *p, const int lengh)
     setMessageError(tr("<CENTER><b>Data Project is incorrect!</CENTER></b>"));
     return ERROR_ANSWER;
 }
-
+/**
+ * @brief Controller::commandWriteWAV
+ * @return
+ */
 RET_ANSWER Controller::commandWriteWAV(const char *, const int){ return SUCCESSFULLY; }
-
-RET_ANSWER Controller::commandReadWAV(const char *, const int)
+/**
+ * @brief Controller::commandReadWAV
+ * @param pDate
+ * @param lengh
+ * @return
+ */
+RET_ANSWER Controller::commandReadWAV(const char *pDate, const int lengh)
 {
-    return SUCCESSFULLY;
+    // wav
+    if ( lengh == max_lengh_data_wav )
+    {
+        tmpRaedDataWav[""].append(pDate,lengh);
+        return SUCCESSFULLY;
+    }
+    // header
+    else if ( lengh == (max_lengh_name_file+max_lengh_hander_wav+2+1) )
+    {
+        tmpRaedDataWav.clear();
+
+    }
+    // ok nex files
+    else if (lengh == 2)
+    {
+        //QList<QByteArray>::const_iterator end(codeNameFile.end());
+        //if ( end.value_type != codeNameFile[0] )
+        {
+            //signal
+        }
+        //dataproject.clearPlayList();
+        //dataproject.retPlayList()
+    }
+    setMessageError(tr("<CENTER><b>WAV file is incorrect!</CENTER></b>"));
+    return ERROR_ANSWER;
 }
 /**
  * @brief Controller::commandSetTime
@@ -294,11 +294,11 @@ RET_ANSWER Controller::commandReadTime(const char *pDate, const int lengh)
     setMessageError(tr("<CENTER><b>Data Time is incorrect!</CENTER></b>"));
     return ERROR_ANSWER;
 }
-
-RET_ANSWER Controller::commandWriteTest(const char *, const int)
-{
-    return ERROR_ANSWER;
-}
+/**
+ * @brief Controller::commandWriteTest
+ * @return
+ */
+RET_ANSWER Controller::commandWriteTest(const char *, const int){ return SUCCESSFULLY; }
 /**
  * @brief Controller::commandTest
  * @param pDate
@@ -316,7 +316,8 @@ RET_ANSWER Controller::commandReadTest(const char *pDate, const int lengh)
          return SUCCESSFULLY;
     }
     setMessageError(tr("<CENTER><b>Data Controller::commandReadTest is incorrect!</CENTER></b>"));
-    emit signalStop();
+    // stop timer diagnosis
+    emit signalTimerDiagnosisDisabled();
     return ERROR_ANSWER;
 }
 /**
@@ -480,17 +481,24 @@ void Controller::sendOutputMessage()
     if (!messageError.isEmpty())
     {
         emit signalMessageError(messageError);
+        messageError.clear();
     }
     else if (!messageOk.isEmpty())
     {
         emit signalMessageOk(messageOk);
+        messageOk.clear();
     }
 }
 /**
  * @brief Controller::Controller
  * @param parent
  */
-Controller::Controller( QObject *parent ) : QObject(parent),timerRead(new QTimer(parent))
+Controller::Controller( QObject *parent ) :
+                    QObject(parent),
+                    timerRead(new QTimer(parent)),
+                    max_lengh_data_wav(1024*2),
+                    max_lengh_hander_wav(44),
+                    max_lengh_name_file(64)
 {
     connect(this,SIGNAL(signalStart()),this,SIGNAL(signalStep()),Qt::DirectConnection);
     connect(this,SIGNAL(signalStep()),this,SLOT(on_Machine()),Qt::DirectConnection);
@@ -518,19 +526,20 @@ void Controller::on_Machine()
                     currentValueProgress = 0;
                     const int valueMax = 3*templistCMD.count();
                     emit signalProgressRange(0,valueMax);
-                    emit signalStep();
+                    emit signalProgressVisible(progressVisible);
                 }else{
-                    emit signalMessageError(tr("<CENTER><b>Interface open ERROR!</CENTER></b>"));
-                    emit signalStop();
+                    stat = stStopExchange;
+                    setMessageError(tr("<CENTER><b>Interface open ERROR!</CENTER></b>"));
                 }
             }
             listCMD.clear();
+            emit signalStep();
         return;
 
         case stCounter:
             if( !templistCMD.isEmpty() )
             {
-                emit signalProgressValue(++currentValueProgress,true);
+                emit signalProgressValue(++currentValueProgress);
                 sendCmd.clear();
                 sendCmd.append(templistCMD.dequeue());
                 countSend = 0;
@@ -549,7 +558,7 @@ void Controller::on_Machine()
             else
             {
                 templistCMD.clear();
-                stat = stCounter;
+                stat = stStopExchange;
             }
             emit signalStep();
         return;
@@ -558,7 +567,7 @@ void Controller::on_Machine()
         {
             currentInterface->sendDate(sendCmd);
             emit signalSendMessage(sendCmd,Qt::green);
-            emit signalProgressValue(++currentValueProgress,true);
+            emit signalProgressValue(++currentValueProgress);
             stat=stRead;
             timerRead->start();
         }
@@ -566,15 +575,23 @@ void Controller::on_Machine()
 
         case stRead:
         {
+            QByteArray resBuff;
 //        const uint8_t Buff[] ={0xAA,0xAA,0xAA,0xAA,0xAA,0x55,0xC3,0x5A,0x1B,0x00,0x10,
 //                       0x02,0x00,0x00,0x2D,0x5E,0x42,0x59,0x00,0x00,0x00,0x00,
 //                       0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x01,0x00,0x00,0x1E,0x1E,
 //                            0x00,0x00,0x40,0xAC
 //                           };
-//                const uint8_t Buff[] ={0xAA,0xAA,0xAA,0xAA,0xAA,0x55,0xC3,0x5A,0x05,0x00,0x10,
-//                               0x01,0x00,0x03,0x00,0x37,0x2F};
-            QByteArray resBuff; //resBuff.append((char*)&Buff,sizeof(Buff));
+
+//#define DEBUG_ANSWER
+#ifdef DEBUG_ANSWER
+            const uint8_t Buff[] ={
+            //    0xAA,0xAA,0xAA,0xAA,0xAA,0x55,0xC3,0x5A,0x05,0x00,0x10,0x01,0x00,0x03,0x00,0x37,0x2F
+                0xAA,0xAA,0xAA,0xAA,0xAA,0x55,0xC3,0x5A,0x05,0x00,0x10,0x01,0x00,0x00,0x00,0x37,0xDF
+            };
+            resBuff.append((char*)&Buff,sizeof(Buff));
+#else
             currentInterface->readDate(resBuff);
+#endif
             emit signalSendMessage(resBuff,Qt::darkYellow);
             const RET_ANSWER answer = parserReceivedPacket(resBuff);
             if ( answer == DELAY_ANSWER) // next package
@@ -584,18 +601,22 @@ void Controller::on_Machine()
             timerRead->stop();
             stat = (answer != SUCCESSFULLY)?stRepeat:stCounter;
             const int progress = (answer != SUCCESSFULLY)?currentValueProgress:++currentValueProgress;
-            emit signalProgressValue(progress,true);
+            emit signalProgressValue(progress);
             emit signalStep();
         }
         return;
 
+        case stStopExchange:
+            emit signalTimerDiagnosisDisabled();
         case stClose:
             currentInterface->close();
         default:
             stat = stOpen;
             timerRead->stop();
             connect(this,SIGNAL(signalStart()),this,SIGNAL(signalStep()),Qt::DirectConnection);
-            emit signalProgressValue(0,false);
+            //connect(this,&Controller::signalProgressEnabled,this,)
+            emit signalProgressValue(0);
+            emit signalProgressVisible(false);
             emit signalStop();
             sendOutputMessage();
         return;
@@ -691,6 +712,9 @@ void Controller::commandRun(const int numberCmd)
 {
     if (numberCmd<TYPE_COMMAND::END_TYPE_COMMAND)
     {
+        // disabled progressbar
+        progressVisible = (numberCmd == cmTest)?false:true;
+        // send command
         (this->*command_send[numberCmd])();
     }
 }

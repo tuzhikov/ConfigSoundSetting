@@ -23,5 +23,8 @@
         <file>config/default.ini</file>
         <file>ico/goup.ico</file>
         <file>ico/arrow.ico</file>
+        <file>ico/led_off.ico</file>
+        <file>ico/led_on.ico</file>
+        <file>TS/language_ru.qm</file>
     </qresource>
 </RCC>

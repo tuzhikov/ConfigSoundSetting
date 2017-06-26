@@ -69,3 +69,8 @@ SUBDIRS += \
 RESOURCES += \
     Resources.qrc
 QMAKE_CXXFLAGS += -std=c++0x
+
+TRANSLATIONS += \
+    TS/language_ru.ts
+
+CODECFORSRC  = UTF-8

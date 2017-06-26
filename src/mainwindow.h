@@ -78,8 +78,6 @@ private:
     QList<QAction*> ListCommand;
     QList<QAction*> ListConnect;
     QList<QAction*> ListView;
-
-    QProgressBar *progress;
     QLabel *wificon;
     QMap<int,QList<QSlider*> > soundValue;
     MusicPlayer *player;
@@ -93,6 +91,11 @@ private:
     Controller *ptrController;
     QTimer *timerTest;
     QButtonGroup *grToolButton;
+    QString projectPath;
+    QString wavFilePath;
+    const QString date_time_make;
+    const QString number_version;
+
     void createToolTip(void);
     void createToolBar(void);
     void createStatusBar(void);
@@ -210,7 +213,6 @@ private slots:
     void onSetSliderValue( const int );
     void onSetMessageOutWin(const QByteArray&,const QColor&);
     void onSetMaxPlanWeek(const int);
-    void onSetValueProgress(const int, const bool);
     void onCommandRun( const int );
     void onConnect( const int );
     void onCommandTest();
@@ -223,6 +225,7 @@ private slots:
     void onTimerDiagnosisDisabled();
     void onTimerDiagnosisEnabled();
     void onUpdateListenGuiToDate();
+    void onUpdataLabelIndicator(const int);
 
 signals:
     void signalSendMessage(const QByteArray&,const QColor&);

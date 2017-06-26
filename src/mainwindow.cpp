@@ -16,7 +16,9 @@ MainWindow::MainWindow(QWidget *parent, Controller *pdata) :
     settings( new SettingsDialog(parent) ),
     settingsWifi( new SettingDialogWifi( parent ) ),
     statusBar(new QLabel(parent)),
-    ptrController(pdata)
+    ptrController(pdata),
+    date_time_make(__TIMESTAMP__),
+    number_version("1.100")
 {
     ui->setupUi(this);
     //create
@@ -41,9 +43,19 @@ MainWindow::MainWindow(QWidget *parent, Controller *pdata) :
     // install structure datatime
     ptrController->setDateTime(ui->dateTimeEditConfig->dateTime());
     ptrController->setDateTimeZone(ui->cbGMT->currentIndex());
+    // install structure listen
+    updateGuiToTestListenDate();
     // visibled
     ui->lbAllTime->setVisible(false);
     ui->chbDayLight->setVisible(false);
+    ui->lbDiagnosisVolumePlan->setVisible(false);
+    ui->lbVolPlan->setVisible(false);
+    // LED indicator
+    onUpdataLabelIndicator(false);
+    connect(ptrController,&Controller::signalProgressValue,this,&MainWindow::onUpdataLabelIndicator,Qt::DirectConnection);
+
+    // macros
+    qDebug()<<date_time_make;
     //test
 //    QDateTime test(ui->dateTimeEditConfig->dateTime());
 //    qDebug()<<test<<test.currentDateTimeUtc().toTime_t()<<test.currentDateTimeUtc().toMSecsSinceEpoch();
@@ -109,6 +121,8 @@ MainWindow::~MainWindow()
 void MainWindow::writeSettings()
 {
     Settings::set(Settings::GEOMETRY) = saveGeometry();
+    Settings::set(Settings::PRJ_PACH) = projectPath.isEmpty()?QString(): projectPath;
+    Settings::set(Settings::WAV_PACH) = wavFilePath.isEmpty()?QString(): wavFilePath;
     Settings::set(Settings::IP,Settings::NETWORK) = settingsWifi->getIP();
     Settings::set(Settings::PORT,Settings::NETWORK) = settingsWifi->getPORT();
     Settings::set(Settings::COMNAME,Settings::COMPORT) = settings->getComName();
@@ -130,6 +144,13 @@ void MainWindow::readSettings()
     // read
     const QByteArray gemData = Settings::get(Settings::GEOMETRY).toByteArray();
     restoreGeometry(gemData);
+    // pach
+    const QString prj_pach = Settings::get(Settings::PRJ_PACH).toString();
+    projectPath = prj_pach.isEmpty()?QString() : prj_pach;
+    const QString wav_pach = Settings::get(Settings::WAV_PACH).toString();
+    wavFilePath = wav_pach.isEmpty()?QString() : wav_pach;
+    qDebug()<<prj_pach<<wav_pach;
+
     // Ethrenet
     const QString ip = Settings::get(Settings::IP,Settings::NETWORK).toString();
     if (!ip.isEmpty())
@@ -217,15 +238,16 @@ void MainWindow::createToolBar()
 void MainWindow::createStatusBar()
 {
     /*Add progress in status bar*/
-    progress = new QProgressBar(this);
+    QProgressBar *progress = new QProgressBar(this);
     progress->setVisible(false);
     progress->setTextVisible(true);
-    connect(ptrController,SIGNAL(signalProgressRange(int,int)),progress,SLOT(setRange(int,int)),Qt::DirectConnection);
-    connect(ptrController,SIGNAL(signalProgressValue(int,bool)),this,SLOT(onSetValueProgress(int,bool)),Qt::DirectConnection);
+    connect(ptrController,&Controller::signalProgressRange,progress,&QProgressBar::setRange,Qt::DirectConnection);
+    connect(ptrController,&Controller::signalProgressValue,progress,&QProgressBar::setValue,Qt::DirectConnection);
+    connect(ptrController,&Controller::signalProgressVisible,progress,&QProgressBar::setVisible,Qt::DirectConnection);
     ui->statusBar->addPermanentWidget(progress,0);
     /*Set message in status bar*/
     QLabel *p = new QLabel(this);
-    p->setText(tr("version 1.1"));
+    p->setText(tr("Version:")+number_version);
     p->setOpenExternalLinks(true);
     ui->statusBar->addPermanentWidget(p);
     //statusBar->setText(tr("Sound Configurator is open."));
@@ -316,7 +338,7 @@ void MainWindow::createConnectionGUI()
     timerTest = new QTimer(this);
     connect(timerTest,&QTimer::timeout,this,&MainWindow::onCommandTest);
     connect(ui->gbDiagnosis,&QGroupBox::toggled,this,&MainWindow::onTimerDiagnosis);
-    connect(ptrController,&Controller::signalStop,this,&MainWindow::onTimerDiagnosisDisabled);
+    connect(ptrController,&Controller::signalTimerDiagnosisDisabled,this,&MainWindow::onTimerDiagnosisDisabled);
     // update new
     connect(ptrController,&Controller::signalStop,this,&MainWindow::onUpdateDataToGui);
     // message
@@ -792,10 +814,11 @@ void MainWindow::onWindowsOut()
 void MainWindow::onActionabout()
 {
     QMessageBox::about(this,tr("About the program a Configure."),
-                            tr("<h2> Programming and testing version 1.1</h2>"
-                               "<p>Co., Ltd. CyberSB"
-                               "<h2>The program configure.</h2>"
-                               ));
+                            tr(
+                           "<h3>The program configure UZTVOP. version: %1 </h3>"
+                           "<p>All rights to this software belong to Co., Ltd. CyberSB</p>"
+                           "<p> Build time: %2 </p>"
+                           ).arg(number_version).arg(date_time_make));
 }
 /**
  * @brief MainWindow::onToolBar
@@ -1356,13 +1379,14 @@ void MainWindow::updateHolidayToGui()
 
     if (!lWgt) return;
     // remote old page
-    for ( int i=0; i<lWgt->count();i++ )
+    const int max_item(lWgt->count());
+    for ( int i = 0; i<max_item;i++ )
     {
         remoteItemHoliday(lWgt);
     }
+    // create new page
     const uint32_t max_current_plan = retDataBase().countPlan();
     const uint32_t max_current_holiday = retDataBase().countItemHoliday();
-    // create new page
     for ( uint32_t i=0; i<max_current_holiday; i++)
     {
         TYPEHOLIDAY holiday = {};
@@ -1651,22 +1675,20 @@ void MainWindow::onSetMaxPlanWeek(const int maxPlan)
     ui->sbSunday->setMaximum(maxPlan);
 }
 /**
- * @brief MainWindow::onSetValueProgress
- */
-void MainWindow::onSetValueProgress(const int value, const bool visible)
-{
-    progress->setVisible(visible);
-    progress->setValue(value);
-}
-/**
  * @brief MainWindow::onOpenFile
  */
 void MainWindow::onOpenFile(void)
 {
-    static QString file = QDir::homePath();
-    file = QFileDialog::getOpenFileName(this,tr("Open File"),file,tr("SPG (*.spg);;"));
+    const QString projectPaths(
+                projectPath.isEmpty()?( wavFilePath.isEmpty()?QDir::homePath() : wavFilePath ) : projectPath );
+    const QString file =
+        QFileDialog::getOpenFileName(this,tr("Open File"), projectPaths, tr("SPG (*.spg);;"));
+
     if(!file.isEmpty())
     {
+        // save pach
+        projectPath = QFileInfo(file).path();
+        //
         QFile readFile(file);
         readFile.open(QFile::ReadOnly);
         QDataStream outFile(&readFile);
@@ -1690,10 +1712,15 @@ void MainWindow::onSaveFiles(void)
     //update
     updateGuiToData();
     //
-    static QString file = QDir::homePath();
-    file = QFileDialog::getSaveFileName(this,tr("Save File"),file,tr("SPG (*.spg);;"));
+    const QString projectPaths(
+                projectPath.isEmpty()?( wavFilePath.isEmpty()?QDir::homePath() : wavFilePath ) : projectPath );
+    const QString file =
+        QFileDialog::getSaveFileName(this,tr("Save File"),projectPaths, tr("SPG (*.spg);;"));
+
     if(!file.isEmpty())
     {
+        // save pach
+        projectPath = QFileInfo(file).path();
         QFile appFile(file);
         //appFile.open(QFile::Append); // открываем файл для дозаписи;
         appFile.open(QIODevice::WriteOnly);
@@ -1712,15 +1739,14 @@ void MainWindow::onSaveFiles(void)
 void MainWindow::onOpenSoundFile()
 {
 
-    //const QStringList musicPaths = QStandardPaths::standardLocations(QStandardPaths::MusicLocation);
-    //const QString file =
-    static QString file = QDir::homePath();
-    file = QFileDialog::getOpenFileName(this,tr("Open File"),
-                                        //musicPaths.isEmpty() ? QDir::homePath() : musicPaths.first(),
-                                        file,
+    const QString projectPaths(
+                wavFilePath.isEmpty()? ( projectPath.isEmpty()?QDir::homePath() : projectPath ) : wavFilePath);
+    const QString file =
+        QFileDialog::getOpenFileName(this,tr("Open File"), projectPaths,
                                         tr("TRACK (*.wav);;All files (*.*)"));
     if(!file.isEmpty())
     {
+        wavFilePath = QFileInfo(file).path();
         if( QToolButton* btn = qobject_cast< QToolButton* >( sender() ) )
         {
             if( QLineEdit* edit = btn->parent()->findChild< QLineEdit* >() )
@@ -1776,7 +1802,17 @@ void MainWindow::onItemButtonPlay()
  */
 void MainWindow::onCommandRun(const int indexCommand)
 {
-    ui->mainToolBar->setEnabled(false);// lock button
+    // read data
+    if ( ( indexCommand == Controller::cmReadAll) || (indexCommand == Controller::cmReadSetting) )
+    {
+        const QMessageBox::StandardButtons buttons =
+            QMessageBox::question(this,tr("Read the data from UZTVOP"),tr("Current data will be lost!"));
+        if ( buttons != QMessageBox::Yes)
+        {
+            return;
+        }
+    }
+    //ui->mainToolBar->setEnabled(false);// lock button
     ui->gbDiagnosis->setChecked(false);// clear check diagnosis
     //update
     updateGuiToData();
@@ -1797,7 +1833,6 @@ void MainWindow::onConnect(const int number)
  */
 void MainWindow::onCommandTest()
 {
-    ui->mainToolBar->setEnabled(false);// lock button
     ptrController->commandRun(Controller::cmTest);
     qDebug("command test %d",Controller::cmTest);
 }
@@ -1807,7 +1842,7 @@ void MainWindow::onCommandTest()
  */
 void MainWindow::onWindowError(const QString &msg)
 {
-    QMessageBox::critical(this,tr("Device Protocol Error!"),msg);
+    QMessageBox::critical(this,tr("Device Error!"),msg);
 }
 /**
  * @brief MainWindow::onTestDate
@@ -1869,7 +1904,7 @@ void MainWindow::onTestTime(const TYPETIME &time)
 void MainWindow::onUpdateDataToGui()
 {
     updateDataToGui(); // update date
-    ui->mainToolBar->setEnabled(true); // unlock button
+    //ui->mainToolBar->setEnabled(true); // unlock button
 }
 /**
  * @brief MainWindow::onTimerDiagnosisEnabled
@@ -1908,6 +1943,20 @@ void MainWindow::onTimerDiagnosisEnabled()
 void MainWindow::onUpdateListenGuiToDate()
 {
     updateGuiToTestListenDate();
+}
+/**
+ * @brief MainWindow::onUpdataLabelIndicator
+ */
+void MainWindow::onUpdataLabelIndicator(const int value)
+{
+    if ( value%3 )
+    {
+        ui->indicator->setPixmap(QIcon(":/ico/led_on.ico").pixmap(16,16));
+    }
+    else
+    {
+        ui->indicator->setPixmap(QIcon(":/ico/led_off.ico").pixmap(16,16));
+    }
 }
 /**
  * @brief MainWindow::onWindowOk

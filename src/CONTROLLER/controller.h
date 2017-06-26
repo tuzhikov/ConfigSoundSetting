@@ -18,6 +18,8 @@
 class Controller : public QObject
 {
     Q_OBJECT
+    typedef QMap <QString, QByteArray> TYPE_PLAY;
+    typedef QMap <int,QByteArray> TYPE_CODE_NAME;
 
 public:
     enum TYPE_COMMAND{cmWriteAll,cmReadAll,cmWriteSetting,cmReadSetting,cmSetTime,cmGetTime,cmListen,cmTest,END_TYPE_COMMAND};
@@ -25,23 +27,31 @@ public:
     ~Controller(){}
     inline AccessDataProject &retDataProject(){ return dataproject;}
 private:
-    enum TYPE_STATE{stOpen,stCounter,stRepeat,stWrite,stRead,stClose};
+    enum TYPE_STATE{stOpen,stCounter,stRepeat,stWrite,stRead,stClose,stStopExchange};
     enum TYPE_STEP{STEP_ONE,STEP_TWO,STEP_THREE,STEP_ERROR};
     enum TYPE_INTERFACE{INTERFACE_COM,INTERFACE_WIFI,END_INTERFACE};
 
     TYPE_STATE stat = stOpen;
     AccessDataProject dataproject;
     QQueue<QByteArray> listCMD, templistCMD;
+    QByteArray sendCmd;
+    TYPE_PLAY tmpRaedDataWav;   // временно храним даные wav файла
+    TYPE_CODE_NAME codeNameFile; // 4 байта код в имени файла "0001///"
+    TYPE_CODE_NAME::const_iterator inNameFile;
+
     QTimer *timerRead;
     QVector <LinkInreface* > interface;
     LinkInreface* currentInterface = 0;
     int currentValueProgress = 0;
     TYPETIME timeDevice;
     TYPE_TEST_TRACK listen;
-    QByteArray sendCmd;
     int countSend = 0;
     const int max_repeat = 2;
     QString messageError,messageOk;
+    const quint16 max_lengh_data_wav;
+    const quint16 max_lengh_hander_wav;
+    const quint16 max_lengh_name_file;
+    bool progressVisible;
 
     // send command
     void commandWrite();
@@ -102,13 +112,15 @@ signals:
     void signalStart();
     void signalStop();
     void signalStep();
+    void signalTimerDiagnosisDisabled();
     void signalSearchUsb(QStringList&,quint16,quint16);
     void signalSendMessage(const QByteArray&,const QColor&);
     //void signalStatus(const QString&,const QColor&);
     void signalMessageOk(const QString&);
     void signalMessageError(const QString&);
     void signalProgressRange(const int,const int);
-    void signalProgressValue(const int,const bool);
+    void signalProgressValue(const int);
+    void signalProgressVisible(const bool);
     void signalTypeDevice(const int);
     void signalTime(const TYPETIME &);
     void signalTest(const TYPE_TEST &);

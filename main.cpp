@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     Q_INIT_RESOURCE(Resources);
     QTranslator trn;
-    //trn.load(QString(":/TR/TR/TestCountDown_en"));
+    trn.load(QString(":/TS/language_ru"));
     a.installTranslator(&trn);
     //setting parametr
     QApplication::setOrganizationName("Software Ltd. CyberSB");

@@ -52,6 +52,8 @@ public:
 
     enum Key{
         GEOMETRY,
+        PRJ_PACH,
+        WAV_PACH,
         IP,
         PORT,
         COMNAME,
