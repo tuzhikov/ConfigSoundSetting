@@ -2,6 +2,7 @@
 #define WIFI_H
 
 #include "LinkInterface.h"
+#include <QTcpSocket>
 class QByteArray;
 
 
@@ -18,7 +19,19 @@ class LinkWIFI : public LinkInreface
         bool open();
         int retTimeDelay() {return timeDelay;}
     private:
+        QTcpSocket *pSocket;
         int timeDelay;
+        enum TYPE_PARAMETR_WIFI{
+            WIFI_IP,
+            WIFI_PORT,
+            END_WIFI
+        };
+        struct Settings
+        {
+            QString ip;
+            int port;
+        };
+        Settings setting;
 };
 
 #endif // WIFI_H

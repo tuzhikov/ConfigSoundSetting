@@ -250,6 +250,15 @@ void SettingsDialog::checkCustomDevicePathPolicy(int idx)
         ui->serialPortInfoListBox->clearEditText();
 }
 /**
+ * @brief SettingsDialog::openWindowsSetting
+ */
+void SettingsDialog::openWindowsSetting()
+{
+    show();
+    fillPortsInfo();
+    updateSettings();
+}
+/**
  * @brief SettingsDialog::fillPortsParameters
  */
 void SettingsDialog::fillPortsParameters()

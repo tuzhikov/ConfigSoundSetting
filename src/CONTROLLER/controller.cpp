@@ -2,10 +2,12 @@
 #include "controller.h"
 #include "crc.h"
 
+#define DEBUG_ANSWER
+
 /**
- * @brief Controller::commandWrite
+ * @brief Controller::commandWriteAll
  */
-void Controller::commandWrite()
+void Controller::commandWriteAll()
 {
     // data project
     QByteArray cmd;
@@ -54,11 +56,12 @@ void Controller::commandWrite()
         for (int i = max_pask;--i>=0;)
         {
             QByteArray cmd;
-            const quint16 len = max_lengh_data_wav+3; // CRC16 + CMD_WAV
+            const quint16 len = max_lengh_data_wav+5; // CRC16(2) + CMD_WAV(1)+index_psk(2)
             cmd.append((char*)&len,sizeof(quint16));
             cmd.append(TYPE_UZTVOP);    // type
             cmd.append(CMD_TR_WRITE);   // cmd
             cmd.append(CMD_WAV);        // type cmd
+
             const int lengh(data.size());
             const char *const pBegin(data.data());
             if ( lengh<max_lengh_data_wav )
@@ -72,6 +75,8 @@ void Controller::commandWrite()
                 cmd.append(pBegin, max_lengh_data_wav);
                 data.remove(0, max_lengh_data_wav);
             }
+            // add number paskage
+            cmd.append((char*)&i,sizeof(quint16));
             list.enqueue(cmd);
         }
     }
@@ -79,30 +84,63 @@ void Controller::commandWrite()
     sendMessage(list);
     qDebug()<<"command Write";
 }
+
+void Controller::collectCommandRead(const QByteArray codefile, const quint16 index)
+{
+    QByteArray cmd;
+    cmd.append(codefile.size()+(uint8_t)5);  // lengh low CMD_WAV(1)+crc(2)+index(2)
+    cmd.append((char)0);     // lengh hi
+    cmd.append(TYPE_UZTVOP); // type
+    cmd.append(CMD_TR_READ); // cmd
+    cmd.append(CMD_WAV);     // type cmd
+    cmd.append(codefile);    // code file 4 byte
+    cmd.append((char*)&index,sizeof(quint16)); // Package index
+    collectTransportLevel( cmd );
+    sendMessage( cmd );
+    qDebug()<<"Command Read wav file:"<<cmd;
+
+}
+/**
+ * @brief Controller::checkCommandReadAll
+ * @return
+ */
+QByteArray Controller::checkCommandReadAll()
+{
+    if ( codeNameFile.isEmpty() )
+        return QByteArray();
+    const QByteArray codefile(iteratorNameFile.value());
+    return codefile;
+}
 /**
  * @brief Controller::commandRead wav
  */
-void Controller::commandRead()
+void Controller::commandReadAll()
 {
-
-    /*
-    const QByteArray codefile(inNameFile.value());
+    const QByteArray codefile(checkCommandReadAll());
     if ( !codefile.isEmpty() )
     {
-        QByteArray cmd_wav;
-        cmd_wav.append(codefile.size()+(uint8_t)3);  // lengh low
-        cmd_wav.append((char)0);     // lengh hi
-        cmd_wav.append(TYPE_UZTVOP); // type
-        cmd_wav.append(CMD_TR_READ); // cmd
-        cmd_wav.append(CMD_WAV);     // type cmd
-        cmd_wav.append(codefile); // code file 4 byte
-
-        collectTransportLevel( cmd_wav );
-        sendMessage( cmd_wav );
-        qDebug()<<"command Read wav file ";
+        //
+        startCommandWavFile();
+        // collect command
+        collectCommandRead(codefile, firstPackageIndex);
+        return;
     }
-    */
+    qDebug()<<"Error command read wav file!";
 }
+/**
+ * @brief Controller::commandReadWAV
+ */
+void Controller::commandReadFileWAV()
+{
+    const QByteArray codefile(checkCommandReadAll());
+    if ( !codefile.isEmpty() )
+    {
+        collectCommandRead(codefile, packageIndex);
+        return;
+    }
+    qDebug()<<"Error Controller::commandReadAll()!";
+}
+
 /**
  * @brief Controller::commandWriteSetting
  */
@@ -245,29 +283,47 @@ RET_ANSWER Controller::commandWriteWAV(const char *, const int){ return SUCCESSF
  */
 RET_ANSWER Controller::commandReadWAV(const char *pDate, const int lengh)
 {
-    // wav
-    if ( lengh == max_lengh_data_wav )
+    const quint16 data_wav(max_lengh_data_wav+2);
+    const quint16 prefix_wav_long(max_lengh_name_file+max_lengh_hander_wav+2+1);
+    const quint16 prefix_wav_short(max_lengh_name_file+max_lengh_hander_wav+2);
+
+    if ( lengh == data_wav ) // data wav file
     {
-        tmpRaedDataWav[""].append(pDate,lengh);
+        if ( lookingEndWavFile() )
+        {
+            if ( finishCommandWavFile() )
+            {
+                return SUCCESSFULLY;
+            }
+        }
+        tmpRaedDataWav[namefile].append(pDate,lengh); // save data
+        commandReadFileWAV(); // send command
         return SUCCESSFULLY;
     }
-    // header
-    else if ( lengh == (max_lengh_name_file+max_lengh_hander_wav+2+1) )
-    {
-        tmpRaedDataWav.clear();
 
-    }
-    // ok nex files
-    else if (lengh == 2)
+    if ( (lengh == prefix_wav_long) || (lengh == prefix_wav_short) ) // prefix wav file
     {
-        //QList<QByteArray>::const_iterator end(codeNameFile.end());
-        //if ( end.value_type != codeNameFile[0] )
-        {
-            //signal
-        }
-        //dataproject.clearPlayList();
-        //dataproject.retPlayList()
+        const char *pTotalPackages = pDate+max_lengh_name_file+max_lengh_hander_wav;
+        const char *pBeginWavFiles = pDate+max_lengh_name_file;
+        memcpy(&packageIndex,pTotalPackages,sizeof(quint16));
+        packageIndex -= 1;
+        QString name_file(pDate);
+        namefile = name_file;
+        tmpRaedDataWav[namefile].clear();
+        tmpRaedDataWav[namefile].append(pBeginWavFiles,max_lengh_hander_wav);
+        commandReadFileWAV(); // send command
+        return SUCCESSFULLY;
     }
+
+    if (lengh == 2) // command OK
+    {
+        if ( !finishCommandWavFile() )
+        {
+            commandReadFileWAV(); // send command
+        }
+        return SUCCESSFULLY;
+    }
+
     setMessageError(tr("<CENTER><b>WAV file is incorrect!</CENTER></b>"));
     return ERROR_ANSWER;
 }
@@ -330,6 +386,50 @@ RET_ANSWER Controller::commandRead(const char *p, const int lengh)
 {
     const int number_cmd = *p;
     return ( number_cmd<END_TYPE_NUMBER_COMMAND )?(this->*command_get[number_cmd])(p+1,lengh-1):ERROR_ANSWER;
+}
+/**
+ * @brief Controller::lookingEndWavFile
+ */
+bool Controller::lookingEndWavFile()
+{
+    if ( packageIndex == 0 )
+    {
+        packageIndex = firstPackageIndex;
+        return true;
+    }
+    packageIndex -=1;
+    return false;
+}
+/**
+ * @brief Controller::nextCommandWavFile
+ * @return
+ */
+bool Controller::finishCommandWavFile()
+{
+    bool answer = false;
+    if ( iteratorNameFile!= codeNameFile.constEnd() )
+    {
+        iteratorNameFile++;
+        // save one wav file
+    }
+    else
+    {
+        // save one wav file
+        // start
+        startCommandWavFile();
+        answer = true;
+    }
+    packageIndex = firstPackageIndex;
+
+    return answer;
+}
+/**
+ * @brief Controller::startCommandWavFile
+ */
+void Controller::startCommandWavFile()
+{
+    iteratorNameFile = codeNameFile.constBegin();
+    tmpRaedDataWav.clear();
 }
 /**
  * @brief Controller::commandWrite
@@ -433,7 +533,7 @@ RET_ANSWER Controller::parserReceivedPacket(const QByteArray &cmd)
     static QByteArray readBuffer;
     static TYPE_STEP step = STEP_ONE;
     static int counter = 0;
-    const int max_repeat = (500/currentInterface->retTimeDelay());
+    const int max_repeat = (1000/currentInterface->retTimeDelay());
     RET_ANSWER result = ERROR_ANSWER;
     const QByteArray HEAD(header.pHeader2,header.lengn2);
 
@@ -490,6 +590,122 @@ void Controller::sendOutputMessage()
     }
 }
 /**
+ * @brief Controller::nextAnswerWavTest
+ * @return
+ */
+QByteArray Controller::nextAnswerWavTest()
+{
+    QByteArray retData;
+#ifdef DEBUG_ANSWER
+        //
+        //0xAA,0xAA,0xAA,0xAA,0xAA,0x55,0xC3,0x5A,0x05,0x00,0x10,0x01,0x00,0x03,0x00,0x37,0x2F
+        //
+        //0xAA,0xAA,0xAA,0xAA,0xAA,0x55,0xC3,0x5A,0x05,0x00,0x10,0x01,0x00,0x00,0x00,0x37,0xDF
+        //test
+        //0xAA,0xAA,0xAA,0xAA,0xAA,0x55,0xC3,0x5A,0x1B,0x00,0x10,0x02,0x00,0x00,0x2D,0x5E,0x42,0x59,0x00,
+        //0x00,0x00,0x00,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x01,0x00,0x00,0x1E,0x1E,0x00,0x00,0x40,0xAC
+//        const uint8_t BuffFistWav[] ={
+//                // read
+//                0xAA,0xAA,0xAA,0xAA,0xAA,0x55,0xC3,0x5A,0x73,0x00,0x10,0x02,0x00,0x02,0x32,0x30,0x30,0x30,0x5F,0x30,0x32,
+//                0x30,0x30,0x5F,0xD0,0xA2,0xD0,0xB8,0xD0,0xBA,0x20,0xD1,0x82,0xD0,0xB0,0xD0,0xBA,0x20,0x31,0xD1,0x81,0x20,
+//                0x32,0xD1,0x82,0xD0,0xB8,0xD0,0xBA,0xD0,0xB0,0x2E,0x77,0x61,0x76,0x00,0x00,0x00,0x02,0x00,0x00,0x00,0x02,
+//                0x00,0x00,0x00,0x02,0x00,0x00,0x00,0x06,0x01,0x00,0x00,0x03,0x00,0x00,0x00,0x52,0x49,0x46,0x46,0x24,0xAB,
+//                0x00,0x00,0x57,0x41,0x56,0x45,0x66,0x6D,0x74,0x20,0x10,0x00,0x00,0x00,0x01,0x00,0x01,0x00,0x22,0x56,0x00,
+//                0x00,0x44,0xAC,0x00,0x00,0x02,0x00,0x10,0x00,0x64,0x61,0x74,0x61,0x00,0xAB,0x00,0x00,0x16,0x00,0x02,0x53,0xA4
+//         };
+    // extract sound files
+    static QQueue<QByteArray> list;
+    static TYPE_STEP step = STEP_ONE;
+switch(step)
+{
+    case STEP_ONE:
+    {
+        list.clear();
+        QMap <QString, QByteArray>::iterator it = dataproject.retPlayList().begin();
+        quint8 count_sound = dataproject.retPlayList().size();
+        bool first_package = true;
+
+        for (;it!= dataproject.retPlayList().end(); ++it)
+        {
+            QByteArray name;name.append(it.key());
+            QByteArray data(it.value());
+            const quint16 max_pask = (data.size()/max_lengh_data_wav) +1;
+            //first wav
+            QByteArray cmd;
+            const quint16 lengh = max_lengh_name_file+max_lengh_hander_wav+2+1+4;
+            cmd.append((char*)&lengh,sizeof(quint16));
+            cmd.append(TYPE_UZTVOP);    // type
+            cmd.append(CMD_TR_READ);   // cmd
+            cmd.append((char)0);
+            cmd.append(CMD_WAV);        // type cmd
+            cmd.append(name.data(),max_lengh_name_file); // name
+            cmd.append(data.data(),max_lengh_hander_wav); //
+            data.remove(0, max_lengh_hander_wav);
+            cmd.append((char*)&max_pask, 2);
+            count_sound--;
+            if ( first_package )
+            {
+                cmd.append( COD_CLEAR_WAV );
+                first_package = false;
+            }
+            else
+            {
+                cmd.append( count_sound );
+            }
+            list.enqueue(cmd);
+            // data wav
+            for (int i = max_pask;--i>=0;)
+            {
+                QByteArray cmd;
+                const quint16 len = max_lengh_data_wav+6; // CRC16(2) + CMD_WAV(1)+index_psk(2)
+                cmd.append((char*)&len,sizeof(quint16));
+                cmd.append(TYPE_UZTVOP);    // type
+                cmd.append(CMD_TR_READ);   // cmd
+                cmd.append((char)0);
+                cmd.append(CMD_WAV);        // type cmd
+
+                const int lengh(data.size());
+                const char *const pBegin(data.data());
+                if ( lengh<max_lengh_data_wav )
+                {
+                    cmd.append(pBegin,lengh);
+                    const int lengh_null(max_lengh_data_wav-lengh);
+                    cmd.append(lengh_null, (char)0);
+                }
+                else
+                {
+                    cmd.append(pBegin, max_lengh_data_wav);
+                    data.remove(0, max_lengh_data_wav);
+                }
+                // add number paskage
+                cmd.append((char*)&i,sizeof(quint16));
+                list.enqueue(cmd);
+            }
+        }
+        collectTransportLevel(list);
+
+        step = STEP_TWO;
+    }
+    case STEP_TWO:
+
+        if (!list.isEmpty())
+        {
+            retData.append(list.dequeue());
+        }
+        else
+        {
+            step = STEP_THREE;
+        }
+    break;
+
+    default:
+        retData.clear();
+    break;
+}
+#endif
+    return retData;
+}
+/**
  * @brief Controller::Controller
  * @param parent
  */
@@ -505,8 +721,28 @@ Controller::Controller( QObject *parent ) :
     connect(timerRead,SIGNAL(timeout()),this,SLOT(on_Machine()),Qt::DirectConnection);
     interface<<new ComPort()<<new LinkWIFI();
     checkInterface(INTERFACE_COM);
+    // test name file
+    codeNameFile.insert(0,"2000");
+    codeNameFile.insert(1,"2100");
+    codeNameFile.insert(2,"0001");
+    codeNameFile.insert(3,"0010");
+    codeNameFile.insert(4,"0020");
+    codeNameFile.insert(5,"0030");
+    codeNameFile.insert(6,"0040");
+    codeNameFile.insert(7,"0050");
+    codeNameFile.insert(8,"0060");
+    codeNameFile.insert(9,"0090");
+    codeNameFile.insert(10,"0002");
+    codeNameFile.insert(11,"0100");
+    codeNameFile.insert(12,"0200");
+    codeNameFile.insert(13,"0300");
+    codeNameFile.insert(14,"0400");
+    codeNameFile.insert(15,"0500");
+    codeNameFile.insert(16,"0600");
+    codeNameFile.insert(17,"0900");
+    codeNameFile.insert(18,"3000");
+    iteratorNameFile = codeNameFile.constBegin();
 }
-
 /**
  * @brief Controller::on_Machine
  */
@@ -537,6 +773,11 @@ void Controller::on_Machine()
         return;
 
         case stCounter:
+            if ( !listCMD.isEmpty() )
+            {
+                templistCMD = listCMD;
+                listCMD.clear();
+            }
             if( !templistCMD.isEmpty() )
             {
                 emit signalProgressValue(++currentValueProgress);
@@ -576,19 +817,8 @@ void Controller::on_Machine()
         case stRead:
         {
             QByteArray resBuff;
-//        const uint8_t Buff[] ={0xAA,0xAA,0xAA,0xAA,0xAA,0x55,0xC3,0x5A,0x1B,0x00,0x10,
-//                       0x02,0x00,0x00,0x2D,0x5E,0x42,0x59,0x00,0x00,0x00,0x00,
-//                       0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x01,0x00,0x00,0x1E,0x1E,
-//                            0x00,0x00,0x40,0xAC
-//                           };
-
-//#define DEBUG_ANSWER
 #ifdef DEBUG_ANSWER
-            const uint8_t Buff[] ={
-            //    0xAA,0xAA,0xAA,0xAA,0xAA,0x55,0xC3,0x5A,0x05,0x00,0x10,0x01,0x00,0x03,0x00,0x37,0x2F
-                0xAA,0xAA,0xAA,0xAA,0xAA,0x55,0xC3,0x5A,0x05,0x00,0x10,0x01,0x00,0x00,0x00,0x37,0xDF
-            };
-            resBuff.append((char*)&Buff,sizeof(Buff));
+            resBuff.append(nextAnswerWavTest());
 #else
             currentInterface->readDate(resBuff);
 #endif

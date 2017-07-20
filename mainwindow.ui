@@ -226,6 +226,9 @@
                      <property name="maximum">
                       <number>100</number>
                      </property>
+                     <property name="pageStep">
+                      <number>1</number>
+                     </property>
                      <property name="value">
                       <number>50</number>
                      </property>
@@ -236,6 +239,12 @@
                    </item>
                    <item row="0" column="2">
                     <widget class="QLabel" name="lb_general_spone">
+                     <property name="minimumSize">
+                      <size>
+                       <width>25</width>
+                       <height>0</height>
+                      </size>
+                     </property>
                      <property name="text">
                       <string>100</string>
                      </property>
@@ -262,6 +271,9 @@
                      <property name="singleStep">
                       <number>1</number>
                      </property>
+                     <property name="pageStep">
+                      <number>1</number>
+                     </property>
                      <property name="value">
                       <number>50</number>
                      </property>
@@ -272,6 +284,12 @@
                    </item>
                    <item row="1" column="2">
                     <widget class="QLabel" name="lb_one_zso">
+                     <property name="minimumSize">
+                      <size>
+                       <width>25</width>
+                       <height>0</height>
+                      </size>
+                     </property>
                      <property name="text">
                       <string>100</string>
                      </property>
@@ -298,6 +316,9 @@
                      <property name="singleStep">
                       <number>1</number>
                      </property>
+                     <property name="pageStep">
+                      <number>1</number>
+                     </property>
                      <property name="value">
                       <number>50</number>
                      </property>
@@ -308,6 +329,12 @@
                    </item>
                    <item row="2" column="2">
                     <widget class="QLabel" name="lb_one_zsp">
+                     <property name="minimumSize">
+                      <size>
+                       <width>25</width>
+                       <height>0</height>
+                      </size>
+                     </property>
                      <property name="text">
                       <string>100</string>
                      </property>
@@ -334,6 +361,9 @@
                      <property name="singleStep">
                       <number>1</number>
                      </property>
+                     <property name="pageStep">
+                      <number>1</number>
+                     </property>
                      <property name="value">
                       <number>50</number>
                      </property>
@@ -344,6 +374,12 @@
                    </item>
                    <item row="3" column="2">
                     <widget class="QLabel" name="lb_one_zsr">
+                     <property name="minimumSize">
+                      <size>
+                       <width>25</width>
+                       <height>0</height>
+                      </size>
+                     </property>
                      <property name="text">
                       <string>100</string>
                      </property>
@@ -370,6 +406,9 @@
                      <property name="singleStep">
                       <number>1</number>
                      </property>
+                     <property name="pageStep">
+                      <number>1</number>
+                     </property>
                      <property name="value">
                       <number>50</number>
                      </property>
@@ -380,6 +419,12 @@
                    </item>
                    <item row="4" column="2">
                     <widget class="QLabel" name="lb_one_zsvrr">
+                     <property name="minimumSize">
+                      <size>
+                       <width>25</width>
+                       <height>0</height>
+                      </size>
+                     </property>
                      <property name="text">
                       <string>100</string>
                      </property>
@@ -406,6 +451,9 @@
                      <property name="singleStep">
                       <number>1</number>
                      </property>
+                     <property name="pageStep">
+                      <number>1</number>
+                     </property>
                      <property name="value">
                       <number>50</number>
                      </property>
@@ -416,6 +464,12 @@
                    </item>
                    <item row="5" column="2">
                     <widget class="QLabel" name="lb_one_zsz">
+                     <property name="minimumSize">
+                      <size>
+                       <width>25</width>
+                       <height>0</height>
+                      </size>
+                     </property>
                      <property name="text">
                       <string>100</string>
                      </property>
@@ -442,6 +496,9 @@
                      <property name="singleStep">
                       <number>1</number>
                      </property>
+                     <property name="pageStep">
+                      <number>1</number>
+                     </property>
                      <property name="value">
                       <number>50</number>
                      </property>
@@ -452,6 +509,12 @@
                    </item>
                    <item row="6" column="2">
                     <widget class="QLabel" name="lb_one_zsvrz">
+                     <property name="minimumSize">
+                      <size>
+                       <width>25</width>
+                       <height>0</height>
+                      </size>
+                     </property>
                      <property name="text">
                       <string>100</string>
                      </property>
@@ -475,6 +538,9 @@
                      <property name="maximum">
                       <number>100</number>
                      </property>
+                     <property name="pageStep">
+                      <number>1</number>
+                     </property>
                      <property name="value">
                       <number>50</number>
                      </property>
@@ -485,6 +551,12 @@
                    </item>
                    <item row="7" column="2">
                     <widget class="QLabel" name="lb_one_tvp">
+                     <property name="minimumSize">
+                      <size>
+                       <width>25</width>
+                       <height>0</height>
+                      </size>
+                     </property>
                      <property name="text">
                       <string>100</string>
                      </property>
@@ -546,6 +618,9 @@
                      <property name="singleStep">
                       <number>1</number>
                      </property>
+                     <property name="pageStep">
+                      <number>1</number>
+                     </property>
                      <property name="value">
                       <number>50</number>
                      </property>
@@ -556,6 +631,12 @@
                    </item>
                    <item row="0" column="2">
                     <widget class="QLabel" name="lb_general_sptwo">
+                     <property name="minimumSize">
+                      <size>
+                       <width>25</width>
+                       <height>0</height>
+                      </size>
+                     </property>
                      <property name="text">
                       <string>100</string>
                      </property>
@@ -582,6 +663,9 @@
                      <property name="singleStep">
                       <number>1</number>
                      </property>
+                     <property name="pageStep">
+                      <number>1</number>
+                     </property>
                      <property name="value">
                       <number>50</number>
                      </property>
@@ -592,6 +676,12 @@
                    </item>
                    <item row="1" column="2">
                     <widget class="QLabel" name="lb_two_zso">
+                     <property name="minimumSize">
+                      <size>
+                       <width>25</width>
+                       <height>0</height>
+                      </size>
+                     </property>
                      <property name="text">
                       <string>100</string>
                      </property>
@@ -618,6 +708,9 @@
                      <property name="singleStep">
                       <number>1</number>
                      </property>
+                     <property name="pageStep">
+                      <number>1</number>
+                     </property>
                      <property name="value">
                       <number>50</number>
                      </property>
@@ -628,6 +721,12 @@
                    </item>
                    <item row="2" column="2">
                     <widget class="QLabel" name="lb_two_zsp">
+                     <property name="minimumSize">
+                      <size>
+                       <width>25</width>
+                       <height>0</height>
+                      </size>
+                     </property>
                      <property name="text">
                       <string>100</string>
                      </property>
@@ -654,6 +753,9 @@
                      <property name="singleStep">
                       <number>1</number>
                      </property>
+                     <property name="pageStep">
+                      <number>1</number>
+                     </property>
                      <property name="value">
                       <number>50</number>
                      </property>
@@ -664,6 +766,12 @@
                    </item>
                    <item row="3" column="2">
                     <widget class="QLabel" name="lb_two_zsr">
+                     <property name="minimumSize">
+                      <size>
+                       <width>25</width>
+                       <height>0</height>
+                      </size>
+                     </property>
                      <property name="text">
                       <string>100</string>
                      </property>
@@ -690,6 +798,9 @@
                      <property name="singleStep">
                       <number>1</number>
                      </property>
+                     <property name="pageStep">
+                      <number>1</number>
+                     </property>
                      <property name="value">
                       <number>50</number>
                      </property>
@@ -700,6 +811,12 @@
                    </item>
                    <item row="4" column="2">
                     <widget class="QLabel" name="lb_two_zsvrr">
+                     <property name="minimumSize">
+                      <size>
+                       <width>25</width>
+                       <height>0</height>
+                      </size>
+                     </property>
                      <property name="text">
                       <string>100</string>
                      </property>
@@ -726,6 +843,9 @@
                      <property name="singleStep">
                       <number>1</number>
                      </property>
+                     <property name="pageStep">
+                      <number>1</number>
+                     </property>
                      <property name="value">
                       <number>50</number>
                      </property>
@@ -736,6 +856,12 @@
                    </item>
                    <item row="5" column="2">
                     <widget class="QLabel" name="lb_two_zsz">
+                     <property name="minimumSize">
+                      <size>
+                       <width>25</width>
+                       <height>0</height>
+                      </size>
+                     </property>
                      <property name="text">
                       <string>100</string>
                      </property>
@@ -762,6 +888,9 @@
                      <property name="singleStep">
                       <number>1</number>
                      </property>
+                     <property name="pageStep">
+                      <number>1</number>
+                     </property>
                      <property name="value">
                       <number>50</number>
                      </property>
@@ -772,6 +901,12 @@
                    </item>
                    <item row="6" column="2">
                     <widget class="QLabel" name="lb_two_zsvrz">
+                     <property name="minimumSize">
+                      <size>
+                       <width>25</width>
+                       <height>0</height>
+                      </size>
+                     </property>
                      <property name="text">
                       <string>100</string>
                      </property>
@@ -795,6 +930,9 @@
                      <property name="maximum">
                       <number>100</number>
                      </property>
+                     <property name="pageStep">
+                      <number>1</number>
+                     </property>
                      <property name="value">
                       <number>50</number>
                      </property>
@@ -805,6 +943,12 @@
                    </item>
                    <item row="7" column="2">
                     <widget class="QLabel" name="lb_two_tvp">
+                     <property name="minimumSize">
+                      <size>
+                       <width>25</width>
+                       <height>0</height>
+                      </size>
+                     </property>
                      <property name="text">
                       <string>100</string>
                      </property>
@@ -1036,6 +1180,40 @@
                 </property>
                 <layout class="QHBoxLayout" name="horizontalLayout_10">
                  <item>
+                  <widget class="QComboBox" name="cbSelectPlan">
+                   <property name="minimumSize">
+                    <size>
+                     <width>120</width>
+                     <height>30</height>
+                    </size>
+                   </property>
+                   <property name="toolTipDuration">
+                    <number>0</number>
+                   </property>
+                   <property name="currentIndex">
+                    <number>0</number>
+                   </property>
+                   <item>
+                    <property name="text">
+                     <string>Number Plan 1</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_long">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
                   <widget class="QLabel" name="label_53">
                    <property name="minimumSize">
                     <size>
@@ -1105,40 +1283,6 @@
                    <property name="text">
                     <string>Remote Plan</string>
                    </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_long">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                 <item>
-                  <widget class="QComboBox" name="cbSelectPlan">
-                   <property name="minimumSize">
-                    <size>
-                     <width>120</width>
-                     <height>30</height>
-                    </size>
-                   </property>
-                   <property name="toolTipDuration">
-                    <number>0</number>
-                   </property>
-                   <property name="currentIndex">
-                    <number>0</number>
-                   </property>
-                   <item>
-                    <property name="text">
-                     <string>Number Plan 1</string>
-                    </property>
-                   </item>
                   </widget>
                  </item>
                 </layout>
@@ -1256,7 +1400,7 @@
                <widget class="QGroupBox" name="groupBoxWeek">
                 <property name="minimumSize">
                  <size>
-                  <width>200</width>
+                  <width>250</width>
                   <height>0</height>
                  </size>
                 </property>
@@ -1723,7 +1867,7 @@
                         </size>
                        </property>
                        <property name="text">
-                        <string>Measuring time (min.):</string>
+                        <string>Measuring time (c.):</string>
                        </property>
                       </widget>
                      </item>
@@ -2122,7 +2266,7 @@
                       </size>
                      </property>
                      <property name="minimum">
-                      <number>200</number>
+                      <number>0</number>
                      </property>
                      <property name="maximum">
                       <number>10000</number>
@@ -3456,7 +3600,7 @@
   <action name="actionWrite">
    <property name="icon">
     <iconset resource="Resources.qrc">
-     <normaloff>:/ico/load.ico</normaloff>:/ico/load.ico</iconset>
+     <normaloff>:/ico/download.ico</normaloff>:/ico/download.ico</iconset>
    </property>
    <property name="text">
     <string>Write All</string>
@@ -3468,7 +3612,7 @@
   <action name="actionRead">
    <property name="icon">
     <iconset resource="Resources.qrc">
-     <normaloff>:/ico/download.ico</normaloff>:/ico/download.ico</iconset>
+     <normaloff>:/ico/load.ico</normaloff>:/ico/load.ico</iconset>
    </property>
    <property name="text">
     <string>Read All</string>
@@ -3599,7 +3743,7 @@
   <action name="actionWrite_Setting">
    <property name="icon">
     <iconset resource="Resources.qrc">
-     <normaloff>:/ico/goup.ico</normaloff>:/ico/goup.ico</iconset>
+     <normaloff>:/ico/arrow.ico</normaloff>:/ico/arrow.ico</iconset>
    </property>
    <property name="text">
     <string>Write Data</string>
@@ -3611,7 +3755,7 @@
   <action name="actionRead_Setting">
    <property name="icon">
     <iconset resource="Resources.qrc">
-     <normaloff>:/ico/arrow.ico</normaloff>:/ico/arrow.ico</iconset>
+     <normaloff>:/ico/goup.ico</normaloff>:/ico/goup.ico</iconset>
    </property>
    <property name="text">
     <string>Read Data</string>

@@ -64,7 +64,7 @@
     <message>
         <location filename="../mainwindow.ui" line="181"/>
         <source>Play track</source>
-        <translation>Проиграть трек</translation>
+        <translation>Прослушать звук</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="192"/>
@@ -150,7 +150,7 @@
     <message>
         <location filename="../mainwindow.ui" line="520"/>
         <source>Speaker 2 (top)</source>
-        <translation>Динамик 2 (нижний)</translation>
+        <translation>Динамик 2 (верхний)</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="639"/>
@@ -171,7 +171,7 @@
     <message>
         <location filename="../mainwindow.ui" line="905"/>
         <source>Length   (ms):</source>
-        <translation>Длина   (ms):</translation>
+        <translation>Импульс (ms):</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="952"/>
@@ -279,7 +279,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1498"/>
         <source>Holiday plan</source>
-        <translation>Праздничные планы</translation>
+        <translation>Особые даты</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1576"/>
@@ -294,7 +294,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1613"/>
         <source>Acceleration time (c.):</source>
-        <translation>Время ускорения (c.):</translation>
+        <translation>Время ускорения (c):</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1647"/>
@@ -304,12 +304,12 @@
     <message>
         <location filename="../mainwindow.ui" line="1665"/>
         <source> Dead time (c.):</source>
-        <translation> Время простоя (c.):</translation>
+        <translation>Нечувствительность датчика (с):</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1691"/>
         <source>Motion sensor as TVP.</source>
-        <translation>Датчик движения как TVP.</translation>
+        <translation>Датчик движения как TVP</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1706"/>
@@ -317,9 +317,21 @@
         <translation>Датчик шума</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="1726"/>
         <source>Measuring time (min.):</source>
-        <translation>Время измерения (мин.):</translation>
+        <translation type="vanished">Время измерения (c):</translation>
+    </message>
+    <message>
+        <source>Speaker 1 (top)</source>
+        <translation type="obsolete">Динамик 2 (нижний) {1 ?}</translation>
+    </message>
+    <message>
+        <source>Speaker 2 (bottom)</source>
+        <translation type="obsolete">Динамик 1 (нижний) {2 ?}</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1726"/>
+        <source>Measuring time (c.):</source>
+        <translation>Время измерения (c):</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1762"/>
@@ -349,12 +361,12 @@
     <message>
         <location filename="../mainwindow.ui" line="1932"/>
         <source>ZSZ at the beginning of the ban time</source>
-        <translation>ЗСЗ в начале запретного времени</translation>
+        <translation>ЗСЗ в начале времени запрета дижения</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1945"/>
         <source>ZSZ when you press the button</source>
-        <translation>ЗСЗ, когда вы нажимаете кнопку</translation>
+        <translation>ЗСЗ при нажатии кнопки</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1958"/>
@@ -364,17 +376,17 @@
     <message>
         <location filename="../mainwindow.ui" line="1971"/>
         <source>ZSVRZ when you press the button</source>
-        <translation>ЗСВРЗ, когда вы нажимаете кнопку</translation>
+        <translation>ЗСВРЗ при нажатии кнопки</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1984"/>
         <source>ZSR at the beginning of the ban time</source>
-        <translation>ЗСР в начале запретного времени</translation>
+        <translation>ЗСР в начале времени для движения</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1997"/>
         <source>ZSR at the push of a button</source>
-        <translation>ЗСР, при нажатии на кнопку</translation>
+        <translation>ЗСР при нажатии кнопки</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="2010"/>
@@ -384,7 +396,7 @@
     <message>
         <location filename="../mainwindow.ui" line="2023"/>
         <source>ZSVRR when the button is pressed</source>
-        <translation>ЗСВРР, когда вы нажимаете кнопку</translation>
+        <translation>ЗСВРР при нажатии кнопки</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="2030"/>
@@ -394,17 +406,17 @@
     <message>
         <location filename="../mainwindow.ui" line="2045"/>
         <source>Button insensitivity   (c.):</source>
-        <translation>Нечувствительность кнопки (c.):</translation>
+        <translation>Нечувствительность кнопки (c):</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="2077"/>
         <source>Period ZSO and ZSP (mc.):</source>
-        <translation>Период ЗСО и ЗСР (мс.):</translation>
+        <translation>Период ЗСО и ЗСР (мс):</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="2112"/>
         <source>Delay ZSO and ZSP  (mc.):</source>
-        <translation>Задержка ЗСО и ЗСП (мс.):</translation>
+        <translation>Задержка ЗСО и ЗСП (мс):</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="2201"/>
@@ -440,7 +452,7 @@
     <message>
         <location filename="../mainwindow.ui" line="2437"/>
         <source>Motion Sensor</source>
-        <translation>Датчик Движения</translation>
+        <translation>Датчик движения</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="2444"/>
@@ -498,7 +510,7 @@
     <message>
         <location filename="../mainwindow.ui" line="2698"/>
         <source>Noise sensor volume:</source>
-        <translation>Значение датчика шума:</translation>
+        <translation>К-т. датчика шума:</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="2720"/>
@@ -814,13 +826,13 @@
         <location filename="../mainwindow.ui" line="3462"/>
         <location filename="../mainwindow.ui" line="3465"/>
         <source>Write All</source>
-        <translation>Все записать</translation>
+        <translation>Записать все</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="3474"/>
         <location filename="../mainwindow.ui" line="3477"/>
         <source>Read All</source>
-        <translation>Все прочитать</translation>
+        <translation>Прочитать все</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="3486"/>
@@ -850,7 +862,7 @@
     <message>
         <location filename="../mainwindow.ui" line="3546"/>
         <source>Setting</source>
-        <translation>Натсройка</translation>
+        <translation>Настройка</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="3573"/>
@@ -871,13 +883,13 @@
         <location filename="../mainwindow.ui" line="3605"/>
         <location filename="../mainwindow.ui" line="3608"/>
         <source>Write Data</source>
-        <translation>Записать данные</translation>
+        <translation>Записать настр.</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="3617"/>
         <location filename="../mainwindow.ui" line="3620"/>
         <source>Read Data</source>
-        <translation>Прочитать данные</translation>
+        <translation>Прочитать настр.</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="202"/>
@@ -917,7 +929,7 @@
     <message>
         <location filename="../src/mainwindow.cpp" line="741"/>
         <source>GENERAL TRACK</source>
-        <translation>ОСНОВНЫЕ ТРЕКИ</translation>
+        <translation>ОСНОВНЫЕ ЗВУКИ</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="745"/>
@@ -1007,7 +1019,7 @@
     <message>
         <location filename="../src/mainwindow.cpp" line="756"/>
         <source>ALLOWED TRACK</source>
-        <translation>РАЗРЕШАЮЩИЕ ТРЕКИ</translation>
+        <translation>РАЗРЕШАЮЩИЕ ЗВУКИ</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="760"/>
@@ -1087,7 +1099,7 @@
     <message>
         <location filename="../src/mainwindow.cpp" line="767"/>
         <source>PROHIBITIVE TRACK</source>
-        <translation>ЗАПРЕЩАЮЩИЕ ТРЕКИ</translation>
+        <translation>ЗАПРЕЩАЮЩИЕ ЗВУКИ</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="771"/>
@@ -1097,29 +1109,29 @@
     <message>
         <location filename="../src/mainwindow.cpp" line="772"/>
         <source>TVP TRACK</source>
-        <translation>ТВП ТРЕК</translation>
+        <translation>ТВП ЗВУК</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="816"/>
         <source>About the program a Configure.</source>
-        <translation>О программе Конфигураторе</translation>
+        <translation>О программе «Конфигуратор».</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="817"/>
         <source>&lt;h3&gt;The program configure UZTVOP. version: %1 &lt;/h3&gt;&lt;p&gt;All rights to this software belong to Co., Ltd. CyberSB&lt;/p&gt;&lt;p&gt; Build time: %2 &lt;/p&gt;</source>
-        <translation>&lt;h3&gt;Программа сконфигурирует УЗТВОП. версия: %1 &lt;/h3&gt;&lt;p&gt;Все права на это программное обеспечение принадлежат КиберСБ&lt;/p&gt;&lt;p&gt; Время сборки: %2 &lt;/p&gt;</translation>
+        <translation>&lt;h3&gt;Программа конфигурирования УЗТВОП. Версия: %1 &lt;/h3&gt;&lt;p&gt;Все права на это программное обеспечение принадлежат Кибер-СБ&lt;/p&gt;&lt;p&gt; Время сборки: %2 &lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="899"/>
         <location filename="../src/mainwindow.cpp" line="917"/>
         <location filename="../src/mainwindow.cpp" line="1338"/>
         <source>Number Plan </source>
-        <translation>Номер Плана</translation>
+        <translation>План номер </translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="956"/>
         <source>Current Plan </source>
-        <translation>Текущий План</translation>
+        <translation>Текущий план</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="1685"/>
@@ -1177,7 +1189,7 @@
     <message>
         <location filename="../src/mainwindow.h" line="125"/>
         <source>Trask</source>
-        <translation>Трек</translation>
+        <translation>Звук</translation>
     </message>
 </context>
 <context>
@@ -1239,7 +1251,7 @@
     <message>
         <location filename="../src/PLAYER/musicplayer.cpp" line="381"/>
         <source>Rewind</source>
-        <translation>Перемотка</translation>
+        <translation>Перемотка назад</translation>
     </message>
 </context>
 <context>
@@ -1541,7 +1553,7 @@
     <message>
         <location filename="../src/FORM/createformplaylist.h" line="22"/>
         <source>Number trask</source>
-        <translation>Номер трека</translation>
+        <translation>Номер звука</translation>
     </message>
 </context>
 <context>

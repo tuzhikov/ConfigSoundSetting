@@ -36,8 +36,11 @@ private:
     QQueue<QByteArray> listCMD, templistCMD;
     QByteArray sendCmd;
     TYPE_PLAY tmpRaedDataWav;   // временно храним даные wav файла
-    TYPE_CODE_NAME codeNameFile; // 4 байта код в имени файла "0001///"
-    TYPE_CODE_NAME::const_iterator inNameFile;
+    TYPE_CODE_NAME codeNameFile; // 4 байта код в имени файла "0001//"
+    TYPE_CODE_NAME::const_iterator iteratorNameFile;
+    const quint16 firstPackageIndex = 0xFFFF;
+    quint16 packageIndex = firstPackageIndex;
+    QString namefile;
 
     QTimer *timerRead;
     QVector <LinkInreface* > interface;
@@ -53,9 +56,12 @@ private:
     const quint16 max_lengh_name_file;
     bool progressVisible;
 
+    QByteArray checkCommandReadAll();
     // send command
-    void commandWrite();
-    void commandRead();
+    void commandWriteAll();
+    void collectCommandRead(const QByteArray codefile, const quint16 index);
+    void commandReadAll();
+    void commandReadFileWAV();
     void commandWriteSetting();
     void commandReadSetting();
     void commandSetTime();
@@ -64,7 +70,7 @@ private:
     void commandTest();
     typedef void (Controller::*NUMBER_COMMAND)();
     const NUMBER_COMMAND command_send[END_TYPE_COMMAND] = {
-        commandWrite,commandRead,commandWriteSetting,commandReadSetting,
+        commandWriteAll,commandReadAll,commandWriteSetting,commandReadSetting,
         commandSetTime,commandGetTime,commandListen,commandTest};
     // read command
     RET_ANSWER commandWriteProject(const char *, const int);
@@ -88,6 +94,9 @@ private:
 
     const NUMBER_COMMAND_READ command_read[END_TYPE_NUMBER_COMMAND_TRANSPORT] = { commandWrite, commandRead };
 
+    bool lookingEndWavFile();
+    bool finishCommandWavFile();
+    void startCommandWavFile();
     void collectTransportLevel( QQueue<QByteArray> &list );
     void collectTransportLevel( QByteArray &cmd );
     RET_ANSWER checksumReceived(const QByteArray &);
@@ -95,6 +104,7 @@ private:
     void setMessageError( const QString msg ){messageError = msg;messageOk.clear();}
     void setMessageOk( const QString msg ){messageOk = msg;messageError.clear();}
     void sendOutputMessage();
+    QByteArray nextAnswerWavTest();
 private slots:
     void on_Machine();
 public slots:

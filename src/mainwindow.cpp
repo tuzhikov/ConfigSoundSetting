@@ -306,7 +306,7 @@ void MainWindow::createConnectionGUI()
     //connect week
     connect(ui->sbTotalPlan,SIGNAL(valueChanged(int)),this,SLOT(onSetMaxPlanWeek(int)));
     // win setting uart
-    connect(ui->actionConfig_USB, &QAction::triggered, settings, &MainWindow::show);
+    connect(ui->actionConfig_USB, &QAction::triggered, settings, &SettingsDialog::openWindowsSetting);
     // win setting wifi
     connect(ui->actionConfig_WIFI, &QAction::triggered, settingsWifi, &MainWindow::show);
     // command
@@ -719,7 +719,7 @@ void MainWindow::createOneHoliday(QWidget *page, const int maxItem)
         retDataBase().getOneHoliday(i,&item);
         QDate date(QDate::currentDate().year(),item.month,item.day);
         // make item
-        makeItemHoliday( lWgt,i,max_plan,date,item.plan );
+        makeItemHoliday( lWgt,i,max_plan,date,(item.plan+1) );
     }
     // private pointer
     lWgtHoliday = lWgt;
@@ -899,6 +899,10 @@ void MainWindow::onAddPlan()
             ui->cbSelectPlan->addItem(tr("Number Plan ")+QString::number(i));
         }
     }
+    // set current page
+    const int index_curr = ui->sbTotalPlan->value()-1;
+    ui->cbSelectPlan->setCurrentIndex(index_curr);
+    onPagePlan(index_curr);
 }
 /**
  * @brief MainWindow::onRemotePlan
@@ -1360,7 +1364,7 @@ void MainWindow::updateGuiToHoliday()
         const TYPEHOLIDAY holiday = {
             .month = (uint8_t)formItem->getDateEdit().month(),
             .day = (uint8_t)formItem->getDateEdit().day(),
-            .plan = (uint8_t)formItem->getNumberPlan(),
+            .plan = (uint8_t)(formItem->getNumberPlan()-1),// The plan starts from zero
             .reserved = (uint8_t)0
         };
         if ( retDataBase().setOneHoliday(i,holiday) == false )
@@ -1392,7 +1396,7 @@ void MainWindow::updateHolidayToGui()
         TYPEHOLIDAY holiday = {};
         retDataBase().getOneHoliday(i, &holiday);
         const QDate date(QDate::currentDate().year(), holiday.month, holiday.day);
-        makeItemHoliday( lWgt, (i+1), max_current_plan, date, holiday.plan);
+        makeItemHoliday( lWgt, (i+1), max_current_plan, date, (holiday.plan+1) );// The plan starts from zero
         qDebug("updateHolidayToGui %d",(i+1));
     }
 }
@@ -1401,11 +1405,12 @@ void MainWindow::updateHolidayToGui()
  */
 void MainWindow::updateGuiToWeek()
 {
+
     QList <QSpinBox*> list; list<<ui->sbMonday<<ui->sbTuesday<<ui->sbWednesday
                                <<ui->sbThursday<<ui->sbFriday<<ui->sbSaturday<<ui->sbSunday;
     for (int i = 0; i<list.count(); i++)
     {
-        const int plan = list.at(i)->value();
+        const int plan = list.at(i)->value()?(list.at(i)->value()-1):0;
         retDataBase().setOneWeek(i, plan);
     }
 }
@@ -1420,7 +1425,7 @@ void MainWindow::updateWeekToGui()
     {
         uint8_t plan = 0;
         retDataBase().getOneWeek(i, &plan);
-        list.at(i)->setValue(plan);
+        list.at(i)->setValue((plan+1)); //
     }
 }
 /**
@@ -1860,12 +1865,14 @@ void MainWindow::onTestDate(const TYPE_TEST &cmd)
         showLabel(result,lb);
     }
     //time
-    const QString strtime(
-                QDateTime::fromTime_t(cmd.time,QTimeZone::systemTimeZone()).toString("dd.MM.yyyy hh:mm"));
+    QDateTime date_time;
+    date_time.setTimeZone(QTimeZone::utc());
+    date_time.setTime_t(cmd.time);
+    const QString strtime(date_time.toString("dd.MM.yyyy hh:mm"));
     ui->lbTestTime->setText(strtime);
     //plan
-    ui->lbPlanNumber->setText(QString::number(cmd.plan_number));
-    ui->lbPlanLine->setText(QString::number(cmd.plan_item));
+    ui->lbPlanNumber->setText(QString::number(cmd.plan_number+1)); // The plan starts from zero
+    ui->lbPlanLine->setText(QString::number(cmd.plan_item+1));// The plan starts from zero
     ui->lbVolPlan->setText(QString::number(cmd.plan_value));
     ui->lbSpVolume1->setText(QString::number(cmd.value_speaker1));
     ui->lbSpVolume2->setText(QString::number(cmd.value_speaker2));

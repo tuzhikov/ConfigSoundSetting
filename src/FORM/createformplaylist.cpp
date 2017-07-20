@@ -8,7 +8,8 @@ CreateFormPlayList::CreateFormPlayList(QWidget *parent,
                                        const QString path ): InterfaceForms(parent)
 {
     txt = new QLabel(text,parent);
-    txt->setMinimumWidth(55);
+    txt->setMinimumWidth(60);
+    txt->setAlignment(Qt::AlignRight);
 
     PathTrack = path;
     edit = new QLineEdit(path, parent);

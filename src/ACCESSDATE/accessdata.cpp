@@ -32,11 +32,6 @@ void AccessData::setDefault(TYPEPROJECT *const pPrg)
             pPrg->sound_value.value_sound[i].separate[j] = 50;
         }
     }
-    //WEEK
-    for (int i=0;i<MAX_DAY_WEEK;i++)
-    {
-        pPrg->week[i].plan = 1;
-    }
     //vibration
     pPrg->vibration.on = true;
     pPrg->vibration.intensity = 50;
@@ -61,7 +56,7 @@ void AccessData::setDefault(TYPEPROJECT *const pPrg)
     pPrg->noise.min_ct = 10;
     // setting
     pPrg->setting.flag = GREEN_BLINK_TABU|ZSVRZ_PERIODICALLY|ZSVRR_PERIODICALLY;
-    pPrg->setting.delay = 1;
+    pPrg->setting.delay = 200;
     pPrg->setting.period = 200;
 }
 /**
@@ -317,7 +312,7 @@ bool AccessData::setSoundValue (const uint8_t numspeaker,
 {
     if ( (numspeaker<getMaxSpeaker())&&(size<=getMaxSpeakerLevel()) )
     {
-        pDataProject->sound_value.value_sound[numspeaker].global = global   ;
+        pDataProject->sound_value.value_sound[numspeaker].global = global;
         uint8_t *const pPrm = pDataProject->sound_value.value_sound[numspeaker].separate;
         const size_t lengh = sizeof(pDataProject->sound_value.value_sound[numspeaker].separate);
         memcpy(pPrm,separate,lengh);
@@ -624,8 +619,7 @@ uint32_t AccessData::countItemHoliday()
     {
         TYPEHOLIDAY *const pPrm = &pDataProject->holidays[i];
         if ( (pPrm->month<1)||(pPrm->month>12) ||
-             (pPrm->day<1)||(pPrm->day>31) ||
-             (pPrm->plan<1)
+             (pPrm->day<1)||(pPrm->day>31)
            )
         {
             break;

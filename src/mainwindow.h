@@ -29,39 +29,6 @@ namespace Ui {
 class MainWindow;
 }
 
-//class TextEdit : public QTextEdit
-//{
-//    Q_OBJECT
-
-//public:
-
-//    TextEdit( QWidget* parent = 0 ) : QTextEdit( parent )
-//    {
-//          resize_timer_.setInterval( 50 );
-//          resize_timer_.setSingleShot( true );
-//          //connect( resize_timer_, SIGNAL( timeout() ), this, SLOT( delayed_resize() ) );
-//    }
-//    virtual ~TextEdit() {}
-
-//protected slots:
-//    void delayed_resize()
-//    {
-//        QTextEdit::resizeEvent( &QResizeEvent( size(), old_size_ ) );
-//    }
-
-//protected:
-//     void resizeEvent( QResizeEvent* e )
-//     {
-//          if( !resize_timer_.isActive() )
-//            old_size_ = e->oldSize();
-//          resize_timer_.start();
-//     }
-
-//private:
-//    QTimer   resize_timer_;
-//    QSize    old_size_;
-//};
-
 class MainWindow : public QMainWindow
 {
     Q_OBJECT

@@ -118,6 +118,8 @@ private slots:
     void apply();
     void checkCustomBaudRatePolicy(int idx);
     void checkCustomDevicePathPolicy(int idx);
+public slots:
+    void openWindowsSetting();
 signals:
     void signalListParametr(const QStringList &);
 };
